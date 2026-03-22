@@ -120,22 +120,14 @@
 </div>
 
 <script>
-// PASSWORD HASH (SHA-256 de "Zafer2025")
-const HASH = '5e5b64e29b7de482f854f6a1df7a1c769c1679cfa1ec1b4e5e0cc0de32153e0a';
-
-async function sha256(message){
-    const msgBuffer = new TextEncoder().encode(message);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2,'0')).join('');
-}
+// PASSWORD
+const SENHAS_VALIDAS = ['Zafer2025', 'zafer2025'];
 
 async function handleLogin(e){
     e.preventDefault();
-    const pw = document.getElementById('pwInput').value;
-    const hash = await sha256(pw);
+    const pw = document.getElementById('pwInput').value.trim();
 
-    if(hash === HASH){
+    if(SENHAS_VALIDAS.includes(pw)){
         // SUCCESS
         document.getElementById('errorMsg').classList.remove('show');
         document.getElementById('successOverlay').classList.add('show');
