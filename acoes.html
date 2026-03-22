@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grupo ZAFER — Painel Integrado de Ações | Plano Estratégico 25/26</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <style>
+        :root {
+            --primary:#0B3D2E;--secondary:#D4A843;--success:#27AE60;--warning:#F39C12;
+            --danger:#E74C3C;--info:#2980B9;--orange:#E67E22;--purple:#8E44AD;--teal:#1ABC9C;
+            --dark:#1A1A2E;--dark-card:#16213E;--dark-surface:#0F3460;
+            --text-light:#ECF0F1;--text-muted:#95A5A6;--shadow:0 8px 32px rgba(0,0,0,0.3);
+        }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--dark);color:var(--text-light);line-height:1.7;}
+        .container{max-width:1400px;margin:0 auto;padding:0 24px;}
+
+        .nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(26,26,46,0.96);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.08);}
+        .nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1400px;margin:0 auto;padding:0 24px;height:60px;}
+        .nav-brand{font-weight:800;color:var(--secondary);font-size:1.1rem;}
+        .nav-links{display:flex;gap:8px;}
+        .nav-links a{color:var(--text-muted);text-decoration:none;font-size:0.74rem;font-weight:600;padding:8px 12px;border-radius:10px;transition:all 0.3s;}
+        .nav-links a:hover,.nav-links a.active{color:var(--secondary);background:rgba(212,168,67,0.1);}
+
+        .hero{padding:90px 0 50px;text-align:center;position:relative;overflow:hidden;}
+        .hero::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(212,168,67,0.1),rgba(39,174,96,0.05));z-index:0;}
+        .hero>*{position:relative;z-index:1;}
+        .hero-emoji{font-size:3.5rem;margin-bottom:12px;}
+        .hero h1{font-size:2.8rem;font-weight:900;margin-bottom:8px;background:linear-gradient(135deg,#D4A843,#27AE60);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+        .hero .sub{color:var(--text-muted);font-size:1.05rem;margin-bottom:36px;max-width:780px;margin-left:auto;margin-right:auto;}
+        .hero-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;max-width:1100px;margin:0 auto;}
+        .hc{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px 12px;text-align:center;}
+        .hc .v{font-size:1.55rem;font-weight:900;}
+        .hc .l{font-size:0.66rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;}
+        .vr{color:var(--danger);}.vg{color:var(--success);}.vy{color:var(--secondary);}.vb{color:var(--info);}.vo{color:var(--orange);}.vp{color:var(--purple);}.vt{color:var(--teal);}
+
+        .section{padding:60px 0;}.section-alt{background:var(--dark-card);}
+        .sh{margin-bottom:40px;}
+        .sh .over{display:inline-block;font-size:0.78rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--secondary);margin-bottom:8px;}
+        .sh h2{font-size:2rem;font-weight:800;margin-bottom:10px;}
+        .sh p{color:var(--text-muted);max-width:720px;font-size:0.93rem;}
+
+        .card{background:var(--dark-card);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:28px;box-shadow:var(--shadow);margin-bottom:24px;transition:all 0.3s;}
+        .card:hover{border-color:rgba(212,168,67,0.15);}
+        .ct{font-size:1.05rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+        .ci{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.9rem;}
+
+        .g2{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+        .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+        .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+        .g5{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;}
+
+        .kpi{background:var(--dark-card);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:18px;position:relative;overflow:hidden;text-align:center;}
+        .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+        .kpi.kg::before{background:var(--success);}.kpi.kr::before{background:var(--danger);}
+        .kpi.kb::before{background:var(--info);}.kpi.ky::before{background:var(--secondary);}
+        .kpi.ko::before{background:var(--orange);}.kpi.kp::before{background:var(--purple);}.kpi.kt::before{background:var(--teal);}
+        .kl{font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+        .kv{font-size:1.35rem;font-weight:800;}
+        .kd{font-size:0.75rem;color:var(--text-muted);margin-top:4px;}
+        .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.64rem;font-weight:700;margin-top:5px;}
+        .bu{background:rgba(39,174,96,0.15);color:var(--success);}
+        .bd{background:rgba(231,76,60,0.15);color:var(--danger);}
+
+        .ch{position:relative;height:380px;}
+        .chs{position:relative;height:300px;}
+        .chl{position:relative;height:460px;}
+        .chx{position:relative;height:560px;}
+        .chxx{position:relative;height:650px;}
+
+        .tw{overflow-x:auto;border-radius:14px;border:1px solid rgba(255,255,255,0.08);}
+        table{width:100%;border-collapse:collapse;}
+        thead th{background:var(--dark-surface);color:var(--secondary);font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:12px 12px;text-align:left;border-bottom:2px solid rgba(212,168,67,0.3);white-space:nowrap;}
+        tbody td{padding:11px 12px;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.84rem;}
+        tbody tr:hover{background:rgba(255,255,255,0.02);}
+        .tr{text-align:right;}.tc{text-align:center;}
+        .tag{display:inline-block;padding:3px 10px;border-radius:16px;font-size:0.67rem;font-weight:700;}
+        .tg{background:rgba(39,174,96,0.15);color:var(--success);}
+        .tre{background:rgba(231,76,60,0.15);color:var(--danger);}
+        .ty{background:rgba(243,156,18,0.15);color:var(--warning);}
+        .tb{background:rgba(41,128,185,0.15);color:var(--info);}
+        .to{background:rgba(230,126,34,0.15);color:var(--orange);}
+        .tp{background:rgba(142,68,173,0.15);color:var(--purple);}
+
+        .alert{border-radius:14px;padding:22px 26px;margin:20px 0;border-left:4px solid;display:flex;gap:14px;align-items:flex-start;}
+        .ar{background:rgba(231,76,60,0.06);border-color:var(--danger);}
+        .ag{background:rgba(39,174,96,0.06);border-color:var(--success);}
+        .ay{background:rgba(243,156,18,0.06);border-color:var(--warning);}
+        .ab{background:rgba(41,128,185,0.06);border-color:var(--info);}
+        .ai{font-size:1.3rem;flex-shrink:0;}.at{font-weight:700;margin-bottom:4px;}
+        .ax{color:var(--text-muted);font-size:0.84rem;line-height:1.65;}
+
+        .ins{background:linear-gradient(135deg,rgba(212,168,67,0.08),rgba(212,168,67,0.02));border:1px solid rgba(212,168,67,0.2);border-radius:16px;padding:28px;margin:24px 0;}
+        .ins h4{color:var(--secondary);margin-bottom:12px;font-size:1.02rem;}
+        .ins ul{list-style:none;}
+        .ins li{padding:6px 0;padding-left:24px;position:relative;color:rgba(255,255,255,0.82);font-size:0.86rem;}
+        .ins li::before{content:'→';position:absolute;left:0;color:var(--secondary);font-weight:700;}
+
+        /* ACTION CARD */
+        .act-card{border-radius:18px;padding:24px;border:2px solid;margin-bottom:20px;position:relative;overflow:hidden;transition:all 0.3s;}
+        .act-card:hover{transform:translateY(-3px);}
+        .act-card.p1{background:rgba(231,76,60,0.04);border-color:rgba(231,76,60,0.3);}
+        .act-card.p1::before{content:'🔴 PRIORIDADE 1';position:absolute;top:12px;right:16px;font-size:0.66rem;font-weight:700;color:var(--danger);background:rgba(231,76,60,0.12);padding:3px 10px;border-radius:10px;}
+        .act-card.p2{background:rgba(230,126,34,0.04);border-color:rgba(230,126,34,0.25);}
+        .act-card.p2::before{content:'🟠 PRIORIDADE 2';position:absolute;top:12px;right:16px;font-size:0.66rem;font-weight:700;color:var(--orange);background:rgba(230,126,34,0.12);padding:3px 10px;border-radius:10px;}
+        .act-card.p3{background:rgba(41,128,185,0.04);border-color:rgba(41,128,185,0.2);}
+        .act-card.p3::before{content:'🔵 PRIORIDADE 3';position:absolute;top:12px;right:16px;font-size:0.66rem;font-weight:700;color:var(--info);background:rgba(41,128,185,0.12);padding:3px 10px;border-radius:10px;}
+        .act-name{font-size:1.15rem;font-weight:800;margin-bottom:4px;}
+        .act-sub{font-size:0.8rem;color:var(--text-muted);margin-bottom:14px;}
+        .act-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+        .act-kpi{text-align:center;padding:12px 6px;background:rgba(255,255,255,0.03);border-radius:10px;}
+        .act-kpi .akv{font-size:1.05rem;font-weight:800;}
+        .act-kpi .akl{font-size:0.62rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;}
+
+        /* TIMELINE */
+        .timeline{position:relative;padding-left:36px;}
+        .timeline::before{content:'';position:absolute;left:14px;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--danger),var(--orange),var(--info),var(--success));border-radius:4px;}
+        .tl-item{position:relative;margin-bottom:30px;padding-left:20px;}
+        .tl-item::before{content:'';position:absolute;left:-26px;top:6px;width:14px;height:14px;border-radius:50%;border:3px solid;background:var(--dark);}
+        .tl-item.t1::before{border-color:var(--danger);}.tl-item.t2::before{border-color:var(--orange);}
+        .tl-item.t3::before{border-color:var(--info);}.tl-item.t4::before{border-color:var(--success);}
+        .tl-date{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;}
+        .tl-title{font-size:1rem;font-weight:700;margin-bottom:4px;}
+        .tl-desc{font-size:0.82rem;color:var(--text-muted);}
+
+        .sep{height:4px;background:linear-gradient(90deg,transparent,rgba(212,168,67,0.4),rgba(39,174,96,0.4),transparent);margin:50px 0;}
+
+        .footer{background:var(--dark-card);border-top:1px solid rgba(255,255,255,0.08);padding:40px 0;text-align:center;}
+        .footer p{color:var(--text-muted);font-size:0.82rem;}
+        .footer .brand{color:var(--secondary);font-weight:700;}
+
+        @media(max-width:1024px){.hero-grid{grid-template-columns:repeat(3,1fr);}.g4,.g5{grid-template-columns:repeat(2,1fr);}.act-kpis{grid-template-columns:repeat(2,1fr);}}
+        @media(max-width:768px){.g2,.g3,.hero-grid{grid-template-columns:1fr;}.hero h1{font-size:2rem;}.nav-links{display:none;}}
+
+        .fi{opacity:0;transform:translateY(28px);transition:all 0.7s ease;}
+        .fi.visible{opacity:1;transform:translateY(0);}
+        html{scroll-behavior:smooth;scroll-padding-top:70px;}
+
+        /* PROGRESS BAR */
+        .prog{margin-top:10px;}
+        .prog-track{background:rgba(255,255,255,0.06);border-radius:8px;height:8px;overflow:hidden;}
+        .prog-fill{height:100%;border-radius:8px;transition:width 1.5s ease;}
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+    <div class="nav-inner">
+        <div class="nav-brand">ZAFER — Plano de Ações 25/26</div>
+        <div class="nav-links">
+            <a href="#visao" class="active">🎯 Visão</a>
+            <a href="#diagnostico">🩺 Diagnóstico</a>
+            <a href="#prioridade1">🔴 P1 Urgente</a>
+            <a href="#prioridade2">🟠 P2 Importante</a>
+            <a href="#prioridade3">🔵 P3 Melhoria</a>
+            <a href="#cronograma">📅 Cronograma</a>
+            <a href="#impacto">🚀 Impacto</a>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="visao">
+    <div class="container">
+        <div class="hero-emoji">🎯</div>
+        <h1>Plano Integrado de Ações</h1>
+        <p class="sub">15 ações estratégicas consolidadas dos 9 painéis de análise — priorizadas por impacto financeiro, prazo e complexidade. O roteiro para transformar o Grupo ZAFER.</p>
+        <div class="hero-grid">
+            <div class="hc" style="border-bottom:3px solid var(--danger);">
+                <div class="v vr">4</div>
+                <div class="l">🔴 Ações Urgentes</div>
+            </div>
+            <div class="hc" style="border-bottom:3px solid var(--orange);">
+                <div class="v vo">5</div>
+                <div class="l">🟠 Ações Importantes</div>
+            </div>
+            <div class="hc" style="border-bottom:3px solid var(--info);">
+                <div class="v vb">6</div>
+                <div class="l">🔵 Ações de Melhoria</div>
+            </div>
+            <div class="hc" style="border-bottom:3px solid var(--success);">
+                <div class="v vg">+R$ 7,28M</div>
+                <div class="l">Impacto Total/Ano</div>
+            </div>
+            <div class="hc" style="border-bottom:3px solid var(--secondary);">
+                <div class="v vy">R$ 9,90M</div>
+                <div class="l">Resultado Projetado</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 1 — DIAGNÓSTICO CONSOLIDADO -->
+<!-- ================================================== -->
+<section class="section" id="diagnostico">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">Diagnóstico Consolidado</div>
+            <h2>De Onde Vêm os Problemas e as Oportunidades</h2>
+            <p>Resumo dos achados principais dos 9 painéis de análise — mapa da situação atual</p>
+        </div>
+
+        <div class="g3 fi" style="margin-bottom:30px;">
+            <div class="kpi kr">
+                <div class="kl">Resultado Atual</div>
+                <div class="kv vy">R$ 2,62M</div>
+                <div class="kd">Margem 5,5% | Grupo Consolidado</div>
+            </div>
+            <div class="kpi kr">
+                <div class="kl">Destruição Identificada</div>
+                <div class="kv vr">R$ 4,18M/ano</div>
+                <div class="kd">Cana SP + DM 82I78 + ineficiências</div>
+            </div>
+            <div class="kpi kg">
+                <div class="kl">Potencial com Ações</div>
+                <div class="kv vg">R$ 9,90M</div>
+                <div class="kd">+278% vs. atual | Margem 22,5%</div>
+            </div>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(231,76,60,0.15);">🩺</div>Mapa de Problemas — Ranking por Impacto Financeiro</div>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Problema Identificado</th>
+                            <th class="tc">Fonte</th>
+                            <th class="tr">Impacto/Ano</th>
+                            <th class="tc">% do Resultado</th>
+                            <th class="tc">Severidade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background:rgba(231,76,60,0.06);">
+                            <td><strong>1</strong></td>
+                            <td><strong>Cana SP: Operação deficitária crônica</strong></td>
+                            <td class="tc"><span class="tag tre">Cultura</span></td>
+                            <td class="tr" style="color:var(--danger);font-weight:800;">-R$ 2,31M</td>
+                            <td class="tc">88% do lucro</td>
+                            <td class="tc"><span class="tag tre">CRÍTICO</span></td>
+                        </tr>
+                        <tr style="background:rgba(231,76,60,0.05);">
+                            <td><strong>2</strong></td>
+                            <td><strong>DM 82I78: Pior cultivar — 481 ha com prejuízo</strong></td>
+                            <td class="tc"><span class="tag tre">Variedade</span></td>
+                            <td class="tr" style="color:var(--danger);font-weight:700;">-R$ 1,87M</td>
+                            <td class="tc">71% do lucro</td>
+                            <td class="tc"><span class="tag tre">CRÍTICO</span></td>
+                        </tr>
+                        <tr style="background:rgba(231,76,60,0.04);">
+                            <td><strong>3</strong></td>
+                            <td><strong>Endividamento: R$ 16,17M dívida CP (cobertura 0,16x)</strong></td>
+                            <td class="tc"><span class="tag tre">Financeiro</span></td>
+                            <td class="tr" style="color:var(--danger);">-R$ 3,60M juros</td>
+                            <td class="tc">137% do lucro</td>
+                            <td class="tc"><span class="tag tre">CRÍTICO</span></td>
+                        </tr>
+                        <tr style="background:rgba(243,156,18,0.03);">
+                            <td>4</td>
+                            <td>Custo ADM acima da referência (+R$ 232/ha)</td>
+                            <td class="tc"><span class="tag ty">Custo</span></td>
+                            <td class="tr" style="color:var(--warning);">-R$ 1,46M</td>
+                            <td class="tc">56% do lucro</td>
+                            <td class="tc"><span class="tag ty">ALTO</span></td>
+                        </tr>
+                        <tr style="background:rgba(243,156,18,0.03);">
+                            <td>5</td>
+                            <td>Defensivos: Excesso de aplicações</td>
+                            <td class="tc"><span class="tag ty">Custo</span></td>
+                            <td class="tr" style="color:var(--warning);">-R$ 1,26M</td>
+                            <td class="tc">48% do lucro</td>
+                            <td class="tc"><span class="tag ty">ALTO</span></td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>UBV: Produtividade 23% abaixo de Monte Alegre</td>
+                            <td class="tc"><span class="tag tb">Fazenda</span></td>
+                            <td class="tr">-R$ 850K estimado</td>
+                            <td class="tc">32% do lucro</td>
+                            <td class="tc"><span class="tag tb">MÉDIO</span></td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>Portfólio disperso: 12 cultivares com 33% em prejuízo</td>
+                            <td class="tc"><span class="tag tb">Variedade</span></td>
+                            <td class="tr">-R$ 350K</td>
+                            <td class="tc">13% do lucro</td>
+                            <td class="tc"><span class="tag tb">MÉDIO</span></td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>Cana GO: No limiar do break-even (margem -1,6%)</td>
+                            <td class="tc"><span class="tag to">Cultura</span></td>
+                            <td class="tr">-R$ 127K</td>
+                            <td class="tc">5% do lucro</td>
+                            <td class="tc"><span class="tag to">MÉDIO</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(231,76,60,0.15);">📊</div>Destruição de Valor — Por Fonte (R$ milhões)</div>
+                <div class="ch"><canvas id="chDestroiVal"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(39,174,96,0.15);">📊</div>Potencial de Captura — Por Eixo Estratégico</div>
+                <div class="ch"><canvas id="chPotencial"></canvas></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 2 — PRIORIDADE 1: URGENTES -->
+<!-- ================================================== -->
+<section class="section section-alt" id="prioridade1">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">🔴 Prioridade 1 — Ações Urgentes</div>
+            <h2>4 Ações de Execução Imediata — Impacto: +R$ 4,64M/ano</h2>
+            <p>Ações de altíssimo impacto que devem ser iniciadas nos próximos 30 dias — são as alavancas que mudam o patamar do grupo</p>
+        </div>
+
+        <!-- AÇÃO 1.1 -->
+        <div class="act-card p1 fi">
+            <div class="act-name" style="color:var(--danger);">1.1 — Encerrar Operação Cana SP</div>
+            <div class="act-sub">Não renovar arrendamento | Negociar distrato ou sublocação | Eliminar 1.555 ha deficitários</div>
+            <div class="act-kpis">
+                <div class="act-kpi"><div class="akv vg">+R$ 2,31M</div><div class="akl">Impacto/Ano</div></div>
+                <div class="act-kpi"><div class="akv vr">30 dias</div><div class="akl">Prazo Decisão</div></div>
+                <div class="act-kpi"><div class="akv">R$ 0</div><div class="akl">Investimento</div></div>
+                <div class="act-kpi"><div class="akv vg">∞</div><div class="akl">ROI</div></div>
+            </div>
+            <div class="prog"><div class="prog-track"><div class="prog-fill" style="width:0%;background:var(--danger);"></div></div></div>
+        </div>
+
+        <!-- AÇÃO 1.2 -->
+        <div class="act-card p1 fi">
+            <div class="act-name" style="color:var(--danger);">1.2 — Eliminar DM 82I78 do Portfólio de Soja</div>
+            <div class="act-sub">Substituir 481 ha por NEO 790 + OLIMPO + 78IX80 | Decisão de compra de sementes para 25/26</div>
+            <div class="act-kpis">
+                <div class="act-kpi"><div class="akv vg">+R$ 1,87M</div><div class="akl">Impacto/Ano</div></div>
+                <div class="act-kpi"><div class="akv vo">Safra 25/26</div><div class="akl">Prazo Execução</div></div>
+                <div class="act-kpi"><div class="akv">~R$ 50K</div><div class="akl">Custo (delta semente)</div></div>
+                <div class="act-kpi"><div class="akv vg">37,4x</div><div class="akl">ROI</div></div>
+            </div>
+            <div class="prog"><div class="prog-track"><div class="prog-fill" style="width:0%;background:var(--danger);"></div></div></div>
+        </div>
+
+        <!-- AÇÃO 1.3 -->
+        <div class="act-card p1 fi">
+            <div class="act-name" style="color:var(--danger);">1.3 — Renegociar Dívida de Curto Prazo (R$ 16,17M)</div>
+            <div class="act-sub">Alongar perfil para 3-5 anos | Buscar Plano Safra + BNDES | Reduzir pressão de caixa imediata</div>
+            <div class="act-kpis">
+                <div class="act-kpi"><div class="akv vg">+R$ 260K</div><div class="akl">Economia Juros/Ano</div></div>
+                <div class="act-kpi"><div class="akv vr">60 dias</div><div class="akl">Prazo</div></div>
+                <div class="act-kpi"><div class="akv">Consultoria</div><div class="akl">Investimento</div></div>
+                <div class="act-kpi"><div class="akv vg">0,28x→0,55x</div><div class="akl">Cobertura Dívida</div></div>
+            </div>
+            <div class="prog"><div class="prog-track"><div class="prog-fill" style="width:0%;background:var(--danger);"></div></div></div>
+        </div>
+
+        <!-- AÇÃO 1.4 -->
+        <div class="act-card p1 fi">
+            <div class="act-name" style="color:var(--danger);">1.4 — Rebalancear Portfólio de Soja: 12 → 7 Cultivares</div>
+            <div class="act-sub">Concentrar 65% da área no Trio Elite (NEO 790 + OLIMPO + 78IX80) | Simplificar logística de sementes</div>
+            <div class="act-kpis">
+                <div class="act-kpi"><div class="akv vg">+R$ 200K</div><div class="akl">Impacto Incremental</div></div>
+                <div class="act-kpi"><div class="akv vo">Safra 25/26</div><div class="akl">Prazo</div></div>
+                <div class="act-kpi"><div class="akv">73,8 sc/ha</div><div class="akl">Prod. Projetada</div></div>
+                <div class="act-kpi"><div class="akv vg">+9%</div><div class="akl">vs. 67,69 atual</div></div>
+            </div>
+            <div class="prog"><div class="prog-track"><div class="prog-fill" style="width:0%;background:var(--danger);"></div></div></div>
+        </div>
+
+        <div class="alert ar fi">
+            <div class="ai">🔴</div>
+            <div>
+                <div class="at">As 4 ações urgentes somam +R$ 4,64M/ano — quase triplicam o resultado</div>
+                <div class="ax">Nenhuma dessas ações requer investimento significativo — são decisões de gestão. O resultado salta de R$ 2,62M → R$ 7,26M apenas com cortes e substituições. Se não executadas até jun/2026, o grupo continuará queimando >R$ 4M/ano desnecessariamente.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 3 — PRIORIDADE 2: IMPORTANTES -->
+<!-- ================================================== -->
+<section class="section" id="prioridade2">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">🟠 Prioridade 2 — Ações Importantes</div>
+            <h2>5 Ações de Médio Prazo — Impacto: +R$ 1,80M/ano</h2>
+            <p>Ações que demandam mais planejamento, mas geram retorno significativo em 6-12 meses</p>
+        </div>
+
+        <!-- AÇÃO 2.1 -->
+        <div class="act-card p2 fi">
+            <div class="act-name" style="color:var(--orange);">2.1 — Otimizar Estrutura Administrativa (-R$ 232/ha → benchmark)</div>
+            <div class="act-sub">Auditoria de processos ADM | Redesenho de equipe | Digitalização de controles</div>
+            <div class="act-kpis">
+                <div class="act-kpi"><div class="akv vg">+R$ 500K</div><div class="akl">Economia/Ano</div></div>
+                <div class="act-kpi"><div class="akv vo">90 dias</div><div class="akl">Prazo</div></div>
+                <div class="act-kpi"><div class="akv">~R$ 80K</div><div class="akl">Investimento</div></div>
+                <div class="act-kpi"><div class="akv vg">6,3x</div><div class="akl">ROI</div></div>
+            </div>
+        </div>
+
+        <!-- AÇÃO 2.2 -->
+        <div class="act-card p2 fi">
+            <div class="act-name" style="color:var(--orange);">2.2 — Implantar MIP + Renegociar Defensivos</div>
+            <div class="act-sub">Monitoramento integrado de pragas | Biológicos | Compra coletiva de defensivos</div>
+            <div class="act-kpis">
+                <div class="act-kpi"><div class="akv vg">+R$ 800K</div><div class="akl">Economia/Ano</div></div>
+                <div class="act-kpi"><div class="akv">Safra 25/26</div><div class="akl">Prazo</div></div>
+                <div class="act-kpi"><div class="akv">~R$ 120K</div><div class="akl">Investimento</div></div>
+                <div class="act-kpi"><div class="akv vg">6,7x</div><div class="akl">ROI</div></div>
+            </div>
+        </div>
+
+        <!-- AÇÃO 2.3 -->
+        <div class="act-card p2 fi">
+            <div class="act-name" style="color:var(--orange);">2.3 — Diagnóstico Agronômico UBV (Solo + Manejo)</div>
+            <div class="act-sub">Análise de solo detalhada | Mapa de fertilidade | Plano de correção e adubação diferenciada</div>
+            <div class="act-kpis">
+                <div class="act-kpi"><div class="akv vg">+R$ 250K</div><div class="akl">Impacto Estimado</div></div>
+                <div class="act-kpi"><div class="akv">120 dias</div><div class="akl">Prazo Diagnóstico</div></div>
+                <div class="act-kpi"><div class="akv">~R$ 40K</div><div class="akl">Investimento</div></div>
+                <div class="act-kpi"><div class="akv vg">63→68 sc</div><div class="akl">Meta Prod. Soja</div></div>
+            </div>
+        </div>
+
+        <!-- AÇÃO 2.4 -->
+        <div class="act-card p2 fi">
+            <div class="act-name" style="color:var(--orange);">2.4 — Otimizar Janela de Plantio do Milho Safrinha</div>
+            <div class="act-sub">Priorizar soja precoce em áreas de milho | Meta: 100% plantio até 25/02 | Elevar prod. média 10%</div>
+            <div class="act-kpis">
+                <div class="act-kpi"><div class="akv vg">+R$ 150K</div><div class="akl">Impacto/Ano</div></div>
+                <div class="act-kpi"><div class="akv">Safra 25/26</div><div class="akl">Prazo</div></div>
+                <div class="act-kpi"><div class="akv">R$ 0</div><div class="akl">Investimento</div></div>
+                <div class="act-kpi"><div class="akv vg">138→148 sc</div><div class="akl">Meta Monte Alegre</div></div>
+            </div>
+        </div>
+
+        <!-- AÇÃO 2.5 -->
+        <div class="act-card p2 fi">
+            <div class="act-name" style="color:var(--orange);">2.5 — Plano de Melhoria Cana GO (85 tn/ha target)</div>
+            <div class="act-sub">Renovação de canavial | Controle mais intensivo | Renegociar ATR com usina</div>
+            <div class="act-kpis">
+                <div class="act-kpi"><div class="akv vg">+R$ 100K</div><div class="akl">Meta Virada</div></div>
+                <div class="act-kpi"><div class="akv">12 meses</div><div class="akl">Prazo</div></div>
+                <div class="act-kpi"><div class="akv">~R$ 200K</div><div class="akl">Investimento</div></div>
+                <div class="act-kpi"><div class="akv vy">85 tn/ha</div><div class="akl">Meta Prod.</div></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 4 — PRIORIDADE 3: MELHORIA CONTÍNUA -->
+<!-- ================================================== -->
+<section class="section section-alt" id="prioridade3">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">🔵 Prioridade 3 — Melhoria Contínua</div>
+            <h2>6 Ações Estruturantes — Impacto: +R$ 840K/ano</h2>
+            <p>Ações de 6-18 meses que constroem resiliência e eficiência de longo prazo</p>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(41,128,185,0.15);">📋</div>Ações de Melhoria Contínua — Detalhamento</div>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Ação</th>
+                            <th class="tc">Prazo</th>
+                            <th class="tr">Impacto/Ano</th>
+                            <th class="tr">Investimento</th>
+                            <th class="tc">Área</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>3.1</strong></td>
+                            <td><strong>Renegociar spread bancário (juros)</strong></td>
+                            <td class="tc"><span class="tag tb">90 dias</span></td>
+                            <td class="tr" style="color:var(--success);">+R$ 200K</td>
+                            <td class="tr">R$ 0</td>
+                            <td class="tc"><span class="tag tp">Financeiro</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>3.2</strong></td>
+                            <td><strong>Implantar agricultura de precisão (AP)</strong></td>
+                            <td class="tc"><span class="tag tb">12 meses</span></td>
+                            <td class="tr" style="color:var(--success);">+R$ 180K</td>
+                            <td class="tr">R$ 250K</td>
+                            <td class="tc"><span class="tag tg">Agro</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>3.3</strong></td>
+                            <td><strong>Otimizar logística e maquinário (UBV)</strong></td>
+                            <td class="tc"><span class="tag tb">6 meses</span></td>
+                            <td class="tr" style="color:var(--success);">+R$ 165K</td>
+                            <td class="tr">R$ 80K</td>
+                            <td class="tc"><span class="tag to">Operações</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>3.4</strong></td>
+                            <td><strong>Dashboard de gestão em tempo real</strong></td>
+                            <td class="tc"><span class="tag tb">6 meses</span></td>
+                            <td class="tr" style="color:var(--success);">+R$ 120K</td>
+                            <td class="tr">R$ 60K</td>
+                            <td class="tc"><span class="tag tp">Gestão</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>3.5</strong></td>
+                            <td><strong>Programa de hedge/trava de preço soja + milho</strong></td>
+                            <td class="tc"><span class="tag tb">Contínuo</span></td>
+                            <td class="tr" style="color:var(--success);">+R$ 100K</td>
+                            <td class="tr">R$ 30K</td>
+                            <td class="tc"><span class="tag tp">Comercial</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>3.6</strong></td>
+                            <td><strong>Capacitação de equipe técnica e gerentes</strong></td>
+                            <td class="tc"><span class="tag tb">12 meses</span></td>
+                            <td class="tr" style="color:var(--success);">+R$ 75K</td>
+                            <td class="tr">R$ 45K</td>
+                            <td class="tc"><span class="tag tg">RH</span></td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr style="background:var(--dark-surface);font-weight:700;">
+                            <td colspan="3"><strong>TOTAL P3</strong></td>
+                            <td class="tr" style="color:var(--success);">+R$ 840K</td>
+                            <td class="tr">R$ 465K</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 5 — CRONOGRAMA -->
+<!-- ================================================== -->
+<section class="section" id="cronograma">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">📅 Cronograma de Execução</div>
+            <h2>Linha do Tempo — Abril/2026 a Março/2027</h2>
+            <p>Sequenciamento das 15 ações ao longo de 12 meses</p>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(212,168,67,0.15);">📅</div>Gantt Simplificado — 15 Ações</div>
+            <div class="chxx"><canvas id="chGantt"></canvas></div>
+        </div>
+
+        <div class="g2 fi">
+            <div class="card">
+                <div class="timeline">
+                    <div class="tl-item t1">
+                        <div class="tl-date" style="color:var(--danger);">Abr-Mai 2026 — Sprint 1</div>
+                        <div class="tl-title">Decisões Estruturais</div>
+                        <div class="tl-desc">Encerrar Cana SP | Eliminar DM 82I78 | Iniciar renegociação dívida | Definir portfólio 25/26</div>
+                    </div>
+                    <div class="tl-item t2">
+                        <div class="tl-date" style="color:var(--orange);">Jun-Ago 2026 — Sprint 2</div>
+                        <div class="tl-title">Otimizações Operacionais</div>
+                        <div class="tl-desc">Auditoria ADM | Implantar MIP | Diagnóstico UBV | Renegociar defensivos</div>
+                    </div>
+                    <div class="tl-item t3">
+                        <div class="tl-date" style="color:var(--info);">Set-Nov 2026 — Sprint 3</div>
+                        <div class="tl-title">Plantio Otimizado 25/26</div>
+                        <div class="tl-desc">Soja com 7 cultivares | Elite 65% da área | Janela milho otimizada | Cana GO renovação</div>
+                    </div>
+                    <div class="tl-item t4">
+                        <div class="tl-date" style="color:var(--success);">Dez/26-Mar/27 — Sprint 4</div>
+                        <div class="tl-title">Colheita e Resultados</div>
+                        <div class="tl-desc">Colheita soja 25/26 | Validar ganhos | AP + Dashboard | Hedge safra 26/27</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(39,174,96,0.15);">📈</div>Captura de Valor Acumulada (R$ milhões)</div>
+                <div class="ch"><canvas id="chCaptura"></canvas></div>
+            </div>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(212,168,67,0.15);">📋</div>Matriz Completa — 15 Ações Priorizadas</div>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Ação</th>
+                            <th class="tc">Prioridade</th>
+                            <th class="tc">Prazo</th>
+                            <th class="tr">Impacto/Ano</th>
+                            <th class="tr">Investimento</th>
+                            <th class="tc">ROI</th>
+                            <th class="tc">Dificuldade</th>
+                            <th class="tc">Responsável</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background:rgba(231,76,60,0.05);">
+                            <td><strong>1.1</strong></td>
+                            <td><strong>Encerrar Cana SP</strong></td>
+                            <td class="tc"><span class="tag tre">🔴 P1</span></td>
+                            <td class="tc">30 dias</td>
+                            <td class="tr" style="color:var(--success);font-weight:700;">+R$ 2,31M</td>
+                            <td class="tr">R$ 0</td>
+                            <td class="tc" style="color:var(--success);">∞</td>
+                            <td class="tc"><span class="tag tg">Fácil</span></td>
+                            <td class="tc">Diretoria</td>
+                        </tr>
+                        <tr style="background:rgba(231,76,60,0.04);">
+                            <td><strong>1.2</strong></td>
+                            <td><strong>Eliminar DM 82I78</strong></td>
+                            <td class="tc"><span class="tag tre">🔴 P1</span></td>
+                            <td class="tc">Safra 25/26</td>
+                            <td class="tr" style="color:var(--success);font-weight:700;">+R$ 1,87M</td>
+                            <td class="tr">R$ 50K</td>
+                            <td class="tc" style="color:var(--success);">37x</td>
+                            <td class="tc"><span class="tag tg">Fácil</span></td>
+                            <td class="tc">Agronômico</td>
+                        </tr>
+                        <tr style="background:rgba(231,76,60,0.03);">
+                            <td><strong>1.3</strong></td>
+                            <td><strong>Renegociar dívida CP</strong></td>
+                            <td class="tc"><span class="tag tre">🔴 P1</span></td>
+                            <td class="tc">60 dias</td>
+                            <td class="tr" style="color:var(--success);">+R$ 260K</td>
+                            <td class="tr">R$ 30K</td>
+                            <td class="tc" style="color:var(--success);">8,7x</td>
+                            <td class="tc"><span class="tag ty">Médio</span></td>
+                            <td class="tc">Financeiro</td>
+                        </tr>
+                        <tr style="background:rgba(231,76,60,0.02);">
+                            <td><strong>1.4</strong></td>
+                            <td><strong>Rebalancear portfólio soja</strong></td>
+                            <td class="tc"><span class="tag tre">🔴 P1</span></td>
+                            <td class="tc">Safra 25/26</td>
+                            <td class="tr" style="color:var(--success);">+R$ 200K</td>
+                            <td class="tr">R$ 0</td>
+                            <td class="tc" style="color:var(--success);">∞</td>
+                            <td class="tc"><span class="tag tg">Fácil</span></td>
+                            <td class="tc">Agronômico</td>
+                        </tr>
+                        <tr style="background:rgba(230,126,34,0.04);">
+                            <td><strong>2.1</strong></td>
+                            <td>Otimizar ADM</td>
+                            <td class="tc"><span class="tag to">🟠 P2</span></td>
+                            <td class="tc">90 dias</td>
+                            <td class="tr" style="color:var(--success);">+R$ 500K</td>
+                            <td class="tr">R$ 80K</td>
+                            <td class="tc" style="color:var(--success);">6,3x</td>
+                            <td class="tc"><span class="tag ty">Médio</span></td>
+                            <td class="tc">Gestão</td>
+                        </tr>
+                        <tr style="background:rgba(230,126,34,0.03);">
+                            <td><strong>2.2</strong></td>
+                            <td>MIP + Renegociar defensivos</td>
+                            <td class="tc"><span class="tag to">🟠 P2</span></td>
+                            <td class="tc">Safra 25/26</td>
+                            <td class="tr" style="color:var(--success);">+R$ 800K</td>
+                            <td class="tr">R$ 120K</td>
+                            <td class="tc" style="color:var(--success);">6,7x</td>
+                            <td class="tc"><span class="tag ty">Médio</span></td>
+                            <td class="tc">Agronômico</td>
+                        </tr>
+                        <tr style="background:rgba(230,126,34,0.03);">
+                            <td><strong>2.3</strong></td>
+                            <td>Diagnóstico UBV</td>
+                            <td class="tc"><span class="tag to">🟠 P2</span></td>
+                            <td class="tc">120 dias</td>
+                            <td class="tr" style="color:var(--success);">+R$ 250K</td>
+                            <td class="tr">R$ 40K</td>
+                            <td class="tc" style="color:var(--success);">6,3x</td>
+                            <td class="tc"><span class="tag tg">Fácil</span></td>
+                            <td class="tc">Agronômico</td>
+                        </tr>
+                        <tr style="background:rgba(230,126,34,0.02);">
+                            <td><strong>2.4</strong></td>
+                            <td>Janela milho otimizada</td>
+                            <td class="tc"><span class="tag to">🟠 P2</span></td>
+                            <td class="tc">Safra 25/26</td>
+                            <td class="tr" style="color:var(--success);">+R$ 150K</td>
+                            <td class="tr">R$ 0</td>
+                            <td class="tc" style="color:var(--success);">∞</td>
+                            <td class="tc"><span class="tag tg">Fácil</span></td>
+                            <td class="tc">Agronômico</td>
+                        </tr>
+                        <tr style="background:rgba(230,126,34,0.02);">
+                            <td><strong>2.5</strong></td>
+                            <td>Melhoria Cana GO</td>
+                            <td class="tc"><span class="tag to">🟠 P2</span></td>
+                            <td class="tc">12 meses</td>
+                            <td class="tr" style="color:var(--success);">+R$ 100K</td>
+                            <td class="tr">R$ 200K</td>
+                            <td class="tc">0,5x</td>
+                            <td class="tc"><span class="tag tre">Difícil</span></td>
+                            <td class="tc">Agronômico</td>
+                        </tr>
+                        <tr>
+                            <td>3.1</td><td>Renegociar spread bancário</td><td class="tc"><span class="tag tb">🔵 P3</span></td><td class="tc">90 dias</td><td class="tr vg">+R$ 200K</td><td class="tr">R$ 0</td><td class="tc vg">∞</td><td class="tc"><span class="tag ty">Médio</span></td><td class="tc">Financeiro</td>
+                        </tr>
+                        <tr>
+                            <td>3.2</td><td>Agricultura de Precisão</td><td class="tc"><span class="tag tb">🔵 P3</span></td><td class="tc">12 meses</td><td class="tr vg">+R$ 180K</td><td class="tr">R$ 250K</td><td class="tc">0,7x</td><td class="tc"><span class="tag ty">Médio</span></td><td class="tc">Agronômico</td>
+                        </tr>
+                        <tr>
+                            <td>3.3</td><td>Logística maquinário UBV</td><td class="tc"><span class="tag tb">🔵 P3</span></td><td class="tc">6 meses</td><td class="tr vg">+R$ 165K</td><td class="tr">R$ 80K</td><td class="tc vg">2,1x</td><td class="tc"><span class="tag ty">Médio</span></td><td class="tc">Operações</td>
+                        </tr>
+                        <tr>
+                            <td>3.4</td><td>Dashboard de gestão</td><td class="tc"><span class="tag tb">🔵 P3</span></td><td class="tc">6 meses</td><td class="tr vg">+R$ 120K</td><td class="tr">R$ 60K</td><td class="tc vg">2,0x</td><td class="tc"><span class="tag tg">Fácil</span></td><td class="tc">TI/Gestão</td>
+                        </tr>
+                        <tr>
+                            <td>3.5</td><td>Hedge de preço</td><td class="tc"><span class="tag tb">🔵 P3</span></td><td class="tc">Contínuo</td><td class="tr vg">+R$ 100K</td><td class="tr">R$ 30K</td><td class="tc vg">3,3x</td><td class="tc"><span class="tag ty">Médio</span></td><td class="tc">Comercial</td>
+                        </tr>
+                        <tr>
+                            <td>3.6</td><td>Capacitação equipe</td><td class="tc"><span class="tag tb">🔵 P3</span></td><td class="tc">12 meses</td><td class="tr vg">+R$ 75K</td><td class="tr">R$ 45K</td><td class="tc vg">1,7x</td><td class="tc"><span class="tag tg">Fácil</span></td><td class="tc">RH</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr style="background:var(--dark-surface);font-weight:800;">
+                            <td colspan="4"><strong>TOTAL — 15 AÇÕES</strong></td>
+                            <td class="tr" style="color:var(--success);font-size:1.05rem;">+R$ 7,28M</td>
+                            <td class="tr">R$ 985K</td>
+                            <td class="tc" style="color:var(--success);">7,4x</td>
+                            <td colspan="2"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 6 — IMPACTO CONSOLIDADO -->
+<!-- ================================================== -->
+<section class="section section-alt" id="impacto">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">🚀 Impacto Consolidado</div>
+            <h2>De R$ 2,62M para R$ 9,90M — A Transformação Completa</h2>
+            <p>Resultado projetado com a execução das 15 ações estratégicas</p>
+        </div>
+
+        <div class="g5 fi" style="margin-bottom:30px;">
+            <div class="kpi kr">
+                <div class="kl">Resultado Atual</div>
+                <div class="kv vy">R$ 2,62M</div>
+                <div class="kd">Margem 5,5%</div>
+            </div>
+            <div class="kpi kr">
+                <div class="kl">(+) P1 Urgentes</div>
+                <div class="kv vg">+R$ 4,64M</div>
+                <div class="kd">4 ações</div>
+            </div>
+            <div class="kpi ko">
+                <div class="kl">(+) P2 Importantes</div>
+                <div class="kv vg">+R$ 1,80M</div>
+                <div class="kd">5 ações</div>
+            </div>
+            <div class="kpi kb">
+                <div class="kl">(+) P3 Melhoria</div>
+                <div class="kv vg">+R$ 840K</div>
+                <div class="kd">6 ações</div>
+            </div>
+            <div class="kpi kg">
+                <div class="kl">Resultado Projetado</div>
+                <div class="kv vg">R$ 9,90M</div>
+                <div class="kd">Margem 22,5%</div>
+                <div class="badge bu">+278%</div>
+            </div>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(39,174,96,0.15);">🚀</div>Waterfall: Construção do Resultado — R$ 2,62M → R$ 9,90M</div>
+            <div class="chl"><canvas id="chWaterfallFinal"></canvas></div>
+        </div>
+
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(39,174,96,0.15);">📊</div>Impacto por Eixo Estratégico (R$ milhões)</div>
+                <div class="ch"><canvas id="chEixos"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(212,168,67,0.15);">📊</div>Investimento vs. Retorno — ROI por Ação</div>
+                <div class="ch"><canvas id="chROI"></canvas></div>
+            </div>
+        </div>
+
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(212,168,67,0.15);">📊</div>Antes vs. Depois — KPIs do Grupo</div>
+                <div class="ch"><canvas id="chRadarAntesDep"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(39,174,96,0.15);">📊</div>Composição do Resultado por Cultura — Antes vs Depois</div>
+                <div class="ch"><canvas id="chCultAntesDep"></canvas></div>
+            </div>
+        </div>
+
+        <!-- TABELA COMPARATIVA -->
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(212,168,67,0.15);">📋</div>Comparativo Completo — Antes vs. Depois das 15 Ações</div>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr><th>Indicador</th><th class="tr">Atual (24/25)</th><th class="tr">Projetado (25/26)</th><th class="tc">Variação</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Receita Total</td><td class="tr">R$ 47,55M</td><td class="tr" style="color:var(--success);font-weight:700;">R$ 43,92M</td><td class="tc" style="color:var(--warning);">-7,6% (sem Cana SP)</td></tr>
+                        <tr><td>Custo Total</td><td class="tr">R$ 44,93M</td><td class="tr" style="color:var(--success);font-weight:700;">R$ 34,02M</td><td class="tc" style="color:var(--success);">-24,3%</td></tr>
+                        <tr style="background:rgba(39,174,96,0.04);"><td><strong>Resultado Líquido</strong></td><td class="tr" style="font-weight:700;">R$ 2,62M</td><td class="tr" style="color:var(--success);font-weight:900;font-size:1.05rem;">R$ 9,90M</td><td class="tc" style="color:var(--success);font-weight:700;">+278%</td></tr>
+                        <tr><td>Margem Líquida</td><td class="tr">5,5%</td><td class="tr" style="color:var(--success);">22,5%</td><td class="tc" style="color:var(--success);">+17,0 p.p.</td></tr>
+                        <tr><td>Produtividade Soja</td><td class="tr">67,69 sc/ha</td><td class="tr" style="color:var(--success);">73,8 sc/ha</td><td class="tc" style="color:var(--success);">+9,0%</td></tr>
+                        <tr><td>Nº de Cultivares Soja</td><td class="tr">12</td><td class="tr" style="color:var(--success);">7</td><td class="tc" style="color:var(--success);">-42% (foco)</td></tr>
+                        <tr><td>Área em Prejuízo</td><td class="tr" style="color:var(--danger);">2.486 ha (39%)</td><td class="tr" style="color:var(--success);">0 ha (0%)</td><td class="tc" style="color:var(--success);">-100%</td></tr>
+                        <tr><td>Cobertura Dívida CP</td><td class="tr" style="color:var(--danger);">0,16x</td><td class="tr" style="color:var(--success);">0,61x</td><td class="tc" style="color:var(--success);">+281%</td></tr>
+                        <tr><td>Custo Médio/ha</td><td class="tr">R$ 7.125</td><td class="tr" style="color:var(--success);">R$ 7.160</td><td class="tc">+0,5% (maior qualidade)</td></tr>
+                        <tr><td>Retorno por R$ de Custo</td><td class="tr" style="color:var(--warning);">R$ 1,06</td><td class="tr" style="color:var(--success);">R$ 1,29</td><td class="tc" style="color:var(--success);">+21,7%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- CONCLUSÃO FINAL -->
+        <div style="background:linear-gradient(135deg,rgba(11,61,46,0.25),rgba(39,174,96,0.08));border:2px solid rgba(39,174,96,0.3);border-radius:24px;padding:60px 40px;text-align:center;margin-top:40px;" class="fi">
+            <div style="font-size:3rem;margin-bottom:16px;">🚀</div>
+            <div style="font-size:0.85rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--secondary);margin-bottom:12px;">Conclusão Final — Plano Integrado de Ações</div>
+            <h2 style="font-size:2rem;margin-bottom:24px;">15 ações. R$ 985K de investimento. R$ 7,28M de retorno anual.</h2>
+            <p style="color:rgba(255,255,255,0.7);font-size:1rem;max-width:800px;margin:0 auto 40px;">
+                O Grupo ZAFER está a <strong style="color:var(--secondary);">15 decisões de distância</strong> de multiplicar seu resultado por <strong style="color:var(--success);">quase 4x</strong>. 
+                As primeiras 4 ações (Prioridade 1) sozinhas geram <strong style="color:var(--success);">+R$ 4,64M</strong> e não precisam de investimento relevante — 
+                são <strong>decisões de corte</strong>. O restante constrói eficiência e resiliência de longo prazo.
+            </p>
+            <div style="display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin-bottom:30px;">
+                <div style="background:rgba(255,255,255,0.04);border-radius:16px;padding:24px 30px;min-width:160px;">
+                    <div style="font-size:2.5rem;font-weight:900;color:var(--text-muted);">R$ 2,62M</div>
+                    <div style="font-size:0.75rem;color:var(--text-muted);">HOJE</div>
+                </div>
+                <div style="display:flex;align-items:center;font-size:2.5rem;color:var(--secondary);">→</div>
+                <div style="background:rgba(39,174,96,0.08);border:2px solid rgba(39,174,96,0.3);border-radius:16px;padding:24px 30px;min-width:160px;">
+                    <div style="font-size:2.5rem;font-weight:900;color:var(--success);">R$ 9,90M</div>
+                    <div style="font-size:0.75rem;color:var(--success);">META 25/26</div>
+                </div>
+                <div style="display:flex;align-items:center;font-size:2.5rem;color:var(--secondary);">→</div>
+                <div style="background:rgba(212,168,67,0.08);border:2px solid rgba(212,168,67,0.3);border-radius:16px;padding:24px 30px;min-width:160px;">
+                    <div style="font-size:2.5rem;font-weight:900;color:var(--secondary);">+278%</div>
+                    <div style="font-size:0.75rem;color:var(--secondary);">CRESCIMENTO</div>
+                </div>
+            </div>
+            <p style="color:rgba(255,255,255,0.5);font-size:0.85rem;max-width:600px;margin:0 auto;">
+                "Não é sobre trabalhar mais. É sobre parar de alimentar o que destrói valor e concentrar no que gera resultado."
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="container">
+        <p class="brand">Dr. Sidney Souza</p>
+        <p>Painel Integrado de Ações — Grupo ZAFER — Plano Estratégico 2025/2026</p>
+        <p>Rio Verde, GO — Março/2026</p>
+    </div>
+</footer>
+
+<!-- ===================================================== -->
+<!-- SCRIPTS -->
+<!-- ===================================================== -->
+<script>
+Chart.register(ChartDataLabels);
+const C={g:'#27AE60',gl:'rgba(39,174,96,0.25)',r:'#E74C3C',rl:'rgba(231,76,60,0.25)',y:'#D4A843',yl:'rgba(212,168,67,0.25)',b:'#2980B9',bl:'rgba(41,128,185,0.25)',o:'#E67E22',ol:'rgba(230,126,34,0.25)',p:'#8E44AD',pl:'rgba(142,68,173,0.25)',t:'#1ABC9C',w:'#ECF0F1',m:'#95A5A6',d:'#1A1A2E'};
+const D={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:C.w,font:{size:11}}},datalabels:{display:false}},scales:{x:{ticks:{color:C.m,font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'}},y:{ticks:{color:C.m},grid:{color:'rgba(255,255,255,0.04)'}}}};
+
+// ===== DESTRUIÇÃO DE VALOR =====
+new Chart(document.getElementById('chDestroiVal'),{
+    type:'bar',data:{labels:['Cana SP','DM 82I78','Custo\nFinanceiro','ADM\nExcesso','Defensivos\nExcesso','Outras\nVariedades','Cana GO','UBV\nIneficiência'],
+        datasets:[{data:[2.31,1.87,1.40,1.46,1.26,0.35,0.13,0.85],backgroundColor:[C.r,C.r,C.p,C.b,C.o,'#F39C12',C.o,C.y],borderRadius:6}]},
+    options:{...D,indexAxis:'y',plugins:{...D.plugins,legend:{display:false},datalabels:{display:true,anchor:'end',align:'right',color:C.w,font:{weight:'bold',size:11},formatter:v=>'R$ '+v.toFixed(2)+'M'}},scales:{x:{...D.scales.x,ticks:{callback:v=>'R$ '+v+'M'}},y:{...D.scales.y,grid:{display:false}}}}
+});
+
+// ===== POTENCIAL DE CAPTURA =====
+new Chart(document.getElementById('chPotencial'),{
+    type:'bar',data:{labels:['Corte Cana SP','Variedades\nSoja','Redução\nCustos','Melhoria\nOperacional','Financeiro'],
+        datasets:[{data:[2.31,2.07,1.80,0.65,0.46],backgroundColor:[C.g,C.g,C.t,C.b,C.p],borderRadius:8}]},
+    options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:true,anchor:'end',align:'top',color:C.w,font:{weight:'bold',size:12},formatter:v=>'+R$ '+v.toFixed(2)+'M'}},scales:{x:D.scales.x,y:{...D.scales.y,ticks:{callback:v=>'R$ '+v+'M'}}}}
+});
+
+// ===== GANTT SIMPLIFICADO =====
+const ganttActions=['1.1 Encerrar Cana SP','1.2 Eliminar DM 82I78','1.3 Renegociar Dívida','1.4 Portfólio Soja','2.1 Otimizar ADM','2.2 MIP + Defensivos','2.3 Diagnóstico UBV','2.4 Janela Milho','2.5 Cana GO Melhoria','3.1 Spread Bancário','3.2 Agric. Precisão','3.3 Logística UBV','3.4 Dashboard','3.5 Hedge Preço','3.6 Capacitação'];
+const ganttStart=[0,0,0,1,2,3,2,4,3,2,5,3,4,5,4];
+const ganttDur=[1,2,2,3,3,5,2,4,8,2,7,4,4,7,8];
+const ganttColors=[C.r,C.r,C.r,C.r,C.o,C.o,C.o,C.o,C.o,C.b,C.b,C.b,C.b,C.b,C.b];
+new Chart(document.getElementById('chGantt'),{
+    type:'bar',data:{labels:ganttActions,datasets:[
+        {label:'Início',data:ganttStart,backgroundColor:'transparent'},
+        {label:'Duração (meses)',data:ganttDur,backgroundColor:ganttColors.map(c=>c+'AA'),borderColor:ganttColors,borderWidth:1,borderRadius:4}
+    ]},options:{...D,indexAxis:'y',plugins:{...D.plugins,legend:{display:false},datalabels:{display:ctx=>ctx.datasetIndex===1,color:C.w,font:{weight:'bold',size:9},formatter:(v,ctx)=>{const m=['Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez','Jan','Fev','Mar'];const s=ganttStart[ctx.dataIndex];return m[s]+'-'+m[Math.min(s+v-1,11)];}}},
+    scales:{x:{...D.scales.x,stacked:true,ticks:{callback:(v,i)=>['Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez','Jan','Fev','Mar'][v]||''},max:12},y:{...D.scales.y,stacked:true,grid:{display:false},ticks:{font:{size:9}}}}}
+});
+
+// ===== CAPTURA ACUMULADA =====
+new Chart(document.getElementById('chCaptura'),{
+    type:'line',data:{labels:['Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez','Jan','Fev','Mar'],datasets:[{
+        data:[2.31,4.18,4.94,5.84,6.48,7.08,7.78,8.38,8.90,9.30,9.60,9.90],
+        borderColor:C.g,backgroundColor:'rgba(39,174,96,0.1)',fill:true,pointRadius:6,tension:0.3,borderWidth:3,
+        pointBackgroundColor:['#E74C3C','#E74C3C','#E74C3C','#E67E22','#E67E22','#E67E22','#E67E22','#2980B9','#2980B9','#27AE60','#27AE60','#27AE60']
+    }]},options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:true,color:C.w,font:{weight:'bold',size:9},align:'top',formatter:v=>'R$ '+v.toFixed(1)+'M'}},scales:{x:D.scales.x,y:{...D.scales.y,min:0,max:11,ticks:{callback:v=>'R$ '+v+'M'}}}}
+});
+
+// ===== WATERFALL FINAL =====
+new Chart(document.getElementById('chWaterfallFinal'),{
+    type:'bar',data:{
+        labels:['Resultado\nAtual','Encerrar\nCana SP','Eliminar\nDM 82I78','Portfólio\nSoja','Renegociar\nDívida','Otimizar\nADM','MIP +\nDefensivos','Diagnóstico\nUBV','Milho +\nCana GO','6 Ações\nP3','Resultado\n25/26'],
+        datasets:[
+            {label:'Base',data:[0,2.62,4.93,6.80,7.00,7.26,7.76,8.56,8.81,9.06,0],backgroundColor:'transparent'},
+            {label:'Ganho',data:[2.62,2.31,1.87,0.20,0.26,0.50,0.80,0.25,0.25,0.84,9.90],backgroundColor:[C.y,C.g,C.g,C.g,C.t,C.b,C.o,C.b,C.o,C.p,C.y],borderRadius:6}
+        ]
+    },options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:ctx=>ctx.datasetIndex===1,anchor:'end',align:'top',color:C.w,font:{weight:'bold',size:9},formatter:(v,ctx)=>{if(ctx.dataIndex===0)return'R$ 2,62M';if(ctx.dataIndex===10)return'R$ 9,90M';return'+R$ '+v.toFixed(2)+'M';}}},scales:{x:{...D.scales.x,stacked:true,ticks:{font:{size:8},maxRotation:0}},y:{...D.scales.y,stacked:true,max:12,ticks:{callback:v=>'R$ '+v+'M'}}}}
+});
+
+// ===== EIXOS ESTRATÉGICOS =====
+new Chart(document.getElementById('chEixos'),{
+    type:'doughnut',data:{labels:['Corte Cana SP (R$ 2,31M)','Variedades Soja (R$ 2,07M)','Custos Operacionais (R$ 1,80M)','Melhoria Operacional (R$ 0,65M)','Financeiro (R$ 0,46M)'],
+        datasets:[{data:[2.31,2.07,1.80,0.65,0.46],backgroundColor:[C.r,C.g,C.o,C.b,C.p],borderColor:C.d,borderWidth:3}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{legend:{position:'bottom',labels:{color:C.w,font:{size:10},padding:10}},datalabels:{display:true,color:C.w,font:{weight:'bold',size:11},formatter:v=>'R$ '+v.toFixed(2)+'M'}}}
+});
+
+// ===== ROI =====
+new Chart(document.getElementById('chROI'),{
+    type:'scatter',data:{datasets:[
+        {label:'1.1 Cana SP',data:[{x:0,y:2310}],backgroundColor:C.r,pointRadius:18},
+        {label:'1.2 DM 82I78',data:[{x:50,y:1870}],backgroundColor:C.r,pointRadius:16},
+        {label:'2.2 MIP/Defens.',data:[{x:120,y:800}],backgroundColor:C.o,pointRadius:12},
+        {label:'2.1 ADM',data:[{x:80,y:500}],backgroundColor:C.o,pointRadius:10},
+        {label:'1.3 Dívida',data:[{x:30,y:260}],backgroundColor:C.r,pointRadius:8},
+        {label:'2.3 UBV',data:[{x:40,y:250}],backgroundColor:C.o,pointRadius:8},
+        {label:'3.2 AP',data:[{x:250,y:180}],backgroundColor:C.b,pointRadius:7},
+        {label:'2.4 Milho',data:[{x:0,y:150}],backgroundColor:C.o,pointRadius:6}
+    ]},options:{...D,plugins:{...D.plugins,datalabels:{display:true,align:'right',offset:12,color:C.w,font:{size:8,weight:'bold'},formatter:(v,ctx)=>ctx.dataset.label}},
+    scales:{
+        x:{title:{display:true,text:'Investimento (R$ mil) →',color:C.y,font:{weight:'bold'}},ticks:{callback:v=>'R$ '+v+'K'},grid:{color:'rgba(255,255,255,0.04)'}},
+        y:{title:{display:true,text:'Retorno Anual (R$ mil) →',color:C.y,font:{weight:'bold'}},ticks:{callback:v=>'R$ '+v+'K'},grid:{color:'rgba(255,255,255,0.04)'}}
+    }}
+});
+
+// ===== RADAR ANTES vs DEPOIS =====
+new Chart(document.getElementById('chRadarAntesDep'),{
+    type:'radar',data:{labels:['Resultado','Margem','Prod. Soja','Eficiência Custo','Saúde Dívida','Diversificação'],datasets:[
+        {label:'Antes (24/25)',data:[25,27,68,50,16,30],borderColor:C.r,backgroundColor:'rgba(231,76,60,0.06)',pointRadius:5,borderWidth:2},
+        {label:'Depois (25/26)',data:[95,90,82,85,61,75],borderColor:C.g,backgroundColor:'rgba(39,174,96,0.08)',pointRadius:5,borderWidth:2}
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:C.w}},datalabels:{display:false}},scales:{r:{ticks:{display:false},grid:{color:'rgba(255,255,255,0.08)'},pointLabels:{color:C.w,font:{size:11}},min:0,max:100}}}
+});
+
+// ===== CULTURAS ANTES vs DEPOIS =====
+new Chart(document.getElementById('chCultAntesDep'),{
+    type:'bar',data:{labels:['Soja','Milho','Cana GO','Cana SP','TOTAL'],datasets:[
+        {label:'Resultado 24/25',data:[3.65,1.41,-0.13,-2.31,2.62],backgroundColor:C.yl,borderColor:C.y,borderWidth:2,borderRadius:4},
+        {label:'Resultado 25/26 (Projetado)',data:[5.52,1.76,0.10,0,9.90],backgroundColor:C.gl,borderColor:C.g,borderWidth:2,borderRadius:4}
+    ]},options:{...D,plugins:{...D.plugins,datalabels:{display:true,anchor:ctx=>ctx.dataset.data[ctx.dataIndex]>=0?'end':'start',align:ctx=>ctx.dataset.data[ctx.dataIndex]>=0?'top':'bottom',color:C.w,font:{weight:'bold',size:9},formatter:v=>v===0?'Eliminada':(v>=0?'+':'')+v.toFixed(2)+'M'}},scales:{x:D.scales.x,y:{...D.scales.y,ticks:{callback:v=>'R$ '+v+'M'}}}}
+});
+
+// SCROLL
+const obs=new IntersectionObserver(e=>{e.forEach(el=>{if(el.isIntersecting)el.target.classList.add('visible')})},{threshold:0.08});
+document.querySelectorAll('.fi').forEach(el=>obs.observe(el));
+window.addEventListener('scroll',()=>{
+    const ids=['visao','diagnostico','prioridade1','prioridade2','prioridade3','cronograma','impacto'];
+    let cur='';ids.forEach(id=>{const el=document.getElementById(id);if(el&&window.scrollY>=el.offsetTop-200)cur=id;});
+    document.querySelectorAll('.nav-links a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+cur));
+});
+</script>
+</body>
+</html>

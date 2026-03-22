@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grupo ZAFER — Painel de Custos | Safra 2024/2025</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <style>
+        :root {
+            --primary:#0B3D2E;--secondary:#D4A843;--success:#27AE60;--warning:#F39C12;
+            --danger:#E74C3C;--info:#2980B9;--orange:#E67E22;--purple:#8E44AD;--teal:#1ABC9C;
+            --dark:#1A1A2E;--dark-card:#16213E;--dark-surface:#0F3460;
+            --text-light:#ECF0F1;--text-muted:#95A5A6;--shadow:0 8px 32px rgba(0,0,0,0.3);
+        }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--dark);color:var(--text-light);line-height:1.7;}
+        .container{max-width:1400px;margin:0 auto;padding:0 24px;}
+
+        /* NAV */
+        .nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(26,26,46,0.96);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.08);}
+        .nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1400px;margin:0 auto;padding:0 24px;height:60px;}
+        .nav-brand{font-weight:800;color:var(--secondary);font-size:1.1rem;}
+        .nav-links{display:flex;gap:8px;}
+        .nav-links a{color:var(--text-muted);text-decoration:none;font-size:0.76rem;font-weight:600;padding:8px 14px;border-radius:10px;transition:all 0.3s;}
+        .nav-links a:hover,.nav-links a.active{color:var(--secondary);background:rgba(212,168,67,0.1);}
+
+        /* HERO */
+        .hero{padding:90px 0 50px;text-align:center;position:relative;overflow:hidden;}
+        .hero::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(231,76,60,0.08),rgba(212,168,67,0.04));z-index:0;}
+        .hero>*{position:relative;z-index:1;}
+        .hero-emoji{font-size:3.5rem;margin-bottom:12px;}
+        .hero h1{font-size:3rem;font-weight:900;margin-bottom:8px;background:linear-gradient(135deg,#E74C3C,#D4A843);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+        .hero .sub{color:var(--text-muted);font-size:1.05rem;margin-bottom:36px;max-width:750px;margin-left:auto;margin-right:auto;}
+        .hero-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;max-width:1100px;margin:0 auto;}
+        .hc{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px 12px;text-align:center;}
+        .hc .v{font-size:1.65rem;font-weight:900;}
+        .hc .l{font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;}
+        .vr{color:var(--danger);}.vg{color:var(--success);}.vy{color:var(--secondary);}.vb{color:var(--info);}.vo{color:var(--orange);}.vp{color:var(--purple);}.vt{color:var(--teal);}
+
+        /* SECTIONS */
+        .section{padding:60px 0;}
+        .section-alt{background:var(--dark-card);}
+        .sh{margin-bottom:40px;}
+        .sh .over{display:inline-block;font-size:0.78rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--secondary);margin-bottom:8px;}
+        .sh h2{font-size:2rem;font-weight:800;margin-bottom:10px;}
+        .sh p{color:var(--text-muted);max-width:720px;font-size:0.93rem;}
+
+        /* CARDS */
+        .card{background:var(--dark-card);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:28px;box-shadow:var(--shadow);margin-bottom:24px;transition:all 0.3s;}
+        .card:hover{border-color:rgba(212,168,67,0.15);}
+        .ct{font-size:1.05rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+        .ci{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.9rem;}
+
+        /* GRIDS */
+        .g2{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+        .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+        .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+
+        /* KPI */
+        .kpi{background:var(--dark-card);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:20px;position:relative;overflow:hidden;text-align:center;}
+        .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+        .kpi.kg::before{background:var(--success);}.kpi.kr::before{background:var(--danger);}
+        .kpi.kb::before{background:var(--info);}.kpi.ky::before{background:var(--secondary);}
+        .kpi.ko::before{background:var(--orange);}.kpi.kp::before{background:var(--purple);}
+        .kl{font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+        .kv{font-size:1.45rem;font-weight:800;}
+        .kd{font-size:0.78rem;color:var(--text-muted);margin-top:4px;}
+        .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.66rem;font-weight:700;margin-top:6px;}
+        .bu{background:rgba(39,174,96,0.15);color:var(--success);}
+        .bd{background:rgba(231,76,60,0.15);color:var(--danger);}
+        .bw{background:rgba(243,156,18,0.15);color:var(--warning);}
+        .bi{background:rgba(41,128,185,0.15);color:var(--info);}
+
+        /* CHARTS */
+        .ch{position:relative;height:380px;}
+        .chs{position:relative;height:300px;}
+        .chl{position:relative;height:460px;}
+        .chx{position:relative;height:560px;}
+
+        /* TABLES */
+        .tw{overflow-x:auto;border-radius:14px;border:1px solid rgba(255,255,255,0.08);}
+        table{width:100%;border-collapse:collapse;}
+        thead th{background:var(--dark-surface);color:var(--secondary);font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:13px 14px;text-align:left;border-bottom:2px solid rgba(212,168,67,0.3);white-space:nowrap;}
+        tbody td{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.87rem;}
+        tbody tr:hover{background:rgba(255,255,255,0.02);}
+        .tr{text-align:right;}.tc{text-align:center;}
+        .tag{display:inline-block;padding:3px 10px;border-radius:16px;font-size:0.7rem;font-weight:700;}
+        .tg{background:rgba(39,174,96,0.15);color:var(--success);}
+        .tre{background:rgba(231,76,60,0.15);color:var(--danger);}
+        .ty{background:rgba(243,156,18,0.15);color:var(--warning);}
+        .tb{background:rgba(41,128,185,0.15);color:var(--info);}
+        .to{background:rgba(230,126,34,0.15);color:var(--orange);}
+
+        /* ALERTS */
+        .alert{border-radius:14px;padding:22px 26px;margin:20px 0;border-left:4px solid;display:flex;gap:14px;align-items:flex-start;}
+        .ar{background:rgba(231,76,60,0.06);border-color:var(--danger);}
+        .ag{background:rgba(39,174,96,0.06);border-color:var(--success);}
+        .ay{background:rgba(243,156,18,0.06);border-color:var(--warning);}
+        .ab{background:rgba(41,128,185,0.06);border-color:var(--info);}
+        .ai{font-size:1.3rem;flex-shrink:0;}.at{font-weight:700;margin-bottom:4px;}
+        .ax{color:var(--text-muted);font-size:0.86rem;line-height:1.65;}
+
+        /* INSIGHT */
+        .ins{background:linear-gradient(135deg,rgba(212,168,67,0.08),rgba(212,168,67,0.02));border:1px solid rgba(212,168,67,0.2);border-radius:16px;padding:28px;margin:24px 0;}
+        .ins h4{color:var(--secondary);margin-bottom:12px;font-size:1.02rem;}
+        .ins ul{list-style:none;}
+        .ins li{padding:6px 0;padding-left:24px;position:relative;color:rgba(255,255,255,0.82);font-size:0.88rem;}
+        .ins li::before{content:'→';position:absolute;left:0;color:var(--secondary);font-weight:700;}
+
+        /* COST BAR */
+        .cost-bar{margin-bottom:18px;}
+        .cost-bar .cb-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+        .cost-bar .cb-name{font-size:0.88rem;font-weight:600;}
+        .cost-bar .cb-val{font-size:0.88rem;font-weight:700;}
+        .cost-bar .cb-track{background:rgba(255,255,255,0.06);border-radius:8px;height:24px;overflow:hidden;position:relative;}
+        .cost-bar .cb-fill{height:100%;border-radius:8px;transition:width 1.2s ease;display:flex;align-items:center;padding-left:10px;font-size:0.7rem;font-weight:700;color:rgba(0,0,0,0.7);}
+        .cost-bar .cb-pct{font-size:0.72rem;color:var(--text-muted);text-align:right;margin-top:2px;}
+
+        /* SEPARATOR */
+        .sep{height:3px;background:linear-gradient(90deg,transparent,rgba(231,76,60,0.3),rgba(212,168,67,0.3),transparent);margin:40px 0;}
+
+        /* FOOTER */
+        .footer{background:var(--dark-card);border-top:1px solid rgba(255,255,255,0.08);padding:40px 0;text-align:center;}
+        .footer p{color:var(--text-muted);font-size:0.82rem;}
+        .footer .brand{color:var(--secondary);font-weight:700;}
+
+        /* RESPONSIVE */
+        @media(max-width:1024px){.hero-grid{grid-template-columns:repeat(3,1fr);}.g4{grid-template-columns:repeat(2,1fr);}}
+        @media(max-width:768px){.g2,.g3,.hero-grid{grid-template-columns:1fr;}.hero h1{font-size:2.1rem;}.nav-links{display:none;}}
+
+        /* ANIMATIONS */
+        .fi{opacity:0;transform:translateY(28px);transition:all 0.7s ease;}
+        .fi.visible{opacity:1;transform:translateY(0);}
+        html{scroll-behavior:smooth;scroll-padding-top:70px;}
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+    <div class="nav-inner">
+        <div class="nav-brand">ZAFER — Custos 24/25</div>
+        <div class="nav-links">
+            <a href="#visao" class="active">💲 Visão</a>
+            <a href="#estrutura">📊 Estrutura</a>
+            <a href="#cultura">🌾 Por Cultura</a>
+            <a href="#fazenda">🏠 Por Fazenda</a>
+            <a href="#historico">📈 Evolução</a>
+            <a href="#ineficiencia">🚨 Ineficiências</a>
+            <a href="#economia">✂️ Economia</a>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="visao">
+    <div class="container">
+        <div class="hero-emoji">💲</div>
+        <h1>Painel de Custos</h1>
+        <p class="sub">Anatomia completa dos R$ 44,93 milhões em custos operacionais — onde cada real é gasto, onde estão os excessos e as oportunidades de economia</p>
+        <div class="hero-grid">
+            <div class="hc">
+                <div class="v vr">R$ 44,93M</div>
+                <div class="l">Custo Total</div>
+            </div>
+            <div class="hc">
+                <div class="v vo">R$ 7.125</div>
+                <div class="l">Custo Médio/ha</div>
+            </div>
+            <div class="hc">
+                <div class="v vy">94,5%</div>
+                <div class="l">Custo/Receita</div>
+            </div>
+            <div class="hc">
+                <div class="v vr">+12,4%</div>
+                <div class="l">vs. Safra 23/24</div>
+            </div>
+            <div class="hc">
+                <div class="v vg">R$ 2,8M</div>
+                <div class="l">Potencial Economia</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 1 — ESTRUTURA DE CUSTOS CONSOLIDADA -->
+<!-- ================================================== -->
+<section class="section" id="estrutura">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">Estrutura de Custos</div>
+            <h2>Onde Vão os R$ 44,93 Milhões?</h2>
+            <p>Decomposição completa por categoria — insumos, operações, arrendamento, administrativo e financeiro</p>
+        </div>
+
+        <!-- BARRAS DE CUSTO VISUAIS -->
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(231,76,60,0.15);">📊</div>Composição dos Custos — Grupo Consolidado</div>
+
+            <div class="cost-bar">
+                <div class="cb-top"><div class="cb-name">🧪 Insumos (Sementes + Defensivos + Fertilizantes)</div><div class="cb-val" style="color:var(--danger);">R$ 17,52M</div></div>
+                <div class="cb-track"><div class="cb-fill" style="width:39%;background:linear-gradient(90deg,#E74C3C,#C0392B);">39,0%</div></div>
+                <div class="cb-pct">R$ 2.778/ha | Maior categoria</div>
+            </div>
+
+            <div class="cost-bar">
+                <div class="cb-top"><div class="cb-name">🚜 Operações Mecanizadas (Plantio + Pulverização + Colheita)</div><div class="cb-val" style="color:var(--orange);">R$ 9,88M</div></div>
+                <div class="cb-track"><div class="cb-fill" style="width:22%;background:linear-gradient(90deg,#E67E22,#D35400);">22,0%</div></div>
+                <div class="cb-pct">R$ 1.567/ha</div>
+            </div>
+
+            <div class="cost-bar">
+                <div class="cb-top"><div class="cb-name">🏠 Arrendamento e Terra (TMA + Parceria)</div><div class="cb-val" style="color:var(--warning);">R$ 7,19M</div></div>
+                <div class="cb-track"><div class="cb-fill" style="width:16%;background:linear-gradient(90deg,#F39C12,#E67E22);">16,0%</div></div>
+                <div class="cb-pct">R$ 1.140/ha | Custo fixo</div>
+            </div>
+
+            <div class="cost-bar">
+                <div class="cb-top"><div class="cb-name">👔 Administrativo (Pessoal + Gestão + Consultoria)</div><div class="cb-val" style="color:var(--info);">R$ 4,49M</div></div>
+                <div class="cb-track"><div class="cb-fill" style="width:10%;background:linear-gradient(90deg,#2980B9,#2471A3);">10,0%</div></div>
+                <div class="cb-pct">R$ 712/ha | Acima da referência</div>
+            </div>
+
+            <div class="cost-bar">
+                <div class="cb-top"><div class="cb-name">💰 Financeiro (Juros + Taxas + IOF)</div><div class="cb-val" style="color:var(--purple);">R$ 3,60M</div></div>
+                <div class="cb-track"><div class="cb-fill" style="width:8%;background:linear-gradient(90deg,#8E44AD,#7D3C98);">8,0%</div></div>
+                <div class="cb-pct">R$ 571/ha | Reflexo da dívida</div>
+            </div>
+
+            <div class="cost-bar">
+                <div class="cb-top"><div class="cb-name">📦 Outros (Frete + Secagem + Armazenagem + Diversos)</div><div class="cb-val">R$ 2,25M</div></div>
+                <div class="cb-track"><div class="cb-fill" style="width:5%;background:linear-gradient(90deg,#95A5A6,#7F8C8D);">5,0%</div></div>
+                <div class="cb-pct">R$ 357/ha</div>
+            </div>
+        </div>
+
+        <!-- GRÁFICOS ESTRUTURA -->
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(231,76,60,0.15);">🍕</div>Distribuição de Custos — Composição (%)</div>
+                <div class="ch"><canvas id="chCustoPizza"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(212,168,67,0.15);">📊</div>Custo Total vs. Receita — Margem Operacional</div>
+                <div class="ch"><canvas id="chCustoVsRec"></canvas></div>
+            </div>
+        </div>
+
+        <!-- SUB-CATEGORIAS DE INSUMOS -->
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(231,76,60,0.15);">🧪</div>Detalhamento de Insumos — A Maior Categoria (39%)</div>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sub-Categoria</th>
+                            <th class="tr">Valor (R$)</th>
+                            <th class="tc">% Insumos</th>
+                            <th class="tc">% Custo Total</th>
+                            <th class="tr">R$/ha</th>
+                            <th class="tc">Variação vs 23/24</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Defensivos (Herbicidas + Fungicidas + Inseticidas)</strong></td>
+                            <td class="tr" style="font-weight:700;">R$ 7,88M</td>
+                            <td class="tc">45,0%</td>
+                            <td class="tc">17,5%</td>
+                            <td class="tr">R$ 1.249</td>
+                            <td class="tc"><span class="tag tre">+18,2%</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Fertilizantes (NPK + Micros + Foliares)</strong></td>
+                            <td class="tr" style="font-weight:700;">R$ 6,13M</td>
+                            <td class="tc">35,0%</td>
+                            <td class="tc">13,6%</td>
+                            <td class="tr">R$ 972</td>
+                            <td class="tc"><span class="tag ty">+8,5%</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sementes (Cultivares + Tratamento)</strong></td>
+                            <td class="tr" style="font-weight:700;">R$ 2,98M</td>
+                            <td class="tc">17,0%</td>
+                            <td class="tc">6,6%</td>
+                            <td class="tr">R$ 473</td>
+                            <td class="tc"><span class="tag tg">+3,1%</span></td>
+                        </tr>
+                        <tr>
+                            <td>Inoculantes + Adjuvantes + Biológicos</td>
+                            <td class="tr">R$ 0,53M</td>
+                            <td class="tc">3,0%</td>
+                            <td class="tc">1,2%</td>
+                            <td class="tr">R$ 84</td>
+                            <td class="tc"><span class="tag tg">-2,3%</span></td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr style="background:var(--dark-surface);font-weight:700;">
+                            <td><strong>TOTAL INSUMOS</strong></td>
+                            <td class="tr" style="color:var(--danger);">R$ 17,52M</td>
+                            <td class="tc">100%</td>
+                            <td class="tc">39,0%</td>
+                            <td class="tr">R$ 2.778</td>
+                            <td class="tc"><span class="tag tre">+13,1%</span></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <div class="alert ay fi">
+            <div class="ai">📌</div>
+            <div>
+                <div class="at">Defensivos subiram 18,2% e representam o maior sub-item (R$ 7,88M)</div>
+                <div class="ax">O aumento reflete pressão de pragas (ferrugem asiática + percevejo) e câmbio impactando importados. A DM 82I78 demandou aplicações extras que elevaram o custo médio — outro motivo para eliminar esta cultivar.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 2 — POR CULTURA -->
+<!-- ================================================== -->
+<section class="section section-alt" id="cultura">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">Custos por Cultura</div>
+            <h2>Quanto Custa Produzir Cada Cultura?</h2>
+            <p>Custo total e por hectare de cada cultura — identificando onde o dinheiro é mais e menos bem empregado</p>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(212,168,67,0.15);">📋</div>Custo por Cultura — Visão Completa</div>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Cultura</th>
+                            <th class="tc">Área (ha)</th>
+                            <th class="tr">Custo Total</th>
+                            <th class="tr">Custo/ha</th>
+                            <th class="tr">Receita/ha</th>
+                            <th class="tr">Resultado/ha</th>
+                            <th class="tc">Margem</th>
+                            <th class="tc">Eficiência</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background:rgba(39,174,96,0.04);">
+                            <td><strong>🌱 Soja</strong></td>
+                            <td class="tc">2.788</td>
+                            <td class="tr">R$ 18,63M</td>
+                            <td class="tr">R$ 6.682</td>
+                            <td class="tr" style="color:var(--success);">R$ 7.990</td>
+                            <td class="tr" style="color:var(--success);font-weight:700;">+R$ 1.308</td>
+                            <td class="tc"><span class="tag tg">+16,4%</span></td>
+                            <td class="tc"><span class="tag tg">⭐ Melhor</span></td>
+                        </tr>
+                        <tr style="background:rgba(39,174,96,0.03);">
+                            <td><strong>🌽 Milho Saf.</strong></td>
+                            <td class="tc">1.377</td>
+                            <td class="tr">R$ 8,00M</td>
+                            <td class="tr">R$ 5.810</td>
+                            <td class="tr" style="color:var(--success);">R$ 6.833</td>
+                            <td class="tr" style="color:var(--success);font-weight:700;">+R$ 1.023</td>
+                            <td class="tc"><span class="tag tg">+15,0%</span></td>
+                            <td class="tc"><span class="tag tg">✅ Bom</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>🍬 Cana GO</strong></td>
+                            <td class="tc">586</td>
+                            <td class="tr">R$ 7,80M</td>
+                            <td class="tr" style="color:var(--warning);">R$ 13.311</td>
+                            <td class="tr">R$ 13.094</td>
+                            <td class="tr" style="color:var(--danger);">-R$ 217</td>
+                            <td class="tc"><span class="tag tre">-1,6%</span></td>
+                            <td class="tc"><span class="tag ty">⚠️ Marginal</span></td>
+                        </tr>
+                        <tr style="background:rgba(231,76,60,0.05);">
+                            <td><strong style="color:var(--danger);">🚨 Cana SP</strong></td>
+                            <td class="tc">1.555</td>
+                            <td class="tr" style="color:var(--danger);font-weight:700;">R$ 10,63M</td>
+                            <td class="tr" style="color:var(--danger);">R$ 6.838</td>
+                            <td class="tr">R$ 5.352</td>
+                            <td class="tr" style="color:var(--danger);font-weight:800;">-R$ 1.486</td>
+                            <td class="tc"><span class="tag tre">-27,8%</span></td>
+                            <td class="tc"><span class="tag tre">❌ Péssimo</span></td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr style="background:var(--dark-surface);font-weight:700;">
+                            <td><strong>CONSOLIDADO</strong></td>
+                            <td class="tc">6.307</td>
+                            <td class="tr">R$ 44,93M</td>
+                            <td class="tr">R$ 7.125</td>
+                            <td class="tr">R$ 7.540</td>
+                            <td class="tr" style="color:var(--success);">+R$ 415</td>
+                            <td class="tc"><span class="tag tg">+5,5%</span></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(231,76,60,0.15);">📊</div>Custo Total por Cultura (R$ milhões)</div>
+                <div class="ch"><canvas id="chCustoCult"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(212,168,67,0.15);">📊</div>Custo por Hectare — Cada Cultura (R$/ha)</div>
+                <div class="ch"><canvas id="chCustoHaCult"></canvas></div>
+            </div>
+        </div>
+
+        <!-- BREAKDOWN POR CULTURA -->
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(212,168,67,0.15);">📊</div>Composição de Custos por Cultura (R$/ha)</div>
+            <div class="chl"><canvas id="chBreakCult"></canvas></div>
+        </div>
+
+        <div class="alert ar fi">
+            <div class="ai">🚨</div>
+            <div>
+                <div class="at">Cana SP: Custo de R$ 10,63M para gerar R$ 8,32M — Queima R$ 2,31M</div>
+                <div class="ax">A Cana SP absorve 23,7% de todo o custo do grupo e retorna apenas 17,5% da receita. Cada real gasto na Cana SP retorna apenas R$ 0,78 — enquanto na Soja retorna R$ 1,20. Eliminando a Cana SP, o custo médio/ha do grupo cairia de R$ 7.125 para R$ 5.576 (-21,7%).</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 3 — POR FAZENDA -->
+<!-- ================================================== -->
+<section class="section" id="fazenda">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">Custos por Fazenda</div>
+            <h2>Eficiência de Custo — Cada Fazenda é um Centro de Custo</h2>
+            <p>Comparativo de custo/ha entre fazendas revela onde a operação é mais eficiente</p>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(212,168,67,0.15);">🏠</div>Custo por Fazenda — Ranking de Eficiência</div>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fazenda</th>
+                            <th class="tc">Cultura</th>
+                            <th class="tc">Área</th>
+                            <th class="tr">Custo Total</th>
+                            <th class="tr">Custo/ha</th>
+                            <th class="tr">Receita/ha</th>
+                            <th class="tc">Eficiência (R$/R$)</th>
+                            <th class="tc">Rank</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background:rgba(39,174,96,0.04);">
+                            <td><strong>🏆 Monte Alegre</strong></td>
+                            <td class="tc">Soja + Milho</td>
+                            <td class="tc">1.616 ha</td>
+                            <td class="tr">R$ 13,08M</td>
+                            <td class="tr" style="color:var(--success);">R$ 8.093</td>
+                            <td class="tr" style="color:var(--success);">R$ 10.240</td>
+                            <td class="tc" style="color:var(--success);font-weight:700;">R$ 1,27</td>
+                            <td class="tc"><span class="tag tg">⭐ #1</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>🌾 Brejo</strong></td>
+                            <td class="tc">Soja + Milho</td>
+                            <td class="tc">895 ha</td>
+                            <td class="tr">R$ 7,42M</td>
+                            <td class="tr">R$ 8.290</td>
+                            <td class="tr">R$ 9.877</td>
+                            <td class="tc" style="color:var(--success);">R$ 1,19</td>
+                            <td class="tc"><span class="tag tg">#2</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>🔍 UBV</strong></td>
+                            <td class="tc">Soja + Milho</td>
+                            <td class="tc">654 ha</td>
+                            <td class="tr">R$ 6,13M</td>
+                            <td class="tr" style="color:var(--warning);">R$ 9.373</td>
+                            <td class="tr">R$ 9.633</td>
+                            <td class="tc" style="color:var(--warning);">R$ 1,03</td>
+                            <td class="tc"><span class="tag ty">#3</span></td>
+                        </tr>
+                        <tr>
+                            <td>🍬 Cana GO</td>
+                            <td class="tc">Cana</td>
+                            <td class="tc">586 ha</td>
+                            <td class="tr">R$ 7,80M</td>
+                            <td class="tr" style="color:var(--warning);">R$ 13.311</td>
+                            <td class="tr">R$ 13.094</td>
+                            <td class="tc" style="color:var(--danger);">R$ 0,98</td>
+                            <td class="tc"><span class="tag tre">#4</span></td>
+                        </tr>
+                        <tr style="background:rgba(231,76,60,0.05);">
+                            <td><strong style="color:var(--danger);">🚨 Cana SP</strong></td>
+                            <td class="tc">Cana</td>
+                            <td class="tc">1.555 ha</td>
+                            <td class="tr" style="color:var(--danger);">R$ 10,63M</td>
+                            <td class="tr" style="color:var(--danger);">R$ 6.838</td>
+                            <td class="tr" style="color:var(--danger);">R$ 5.352</td>
+                            <td class="tc" style="color:var(--danger);font-weight:700;">R$ 0,78</td>
+                            <td class="tc"><span class="tag tre">#5 Pior</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(39,174,96,0.15);">📊</div>Eficiência: Retorno por Real Investido (R$/R$)</div>
+                <div class="ch"><canvas id="chEficFaz"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(231,76,60,0.15);">📊</div>Custo/ha por Fazenda — Composição</div>
+                <div class="ch"><canvas id="chCustoFazStack"></canvas></div>
+            </div>
+        </div>
+
+        <div class="ins fi">
+            <h4>🏠 Insights de Custo por Fazenda</h4>
+            <ul>
+                <li><strong>Monte Alegre:</strong> Cada R$ 1 gasto retorna R$ 1,27 — melhor eficiência do grupo</li>
+                <li><strong>UBV:</strong> Custo/ha 15,8% maior que Monte Alegre — mas produtividade 23% menor. O problema é mais de produtividade que de custo.</li>
+                <li><strong>Cana SP:</strong> Cada R$ 1 gasto retorna apenas R$ 0,78 — <strong>destrói valor a cada hectare plantado</strong></li>
+                <li><strong>Se a Cana SP fosse eliminada:</strong> Custo total cairia R$ 10,63M → economia líquida de R$ 2,31M (valor do prejuízo)</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 4 — EVOLUÇÃO HISTÓRICA -->
+<!-- ================================================== -->
+<section class="section section-alt" id="historico">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">Evolução Histórica</div>
+            <h2>Custos nos Últimos 7 Safras — Tendência de Alta</h2>
+            <p>Custo total, custo/ha e composição ao longo do tempo</p>
+        </div>
+
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(231,76,60,0.15);">📈</div>Custo Total — 7 Safras (R$ milhões)</div>
+                <div class="chl"><canvas id="chCustoHist"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(212,168,67,0.15);">📈</div>Custo/ha Médio — Evolução (R$/ha)</div>
+                <div class="chl"><canvas id="chCustoHaHist"></canvas></div>
+            </div>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(212,168,67,0.15);">📊</div>Evolução da Relação Custo/Receita — % ao Longo das Safras</div>
+            <div class="ch"><canvas id="chCustoRecHist"></canvas></div>
+        </div>
+
+        <div class="g4 fi" style="margin-top:24px;">
+            <div class="kpi kr">
+                <div class="kl">Custo 18/19</div>
+                <div class="kv">R$ 4.280/ha</div>
+                <div class="kd">Base de comparação</div>
+            </div>
+            <div class="kpi ko">
+                <div class="kl">Custo 21/22</div>
+                <div class="kv vo">R$ 5.890/ha</div>
+                <div class="kd">+37,6% vs 18/19</div>
+            </div>
+            <div class="kpi kr">
+                <div class="kl">Custo 24/25</div>
+                <div class="kv vr">R$ 7.125/ha</div>
+                <div class="kd">+66,5% vs 18/19</div>
+            </div>
+            <div class="kpi ky">
+                <div class="kl">Crescimento/Ano</div>
+                <div class="kv vy">+9,5% a.a.</div>
+                <div class="kd">Acima da inflação</div>
+                <div class="badge bd">⚠️ Comprime margem</div>
+            </div>
+        </div>
+
+        <div class="alert ay fi">
+            <div class="ai">📈</div>
+            <div>
+                <div class="at">Custo/ha cresceu 66,5% em 6 anos — 2x a inflação do período</div>
+                <div class="ax">A escalada de custos reflete: câmbio na importação de insumos, custo do crédito rural elevado, expansão da Cana SP (alto custo operacional) e pressão de mão de obra. A receita/ha cresceu apenas 42% no mesmo período — o que comprimiu a margem de ~15% para ~5,5%.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 5 — INEFICIÊNCIAS DETECTADAS -->
+<!-- ================================================== -->
+<section class="section" id="ineficiencia">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">🚨 Ineficiências Detectadas</div>
+            <h2>Onde o Grupo Gasta Mais do que Deveria?</h2>
+            <p>Análise de benchmarks e identificação de custos acima da referência</p>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(231,76,60,0.15);">🔍</div>Mapa de Ineficiências — Custo Atual vs. Referência do Mercado</div>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th class="tr">Custo ZAFER</th>
+                            <th class="tr">Referência Mercado</th>
+                            <th class="tr">Excesso</th>
+                            <th class="tc">Impacto Total</th>
+                            <th class="tc">Severidade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background:rgba(231,76,60,0.06);">
+                            <td><strong>🚨 Custo DM 82I78 (custo/ha)</strong></td>
+                            <td class="tr" style="color:var(--danger);">R$ 8.867/ha</td>
+                            <td class="tr">R$ 6.682/ha (média)</td>
+                            <td class="tr" style="color:var(--danger);font-weight:700;">+R$ 2.185/ha</td>
+                            <td class="tc" style="color:var(--danger);font-weight:700;">R$ 1,05M</td>
+                            <td class="tc"><span class="tag tre">CRÍTICO</span></td>
+                        </tr>
+                        <tr style="background:rgba(231,76,60,0.04);">
+                            <td><strong>💸 Custo financeiro da dívida</strong></td>
+                            <td class="tr" style="color:var(--danger);">R$ 3,60M</td>
+                            <td class="tr">R$ 2,20M (referência)</td>
+                            <td class="tr" style="color:var(--danger);">+R$ 1,40M</td>
+                            <td class="tc" style="color:var(--danger);">R$ 1,40M</td>
+                            <td class="tc"><span class="tag tre">CRÍTICO</span></td>
+                        </tr>
+                        <tr style="background:rgba(243,156,18,0.03);">
+                            <td><strong>👔 Administrativo</strong></td>
+                            <td class="tr">R$ 712/ha</td>
+                            <td class="tr">R$ 480/ha</td>
+                            <td class="tr" style="color:var(--warning);">+R$ 232/ha</td>
+                            <td class="tc" style="color:var(--warning);">R$ 1,46M</td>
+                            <td class="tc"><span class="tag ty">ALTO</span></td>
+                        </tr>
+                        <tr style="background:rgba(243,156,18,0.03);">
+                            <td><strong>🧪 Defensivos (excesso aplicações)</strong></td>
+                            <td class="tr">R$ 1.249/ha</td>
+                            <td class="tr">R$ 1.050/ha</td>
+                            <td class="tr" style="color:var(--warning);">+R$ 199/ha</td>
+                            <td class="tc" style="color:var(--warning);">R$ 1,26M</td>
+                            <td class="tc"><span class="tag ty">ALTO</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>🚜 Operações UBV (ineficiência)</strong></td>
+                            <td class="tr">R$ 1.820/ha</td>
+                            <td class="tr">R$ 1.567/ha (média grupo)</td>
+                            <td class="tr" style="color:var(--info);">+R$ 253/ha</td>
+                            <td class="tc" style="color:var(--info);">R$ 165K</td>
+                            <td class="tc"><span class="tag tb">MÉDIO</span></td>
+                        </tr>
+                        <tr>
+                            <td>📦 Frete/Secagem (Cana SP distância)</td>
+                            <td class="tr">R$ 580/ha</td>
+                            <td class="tr">R$ 320/ha (GO)</td>
+                            <td class="tr">+R$ 260/ha</td>
+                            <td class="tc">R$ 404K</td>
+                            <td class="tc"><span class="tag tb">MÉDIO</span></td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr style="background:var(--dark-surface);font-weight:700;">
+                            <td colspan="4"><strong>TOTAL DE INEFICIÊNCIAS DETECTADAS</strong></td>
+                            <td class="tc" style="color:var(--danger);font-weight:900;font-size:1.1rem;">R$ 5,73M</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(231,76,60,0.15);">📊</div>Mapa Visual de Ineficiências — Impacto Financeiro</div>
+            <div class="chl"><canvas id="chInefic"></canvas></div>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(231,76,60,0.15);">📊</div>Custo ZAFER vs. Benchmark — Por Categoria (R$/ha)</div>
+            <div class="ch"><canvas id="chBench"></canvas></div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 6 — OPORTUNIDADES DE ECONOMIA -->
+<!-- ================================================== -->
+<section class="section section-alt" id="economia">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">✂️ Oportunidades de Economia</div>
+            <h2>R$ 2,8M Podem Ser Economizados — Ações Práticas</h2>
+            <p>Das R$ 5,73M de ineficiências, R$ 2,8M podem ser capturados com ações de curto prazo</p>
+        </div>
+
+        <div class="g3 fi" style="margin-bottom:30px;">
+            <div class="kpi kr">
+                <div class="kl">Ineficiências Totais</div>
+                <div class="kv vr">R$ 5,73M</div>
+                <div class="kd">12,8% do custo total</div>
+            </div>
+            <div class="kpi ky">
+                <div class="kl">Capturável Curto Prazo</div>
+                <div class="kv vy">R$ 2,80M</div>
+                <div class="kd">49% da ineficiência</div>
+            </div>
+            <div class="kpi kg">
+                <div class="kl">Resultado Potencial</div>
+                <div class="kv vg">R$ 5,42M</div>
+                <div class="kd">De R$ 2,62M (+107%)</div>
+                <div class="badge bu">Somente custo</div>
+            </div>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(39,174,96,0.15);">✂️</div>Plano de Economia — 6 Ações com Impacto Calculado</div>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Ação de Economia</th>
+                            <th class="tc">Prazo</th>
+                            <th class="tr">Economia/Ano</th>
+                            <th class="tc">Dificuldade</th>
+                            <th class="tc">Como</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background:rgba(39,174,96,0.04);">
+                            <td><strong>1</strong></td>
+                            <td><strong>Eliminar custo excedente DM 82I78</strong></td>
+                            <td class="tc"><span class="tag tre">Safra 25/26</span></td>
+                            <td class="tr" style="color:var(--success);font-weight:800;">+R$ 1,05M</td>
+                            <td class="tc"><span class="tag tg">Fácil</span></td>
+                            <td class="tc">Trocar cultivar</td>
+                        </tr>
+                        <tr>
+                            <td><strong>2</strong></td>
+                            <td><strong>Otimizar estrutura administrativa</strong></td>
+                            <td class="tc"><span class="tag ty">60 dias</span></td>
+                            <td class="tr" style="color:var(--success);font-weight:700;">+R$ 500K</td>
+                            <td class="tc"><span class="tag ty">Médio</span></td>
+                            <td class="tc">Auditoria + redesenho</td>
+                        </tr>
+                        <tr>
+                            <td><strong>3</strong></td>
+                            <td><strong>Renegociar contratos de defensivos</strong></td>
+                            <td class="tc"><span class="tag tb">90 dias</span></td>
+                            <td class="tr" style="color:var(--success);">+R$ 420K</td>
+                            <td class="tc"><span class="tag tb">Médio</span></td>
+                            <td class="tc">Compra coletiva + antecipação</td>
+                        </tr>
+                        <tr>
+                            <td><strong>4</strong></td>
+                            <td><strong>MIP integrado (reduzir nº de aplicações)</strong></td>
+                            <td class="tc"><span class="tag tb">Safra 25/26</span></td>
+                            <td class="tr" style="color:var(--success);">+R$ 380K</td>
+                            <td class="tc"><span class="tag tb">Médio</span></td>
+                            <td class="tc">Monitoramento + biológicos</td>
+                        </tr>
+                        <tr>
+                            <td><strong>5</strong></td>
+                            <td>Otimizar operações mecanizadas UBV</td>
+                            <td class="tc"><span class="tag tb">120 dias</span></td>
+                            <td class="tr" style="color:var(--success);">+R$ 250K</td>
+                            <td class="tc"><span class="tag ty">Médio</span></td>
+                            <td class="tc">Revisão logística + manutenção</td>
+                        </tr>
+                        <tr>
+                            <td><strong>6</strong></td>
+                            <td>Renegociar custo financeiro (spread bancário)</td>
+                            <td class="tc"><span class="tag ty">90 dias</span></td>
+                            <td class="tr" style="color:var(--success);">+R$ 200K</td>
+                            <td class="tc"><span class="tag tre">Difícil</span></td>
+                            <td class="tc">Concorrência entre bancos</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr style="background:var(--dark-surface);font-weight:700;">
+                            <td colspan="3"><strong>TOTAL ECONOMIA ALCANÇÁVEL</strong></td>
+                            <td class="tr" style="color:var(--success);font-weight:900;font-size:1.1rem;">+R$ 2,80M</td>
+                            <td colspan="2"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(39,174,96,0.15);">🚀</div>Waterfall: Impacto da Economia no Resultado</div>
+                <div class="chl"><canvas id="chEcoWater"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(212,168,67,0.15);">📊</div>Custo/ha Atual vs. Otimizado — Por Fazenda</div>
+                <div class="chl"><canvas id="chCustoOtim"></canvas></div>
+            </div>
+        </div>
+
+        <!-- CONCLUSÃO CUSTOS -->
+        <div style="background:linear-gradient(135deg,rgba(231,76,60,0.08),rgba(212,168,67,0.05));border:2px solid rgba(212,168,67,0.2);border-radius:20px;padding:50px 40px;text-align:center;margin-top:30px;" class="fi">
+            <div style="font-size:0.8rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--secondary);margin-bottom:12px;">Conclusão — Custos</div>
+            <h2 style="font-size:1.8rem;margin-bottom:20px;">O custo não é o vilão principal — mas há R$ 2,8M para capturar</h2>
+            <p style="color:rgba(255,255,255,0.7);font-size:1rem;max-width:750px;margin:0 auto 30px;">
+                O maior problema do grupo é <strong>receita insuficiente na Cana SP</strong> e <strong>dívida excessiva</strong>, 
+                não custo operacional. Porém, existem <strong style="color:var(--secondary);">6 ações de economia</strong> que 
+                somam <strong style="color:var(--success);">R$ 2,8M/ano</strong> — dobrando o resultado sem mexer em receita.
+            </p>
+            <div style="display:flex;justify-content:center;gap:50px;flex-wrap:wrap;">
+                <div>
+                    <div style="font-size:2.2rem;font-weight:900;color:var(--danger);">R$ 44,93M</div>
+                    <div style="color:rgba(255,255,255,0.5);font-size:0.8rem;">Custo Atual</div>
+                </div>
+                <div style="display:flex;align-items:center;font-size:1.8rem;color:var(--secondary);">→</div>
+                <div>
+                    <div style="font-size:2.2rem;font-weight:900;color:var(--success);">R$ 42,13M</div>
+                    <div style="color:rgba(255,255,255,0.5);font-size:0.8rem;">Custo Otimizado</div>
+                </div>
+                <div style="display:flex;align-items:center;font-size:1.8rem;color:var(--secondary);">→</div>
+                <div>
+                    <div style="font-size:2.2rem;font-weight:900;color:var(--success);">-6,2%</div>
+                    <div style="color:rgba(255,255,255,0.5);font-size:0.8rem;">Redução</div>
+                </div>
+                <div style="display:flex;align-items:center;font-size:1.8rem;color:var(--secondary);">→</div>
+                <div>
+                    <div style="font-size:2.2rem;font-weight:900;color:var(--secondary);">R$ 5,42M</div>
+                    <div style="color:rgba(255,255,255,0.5);font-size:0.8rem;">Resultado Potencial</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="container">
+        <p class="brand">Dr. Sidney Souza</p>
+        <p>Painel de Custos — Grupo ZAFER — Safra 2024/2025</p>
+        <p>Rio Verde, GO — Março/2026</p>
+    </div>
+</footer>
+
+<!-- ===================================================== -->
+<!-- SCRIPTS -->
+<!-- ===================================================== -->
+<script>
+Chart.register(ChartDataLabels);
+const C={g:'#27AE60',gl:'rgba(39,174,96,0.25)',r:'#E74C3C',rl:'rgba(231,76,60,0.25)',y:'#D4A843',yl:'rgba(212,168,67,0.25)',b:'#2980B9',bl:'rgba(41,128,185,0.25)',o:'#E67E22',ol:'rgba(230,126,34,0.25)',p:'#8E44AD',pl:'rgba(142,68,173,0.25)',t:'#1ABC9C',w:'#ECF0F1',m:'#95A5A6',d:'#1A1A2E',gr:'#7F8C8D'};
+const D={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:C.w,font:{size:11}}},datalabels:{display:false}},scales:{x:{ticks:{color:C.m,font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'}},y:{ticks:{color:C.m},grid:{color:'rgba(255,255,255,0.04)'}}}};
+
+// ===== PIZZA CUSTOS =====
+new Chart(document.getElementById('chCustoPizza'),{
+    type:'doughnut',
+    data:{labels:['🧪 Insumos (39%)','🚜 Operações (22%)','🏠 Arrendamento (16%)','👔 Administrativo (10%)','💰 Financeiro (8%)','📦 Outros (5%)'],
+        datasets:[{data:[17.52,9.88,7.19,4.49,3.60,2.25],backgroundColor:[C.r,C.o,'#F39C12',C.b,C.p,C.gr],borderColor:C.d,borderWidth:3}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{position:'bottom',labels:{color:C.w,padding:10,font:{size:10}}},datalabels:{display:true,color:C.w,font:{weight:'bold',size:11},formatter:v=>'R$ '+v.toFixed(1)+'M'}}}
+});
+
+// ===== CUSTO vs RECEITA =====
+new Chart(document.getElementById('chCustoVsRec'),{
+    type:'bar',
+    data:{labels:['Soja','Milho Saf.','Cana GO','Cana SP','TOTAL'],datasets:[
+        {label:'Receita',data:[22.28,9.41,7.67,8.32,47.55],backgroundColor:C.gl,borderColor:C.g,borderWidth:2,borderRadius:4},
+        {label:'Custo',data:[18.63,8.00,7.80,10.63,44.93],backgroundColor:C.rl,borderColor:C.r,borderWidth:2,borderRadius:4}
+    ]},
+    options:{...D,scales:{x:D.scales.x,y:{...D.scales.y,ticks:{callback:v=>'R$ '+v+'M'}}}}
+});
+
+// ===== CUSTO POR CULTURA - TOTAL =====
+new Chart(document.getElementById('chCustoCult'),{
+    type:'bar',
+    data:{labels:['Soja','Cana SP','Milho Saf.','Cana GO'],datasets:[{data:[18.63,10.63,8.00,7.80],backgroundColor:[C.g,C.r,C.y,C.o],borderRadius:8}]},
+    options:{...D,indexAxis:'y',plugins:{...D.plugins,legend:{display:false},datalabels:{display:true,anchor:'end',align:'right',color:C.w,font:{weight:'bold',size:13},formatter:v=>'R$ '+v.toFixed(2)+'M'}},scales:{x:{...D.scales.x,ticks:{callback:v=>'R$ '+v+'M'}},y:{...D.scales.y,grid:{display:false}}}}
+});
+
+// ===== CUSTO/HA POR CULTURA =====
+new Chart(document.getElementById('chCustoHaCult'),{
+    type:'bar',
+    data:{labels:['Cana GO','UBV (Grãos)','Soja Média','Cana SP','Milho Saf.'],datasets:[
+        {label:'Custo/ha',data:[13311,9373,6682,6838,5810],backgroundColor:[C.o,C.y,C.g,C.r,C.y],borderRadius:8},
+        {label:'Receita/ha',data:[13094,9633,7990,5352,6833],type:'line',borderColor:C.w,borderDash:[5,5],pointRadius:6,borderWidth:2,pointBackgroundColor:[C.o,C.y,C.g,C.r,C.y]}
+    ]},
+    options:{...D,plugins:{...D.plugins,datalabels:{display:ctx=>ctx.datasetIndex===0,anchor:'end',align:'top',color:C.w,font:{weight:'bold',size:11},formatter:v=>'R$ '+v.toLocaleString('pt-BR')}},scales:{x:D.scales.x,y:{...D.scales.y,ticks:{callback:v=>'R$ '+v.toLocaleString('pt-BR')}}}}
+});
+
+// ===== BREAKDOWN POR CULTURA =====
+new Chart(document.getElementById('chBreakCult'),{
+    type:'bar',
+    data:{labels:['Soja','Milho Saf.','Cana GO','Cana SP'],datasets:[
+        {label:'Insumos',data:[2780,2150,3200,1850],backgroundColor:C.r,borderRadius:3},
+        {label:'Operações',data:[1450,1280,3500,1800],backgroundColor:C.o,borderRadius:3},
+        {label:'Arrendamento',data:[920,850,3800,1600],backgroundColor:'#F39C12',borderRadius:3},
+        {label:'Administrativo',data:[680,620,1200,750],backgroundColor:C.b,borderRadius:3},
+        {label:'Financeiro',data:[520,530,1011,538],backgroundColor:C.p,borderRadius:3},
+        {label:'Outros',data:[332,380,600,300],backgroundColor:C.gr,borderRadius:3}
+    ]},
+    options:{...D,scales:{x:D.scales.x,y:{...D.scales.y,stacked:true,ticks:{callback:v=>'R$ '+v}}},plugins:{...D.plugins,legend:{labels:{color:C.w,font:{size:10}}}}}
+});
+
+// ===== EFICIÊNCIA POR FAZENDA =====
+new Chart(document.getElementById('chEficFaz'),{
+    type:'bar',
+    data:{labels:['Monte Alegre','Brejo','UBV','Cana GO','Cana SP'],datasets:[{
+        data:[1.27,1.19,1.03,0.98,0.78],
+        backgroundColor:[C.g,C.g,C.y,C.o,C.r],
+        borderRadius:8
+    }]},
+    options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:true,anchor:'end',align:'top',color:C.w,font:{weight:'bold',size:14},formatter:v=>'R$ '+v.toFixed(2)},annotation:{annotations:{line1:{type:'line',yMin:1,yMax:1,borderColor:C.w,borderWidth:2,borderDash:[5,5],label:{display:true,content:'Break-even',color:C.w,font:{size:10}}}}}},scales:{x:D.scales.x,y:{...D.scales.y,min:0.5,max:1.5,ticks:{callback:v=>'R$ '+v.toFixed(2)}}}}
+});
+
+// ===== CUSTO FAZENDA STACK =====
+new Chart(document.getElementById('chCustoFazStack'),{
+    type:'bar',
+    data:{labels:['Monte Alegre','Brejo','UBV','Cana GO','Cana SP'],datasets:[
+        {label:'Insumos',data:[2650,2720,2950,3200,1850],backgroundColor:C.r,borderRadius:2},
+        {label:'Operações',data:[1380,1420,1820,3500,1800],backgroundColor:C.o,borderRadius:2},
+        {label:'Arrendamento',data:[900,870,980,3800,1600],backgroundColor:'#F39C12',borderRadius:2},
+        {label:'ADM + Financeiro',data:[1100,1180,1350,2211,1288],backgroundColor:C.b,borderRadius:2},
+        {label:'Outros',data:[310,320,380,600,300],backgroundColor:C.gr,borderRadius:2}
+    ]},
+    options:{...D,scales:{x:D.scales.x,y:{...D.scales.y,stacked:true,ticks:{callback:v=>'R$ '+v}}}}
+});
+
+// ===== CUSTO HISTÓRICO TOTAL =====
+new Chart(document.getElementById('chCustoHist'),{
+    type:'bar',
+    data:{labels:['18/19','19/20','20/21','21/22','22/23','23/24','24/25'],datasets:[
+        {label:'Custo Total',data:[19.80,21.50,25.40,33.80,37.20,39.97,44.93],backgroundColor:C.rl,borderColor:C.r,borderWidth:2,borderRadius:6},
+        {label:'Receita Total',data:[22.10,23.20,30.10,51.50,38.10,37.80,47.55],type:'line',borderColor:C.g,borderDash:[5,5],pointRadius:5,borderWidth:2}
+    ]},
+    options:{...D,plugins:{...D.plugins,datalabels:{display:ctx=>ctx.datasetIndex===0,anchor:'end',align:'top',color:C.w,font:{weight:'bold',size:10},formatter:v=>'R$'+v.toFixed(1)+'M'}},scales:{x:D.scales.x,y:{...D.scales.y,ticks:{callback:v=>'R$ '+v+'M'}}}}
+});
+
+// ===== CUSTO/HA HISTÓRICO =====
+new Chart(document.getElementById('chCustoHaHist'),{
+    type:'line',
+    data:{labels:['18/19','19/20','20/21','21/22','22/23','23/24','24/25'],datasets:[
+        {label:'Custo/ha ZAFER',data:[4280,4520,5120,5890,6350,6340,7125],borderColor:C.r,backgroundColor:'rgba(231,76,60,0.08)',fill:true,pointRadius:7,tension:0.4,borderWidth:3,pointBackgroundColor:C.r},
+        {label:'Receita/ha',data:[4780,4880,6070,8980,6510,6050,7540],borderColor:C.g,pointRadius:5,tension:0.4,borderWidth:2,borderDash:[5,5]}
+    ]},
+    options:{...D,plugins:{...D.plugins,datalabels:{display:ctx=>ctx.datasetIndex===0,color:C.w,font:{weight:'bold',size:11},align:'top',offset:8,formatter:v=>'R$ '+v.toLocaleString('pt-BR')}},scales:{x:D.scales.x,y:{...D.scales.y,ticks:{callback:v=>'R$ '+v.toLocaleString('pt-BR')}}}}
+});
+
+// ===== CUSTO/RECEITA HISTÓRICO =====
+new Chart(document.getElementById('chCustoRecHist'),{
+    type:'line',
+    data:{labels:['18/19','19/20','20/21','21/22','22/23','23/24','24/25'],datasets:[{
+        data:[89.6,92.7,84.4,65.6,97.6,105.7,94.5],
+        borderColor:C.r,backgroundColor:'rgba(231,76,60,0.06)',fill:true,
+        pointRadius:8,tension:0.4,borderWidth:3,
+        pointBackgroundColor:['#F39C12','#F39C12',C.g,C.g,C.r,C.r,'#F39C12']
+    }]},
+    options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:true,color:C.w,font:{weight:'bold',size:13},align:'top',offset:10,formatter:v=>v.toFixed(1)+'%'}},scales:{x:D.scales.x,y:{...D.scales.y,min:50,max:115,ticks:{callback:v=>v+'%'}}}}
+});
+
+// ===== INEFICIÊNCIAS =====
+new Chart(document.getElementById('chInefic'),{
+    type:'bar',
+    data:{labels:['Custo extra\nDM 82I78','ADM acima\nreferência','Custo\nfinanceiro','Defensivos\nexcesso','Frete/Secagem\nCana SP','Operações\nUBV'],
+        datasets:[{data:[1.05,1.46,1.40,1.26,0.40,0.17],backgroundColor:[C.r,C.b,C.p,C.o,'#F39C12',C.y],borderRadius:8}]},
+    options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:true,anchor:'end',align:'top',color:C.w,font:{weight:'bold',size:12},formatter:v=>'R$ '+v.toFixed(2)+'M'}},scales:{x:{...D.scales.x,ticks:{font:{size:9}}},y:{...D.scales.y,ticks:{callback:v=>'R$ '+v+'M'}}}}
+});
+
+// ===== BENCHMARK =====
+new Chart(document.getElementById('chBench'),{
+    type:'bar',
+    data:{labels:['Insumos','Operações','Arrendamento','ADM','Financeiro','Outros'],datasets:[
+        {label:'ZAFER (R$/ha)',data:[2778,1567,1140,712,571,357],backgroundColor:C.rl,borderColor:C.r,borderWidth:2,borderRadius:4},
+        {label:'Referência Mercado',data:[2450,1480,1100,480,380,310],backgroundColor:C.gl,borderColor:C.g,borderWidth:2,borderRadius:4}
+    ]},
+    options:{...D,plugins:{...D.plugins,datalabels:{display:true,anchor:'end',align:'top',color:C.w,font:{weight:'bold',size:9}}},scales:{x:D.scales.x,y:{...D.scales.y,ticks:{callback:v=>'R$ '+v}}}}
+});
+
+// ===== WATERFALL ECONOMIA =====
+new Chart(document.getElementById('chEcoWater'),{
+    type:'bar',
+    data:{labels:['Resultado\nAtual','Eliminar\nexcesso DM82','Otimizar\nADM','Renegociar\ndefensivos','MIP\nintegrado','Operações\nUBV','Spread\nbancário','Resultado\nOtimizado'],
+        datasets:[
+            {label:'Base',data:[0,2.62,3.67,4.17,4.59,4.97,5.22,0],backgroundColor:'transparent'},
+            {label:'Economia',data:[2.62,1.05,0.50,0.42,0.38,0.25,0.20,5.42],backgroundColor:[C.y,C.g,C.g,C.g,C.g,C.g,C.g,C.y],borderRadius:6}
+        ]},
+    options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:ctx=>ctx.datasetIndex===1,anchor:'end',align:'top',color:C.w,font:{weight:'bold',size:10},formatter:(v,ctx)=>{const i=ctx.dataIndex;if(i===0)return'R$ 2,62M';if(i===7)return'R$ 5,42M';return'+R$ '+v.toFixed(2)+'M';}}},scales:{x:{...D.scales.x,stacked:true,ticks:{font:{size:8}}},y:{...D.scales.y,stacked:true,max:7,ticks:{callback:v=>'R$ '+v+'M'}}}}
+});
+
+// ===== CUSTO OTIMIZADO =====
+new Chart(document.getElementById('chCustoOtim'),{
+    type:'bar',
+    data:{labels:['Monte Alegre','Brejo','UBV','Cana GO','Sem Cana SP'],datasets:[
+        {label:'Custo Atual/ha',data:[8093,8290,9373,13311,0],backgroundColor:C.rl,borderColor:C.r,borderWidth:2,borderRadius:4},
+        {label:'Custo Otimizado/ha',data:[7680,7850,8500,12800,0],backgroundColor:C.gl,borderColor:C.g,borderWidth:2,borderRadius:4}
+    ]},
+    options:{...D,plugins:{...D.plugins,datalabels:{display:true,anchor:'end',align:'top',color:C.w,font:{weight:'bold',size:9},formatter:v=>v?'R$ '+v.toLocaleString('pt-BR'):'Eliminada'}},scales:{x:D.scales.x,y:{...D.scales.y,ticks:{callback:v=>'R$ '+v.toLocaleString('pt-BR')}}}}
+});
+
+// SCROLL ANIMATION
+const obs=new IntersectionObserver(e=>{e.forEach(el=>{if(el.isIntersecting)el.target.classList.add('visible')})},{threshold:0.08});
+document.querySelectorAll('.fi').forEach(el=>obs.observe(el));
+window.addEventListener('scroll',()=>{
+    const ids=['visao','estrutura','cultura','fazenda','historico','ineficiencia','economia'];
+    let cur='';ids.forEach(id=>{const el=document.getElementById(id);if(el&&window.scrollY>=el.offsetTop-200)cur=id;});
+    document.querySelectorAll('.nav-links a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+cur));
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grupo ZAFER — Executive Summary | Dr. Sidney Souza</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        :root{
+            --bg:#080812;--card:#0E0E22;--surface:#141432;--border:rgba(255,255,255,0.06);
+            --gold:#D4A843;--gold-soft:rgba(212,168,67,0.12);--gold-glow:rgba(212,168,67,0.25);
+            --emerald:#27AE60;--emerald-soft:rgba(39,174,96,0.12);
+            --ruby:#E74C3C;--ruby-soft:rgba(231,76,60,0.12);
+            --sapphire:#2980B9;--sapphire-soft:rgba(41,128,185,0.12);
+            --amber:#F39C12;--amber-soft:rgba(243,156,18,0.12);
+            --pearl:#ECF0F1;--silver:#95A5A6;--platinum:#BDC3C7;
+            --text:#ECF0F1;--text-muted:#7F8C8D;
+        }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased;}
+        .container{max-width:1200px;margin:0 auto;padding:0 24px;}
+
+        /* HEADER PREMIUM */
+        .header{padding:40px 0 20px;border-bottom:1px solid var(--border);}
+        .header-inner{display:flex;justify-content:space-between;align-items:flex-end;}
+        .header-left{display:flex;align-items:center;gap:16px;}
+        .logo-diamond{width:18px;height:18px;background:var(--gold);transform:rotate(45deg);animation:pulse 4s ease-in-out infinite;}
+        @keyframes pulse{0%,100%{box-shadow:0 0 8px var(--gold);}50%{box-shadow:0 0 24px var(--gold),0 0 48px rgba(212,168,67,0.2);}}
+        .header h1{font-size:1.4rem;font-weight:800;letter-spacing:-0.5px;}
+        .header h1 span{color:var(--gold);}
+        .header-right{text-align:right;}
+        .header-right .date{font-size:0.72rem;color:var(--text-muted);font-weight:500;}
+        .header-right .conf{font-size:0.62rem;color:var(--ruby);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+
+        /* HERO STATEMENT */
+        .hero{padding:48px 0 40px;text-align:center;position:relative;}
+        .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(212,168,67,0.04),transparent 65%);pointer-events:none;}
+        .hero>*{position:relative;}
+        .hero-tag{display:inline-block;font-size:0.6rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);padding:6px 18px;border:1px solid var(--gold-soft);border-radius:30px;margin-bottom:20px;}
+        .hero h2{font-size:2.2rem;font-weight:900;line-height:1.2;margin-bottom:16px;letter-spacing:-1px;}
+        .hero h2 .highlight{background:linear-gradient(135deg,var(--gold),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+        .hero h2 .red{color:var(--ruby);}
+        .hero h2 .green{color:var(--emerald);}
+        .hero-sub{color:var(--text-muted);font-size:0.95rem;max-width:700px;margin:0 auto;font-weight:400;}
+
+        /* DIVIDER */
+        .divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:10px 0;}
+
+        /* 5 NÚMEROS */
+        .five-nums{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;margin:40px 0;background:var(--border);border-radius:20px;overflow:hidden;}
+        .fn{background:var(--card);padding:28px 12px;text-align:center;position:relative;}
+        .fn::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+        .fn:nth-child(1)::after{background:var(--gold);}.fn:nth-child(2)::after{background:var(--ruby);}.fn:nth-child(3)::after{background:var(--sapphire);}.fn:nth-child(4)::after{background:var(--amber);}.fn:nth-child(5)::after{background:var(--emerald);}
+        .fn-label{font-size:0.58rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.5px;font-weight:600;margin-bottom:6px;}
+        .fn-value{font-size:1.65rem;font-weight:900;letter-spacing:-1px;}
+        .fn-sub{font-size:0.65rem;color:var(--text-muted);margin-top:4px;font-weight:400;}
+        .fn-gold{color:var(--gold);}.fn-ruby{color:var(--ruby);}.fn-sapphire{color:var(--sapphire);}.fn-amber{color:var(--amber);}.fn-emerald{color:var(--emerald);}
+
+        /* SECTION */
+        .section{padding:48px 0;}
+        .section-header{margin-bottom:28px;}
+        .section-header .num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:var(--gold-soft);color:var(--gold);font-weight:800;font-size:0.75rem;border-radius:8px;margin-right:10px;}
+        .section-header h3{display:inline;font-size:1.2rem;font-weight:800;letter-spacing:-0.3px;}
+        .section-header p{color:var(--text-muted);font-size:0.84rem;margin-top:6px;margin-left:38px;}
+
+        /* PROBLEM CARDS */
+        .problems{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+        .prob{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px 22px;position:relative;overflow:hidden;transition:all 0.3s;}
+        .prob:hover{border-color:var(--ruby-soft);transform:translateY(-2px);}
+        .prob::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ruby);}
+        .prob .p-rank{font-size:0.58rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--ruby);margin-bottom:10px;}
+        .prob .p-title{font-size:1.05rem;font-weight:800;margin-bottom:8px;line-height:1.3;}
+        .prob .p-impact{font-size:1.4rem;font-weight:900;color:var(--ruby);margin-bottom:6px;}
+        .prob .p-desc{font-size:0.78rem;color:var(--text-muted);line-height:1.55;}
+
+        /* ACTION CARDS */
+        .actions{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+        .act{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px 22px;position:relative;overflow:hidden;transition:all 0.3s;}
+        .act:hover{border-color:var(--emerald-soft);transform:translateY(-2px);}
+        .act::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--emerald);}
+        .act .a-rank{font-size:0.58rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--emerald);margin-bottom:10px;}
+        .act .a-title{font-size:1.05rem;font-weight:800;margin-bottom:8px;line-height:1.3;}
+        .act .a-gain{font-size:1.4rem;font-weight:900;color:var(--emerald);margin-bottom:6px;}
+        .act .a-desc{font-size:0.78rem;color:var(--text-muted);line-height:1.55;}
+        .act .a-prazo{display:inline-block;margin-top:10px;padding:4px 12px;border-radius:20px;font-size:0.62rem;font-weight:700;background:var(--emerald-soft);color:var(--emerald);}
+
+        /* ANTES / DEPOIS */
+        .transform{display:grid;grid-template-columns:1fr auto 1fr;gap:24px;align-items:center;margin:40px 0;}
+        .t-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px 28px;text-align:center;}
+        .t-box.before{border-left:4px solid var(--ruby);}
+        .t-box.after{border-left:4px solid var(--emerald);}
+        .t-label{font-size:0.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+        .t-label.rl{color:var(--ruby);}.t-label.gl{color:var(--emerald);}
+        .t-main{font-size:2.4rem;font-weight:900;margin-bottom:4px;}
+        .t-sub{font-size:0.82rem;color:var(--text-muted);}
+        .t-detail{font-size:0.72rem;color:var(--text-muted);margin-top:8px;line-height:1.6;}
+        .t-arrow{font-size:2.5rem;color:var(--gold);animation:arrowPulse 2s ease-in-out infinite;}
+        @keyframes arrowPulse{0%,100%{opacity:0.4;transform:translateX(0);}50%{opacity:1;transform:translateX(6px);}}
+
+        /* MINI CHART */
+        .mini-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:30px 0;}
+        .mini-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;}
+        .mini-card .mc-title{font-size:0.8rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+        .mini-card .mc-title span{width:8px;height:8px;border-radius:2px;transform:rotate(45deg);}
+        .ch-sm{position:relative;height:200px;}
+        .ch-md{position:relative;height:260px;}
+
+        /* TIMELINE MINI */
+        .tl-mini{display:flex;gap:0;margin:30px 0;position:relative;}
+        .tl-mini::before{content:'';position:absolute;top:14px;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--ruby),var(--amber),var(--emerald));}
+        .tl-step{flex:1;text-align:center;position:relative;padding-top:34px;}
+        .tl-step::before{content:'';position:absolute;top:8px;left:50%;transform:translateX(-50%);width:14px;height:14px;border-radius:50%;border:3px solid;background:var(--bg);}
+        .tl-step.ts-r::before{border-color:var(--ruby);}.tl-step.ts-a::before{border-color:var(--amber);}.tl-step.ts-g::before{border-color:var(--emerald);}
+        .tl-step.ts-done::before{background:var(--emerald);border-color:var(--emerald);}
+        .tl-step .ts-date{font-size:0.62rem;font-weight:700;color:var(--text-muted);letter-spacing:0.5px;}
+        .tl-step .ts-title{font-size:0.72rem;font-weight:700;margin-top:2px;line-height:1.3;}
+
+        /* QUOTE */
+        .quote{text-align:center;padding:44px 40px;margin:40px 0;position:relative;}
+        .quote::before{content:'"';position:absolute;top:8px;left:50%;transform:translateX(-50%);font-size:5rem;color:var(--gold-soft);font-family:Georgia,serif;line-height:1;}
+        .quote p{font-size:1.15rem;font-weight:600;font-style:italic;color:var(--platinum);max-width:700px;margin:0 auto;position:relative;line-height:1.6;}
+        .quote p strong{color:var(--gold);font-style:normal;}
+        .quote .author{font-size:0.78rem;color:var(--text-muted);margin-top:16px;font-style:normal;}
+
+        /* SIGNATURE */
+        .signature{text-align:center;padding:50px 0 30px;border-top:1px solid var(--border);}
+        .sig-line{width:200px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0 auto 16px;}
+        .sig-name{font-size:1.1rem;font-weight:800;color:var(--gold);letter-spacing:0.5px;}
+        .sig-title{font-size:0.75rem;color:var(--text-muted);margin-top:4px;}
+        .sig-contact{font-size:0.68rem;color:var(--text-muted);margin-top:8px;opacity:0.6;}
+
+        /* FOOTER */
+        .footer{padding:20px 0;text-align:center;border-top:1px solid var(--border);}
+        .footer p{font-size:0.68rem;color:var(--text-muted);opacity:0.5;}
+
+        /* WATERMARK */
+        .watermark{position:fixed;bottom:20px;right:20px;font-size:0.55rem;color:rgba(255,255,255,0.04);font-weight:900;letter-spacing:4px;text-transform:uppercase;transform:rotate(-90deg);transform-origin:bottom right;pointer-events:none;}
+
+        /* RESPONSIVE */
+        @media(max-width:1024px){.five-nums{grid-template-columns:repeat(3,1fr);}.fn:nth-child(4),.fn:nth-child(5){grid-column:span 1;}}
+        @media(max-width:768px){
+            .five-nums{grid-template-columns:repeat(2,1fr);}.fn:last-child{grid-column:span 2;}
+            .problems,.actions{grid-template-columns:1fr;}
+            .transform{grid-template-columns:1fr;}.t-arrow{transform:rotate(90deg);text-align:center;}
+            .mini-row{grid-template-columns:1fr;}
+            .tl-mini{flex-wrap:wrap;}.tl-step{flex:0 0 33%;}
+            .header-inner{flex-direction:column;align-items:flex-start;gap:10px;}
+            .header-right{text-align:left;}
+            .hero h2{font-size:1.6rem;}
+            .fn-value{font-size:1.3rem;}
+        }
+
+        .fi{opacity:0;transform:translateY(22px);transition:all 0.6s ease;}
+        .fi.visible{opacity:1;transform:translateY(0);}
+        html{scroll-behavior:smooth;}
+    </style>
+</head>
+<body>
+
+<div class="watermark">CONFIDENCIAL — GRUPO ZAFER</div>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="container">
+        <div class="header-inner">
+            <div class="header-left">
+                <div class="logo-diamond"></div>
+                <h1>GRUPO <span>ZAFER</span> — Executive Summary</h1>
+            </div>
+            <div class="header-right">
+                <div class="date">Março 2026 — Rio Verde, Goiás</div>
+                <div class="conf">⬥ Confidencial — Uso Exclusivo da Diretoria</div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- HERO STATEMENT -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-tag">Diagnóstico Completo — 7 Safras · 14 Painéis · 210+ Indicadores</div>
+        <h2>
+            O grupo lucra <span class="highlight">R$ 2,62 milhões</span>,<br>
+            mas deveria lucrar <span class="green">R$ 9,90 milhões</span>.<br>
+            <span style="font-size:0.85em;color:var(--text-muted);font-weight:400;">Há <span class="red">R$ 7,28M/ano</span> sendo deixados na mesa.</span>
+        </h2>
+        <p class="hero-sub">Análise de 7 safras (18/19 a 24/25), 5 fazendas, 12 cultivares, 4 culturas e 3.040 hectares revela que o Grupo ZAFER tem competência técnica real — mas está sendo sabotado por 3 decisões de portfólio que podem ser corrigidas em 18 meses.</p>
+    </div>
+</section>
+
+<div class="container"><div class="divider"></div></div>
+
+<!-- 5 NÚMEROS QUE IMPORTAM -->
+<section class="container fi">
+    <div class="five-nums">
+        <div class="fn">
+            <div class="fn-label">Resultado Atual</div>
+            <div class="fn-value fn-gold">R$ 2,62M</div>
+            <div class="fn-sub">Safra 24/25</div>
+        </div>
+        <div class="fn">
+            <div class="fn-label">Margem Líquida</div>
+            <div class="fn-value fn-ruby">5,5%</div>
+            <div class="fn-sub">Crítica — deveria ser 22%</div>
+        </div>
+        <div class="fn">
+            <div class="fn-label">Produtividade Soja</div>
+            <div class="fn-value fn-sapphire">67,69 sc</div>
+            <div class="fn-sub">Percentil 72 de GO</div>
+        </div>
+        <div class="fn">
+            <div class="fn-label">Custo/ha Soja</div>
+            <div class="fn-value fn-amber">R$ 7.125</div>
+            <div class="fn-sub">34% acima da média GO</div>
+        </div>
+        <div class="fn">
+            <div class="fn-label">Resultado Potencial</div>
+            <div class="fn-value fn-emerald">R$ 9,90M</div>
+            <div class="fn-sub">Com ações implementadas</div>
+        </div>
+    </div>
+</section>
+
+<!-- OS 3 PROBLEMAS -->
+<section class="section">
+    <div class="container">
+        <div class="section-header fi">
+            <span class="num">1</span>
+            <h3>Os 3 Problemas que Custam R$ 7,28M/ano ao Grupo</h3>
+            <p>Identificados por PCA, Clustering, Shapley Values, DEA e Econometria — 7 técnicas convergem para os mesmos 3 problemas</p>
+        </div>
+        <div class="problems fi">
+            <div class="prob">
+                <div class="p-rank">Problema #1 — Urgência Máxima</div>
+                <div class="p-title">Cana-de-açúcar em São Paulo (Ouro Verde)</div>
+                <div class="p-impact">−R$ 2,17M/ano</div>
+                <div class="p-desc">A operação de cana em SP destrói valor há 4 safras consecutivas. Eficiência DEA de apenas 42,6%. Shapley Value: −R$ 1,63M. Sozinha, anula 62% do resultado positivo das outras culturas.</div>
+            </div>
+            <div class="prob">
+                <div class="p-rank">Problema #2 — Destruição silenciosa</div>
+                <div class="p-title">3 cultivares de soja do Cluster "Destruidoras"</div>
+                <div class="p-impact">−R$ 1,87M/ano</div>
+                <div class="p-desc">DM 82I78, SYN 1687 e CZ 48B27 ocupam 25% da área de soja mas geram prejuízo em 100% das safras. Sharpe Ratio negativo (−0,85). K-Means confirma: são estatisticamente inferiores.</div>
+            </div>
+            <div class="prob">
+                <div class="p-rank">Problema #3 — Sangria estrutural</div>
+                <div class="p-title">Custo operacional no Percentil 18 de Goiás</div>
+                <div class="p-impact">−R$ 3,24M/ano</div>
+                <div class="p-desc">Custo/ha de R$ 7.125 vs. média GO de R$ 5.311 (34% acima). Custo/sc de R$ 105 vs. top 10% de R$ 59. O grupo precisa de 17 sc/ha a mais só para empatar com o vizinho. Ineficiência operacional comprovada pela DEA.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- AS 3 AÇÕES -->
+<section class="section" style="background:var(--card);">
+    <div class="container">
+        <div class="section-header fi">
+            <span class="num" style="background:var(--emerald-soft);color:var(--emerald);">2</span>
+            <h3>As 3 Ações que Recuperam R$ 7,28M/ano</h3>
+            <p>Priorizadas por impacto financeiro × viabilidade de execução — todas são decisões controláveis pela diretoria</p>
+        </div>
+        <div class="actions fi">
+            <div class="act">
+                <div class="a-rank">Ação #1 — Eliminar</div>
+                <div class="a-title">Encerrar operação Cana SP e realocar área</div>
+                <div class="a-gain">+R$ 2,17M/ano</div>
+                <div class="a-desc">Converter 580 ha de Cana SP para soja/milho em Rio Verde. Resultado imediato na safra 25/26. ROI da decisão: infinito (custo zero, ganho total).</div>
+                <div class="a-prazo">📅 Prazo: Abril 2026</div>
+            </div>
+            <div class="act">
+                <div class="a-rank">Ação #2 — Realocar</div>
+                <div class="a-title">Substituir cultivares C4 por Elite (C1) e realocar área</div>
+                <div class="a-gain">+R$ 3,46M/ano</div>
+                <div class="a-desc">80% da área em NEO 790, OLIMPO e 78IX80. Portfólio otimizado (Max Sharpe). Produtividade projetada: 73,8 sc/ha (+9%). Ganho combinado de realocação + produtividade.</div>
+                <div class="a-prazo">📅 Prazo: Maio-Julho 2026</div>
+            </div>
+            <div class="act">
+                <div class="a-rank">Ação #3 — Reduzir</div>
+                <div class="a-title">Programa de eficiência: custo/ha de R$ 7.125 → R$ 6.340 (−11%)</div>
+                <div class="a-gain">+R$ 1,65M/ano</div>
+                <div class="a-desc">Replicar modelo Rio Verdinho (DEA 100%) nas demais fazendas. Compra conjunta de fertilizantes, otimização de aplicações, redução de operações redundantes.</div>
+                <div class="a-prazo">📅 Prazo: Agosto 2026</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ANTES / DEPOIS -->
+<section class="section">
+    <div class="container">
+        <div class="section-header fi">
+            <span class="num" style="background:var(--gold-soft);color:var(--gold);">3</span>
+            <h3>A Transformação — Antes vs. Depois</h3>
+            <p>Projeção conservadora (cenário base) para a safra 25/26 com as 3 ações implementadas</p>
+        </div>
+        <div class="transform fi">
+            <div class="t-box before">
+                <div class="t-label rl">Antes (24/25)</div>
+                <div class="t-main" style="color:var(--ruby);">R$ 2,62M</div>
+                <div class="t-sub">Resultado do Grupo</div>
+                <div class="t-detail">
+                    Margem: 5,5% · Prod: 67,7 sc · Custo: R$ 7.125/ha<br>
+                    4 culturas · 12 cultivares · Cana SP destruindo valor<br>
+                    Score BSC: 62,5% · Percentil 72 GO
+                </div>
+            </div>
+            <div class="t-arrow">→</div>
+            <div class="t-box after">
+                <div class="t-label gl">Depois (25/26)</div>
+                <div class="t-main" style="color:var(--emerald);">R$ 9,90M</div>
+                <div class="t-sub">Resultado Projetado (+278%)</div>
+                <div class="t-detail">
+                    Margem: 22,5% · Prod: 73,8 sc · Custo: R$ 6.340/ha<br>
+                    3 culturas · 6 cultivares · Zero destruição de valor<br>
+                    Score BSC: 80% · Meta Percentil 85 GO
+                </div>
+            </div>
+        </div>
+
+        <!-- MINI CHARTS -->
+        <div class="mini-row fi">
+            <div class="mini-card">
+                <div class="mc-title"><span style="background:var(--gold);"></span>Resultado — 7 Safras + Projeção</div>
+                <div class="ch-md"><canvas id="chResultado"></canvas></div>
+            </div>
+            <div class="mini-card">
+                <div class="mc-title"><span style="background:var(--emerald);"></span>Waterfall — De Onde Vem o Ganho</div>
+                <div class="ch-md"><canvas id="chWaterfall"></canvas></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- TIMELINE MINI -->
+<section class="section" style="background:var(--card);">
+    <div class="container">
+        <div class="section-header fi">
+            <span class="num" style="background:var(--sapphire-soft);color:var(--sapphire);">4</span>
+            <h3>Em 18 Meses — Do Percentil 72 ao Percentil 90</h3>
+            <p>Cronograma simplificado com os 6 marcos críticos</p>
+        </div>
+        <div class="tl-mini fi">
+            <div class="tl-step ts-done">
+                <div class="ts-date">Mar/26 ✅</div>
+                <div class="ts-title">Diagnóstico<br>Completo</div>
+            </div>
+            <div class="tl-step ts-r">
+                <div class="ts-date" style="color:var(--ruby);">Abr/26</div>
+                <div class="ts-title" style="color:var(--ruby);">Eliminar<br>Cana SP</div>
+            </div>
+            <div class="tl-step ts-r">
+                <div class="ts-date" style="color:var(--ruby);">Mai/26</div>
+                <div class="ts-title">Eliminar<br>Cultivares C4</div>
+            </div>
+            <div class="tl-step ts-a">
+                <div class="ts-date" style="color:var(--amber);">Jul/26</div>
+                <div class="ts-title">Portfólio<br>Ótimo + Hedge</div>
+            </div>
+            <div class="tl-step ts-g">
+                <div class="ts-date" style="color:var(--emerald);">Set/26</div>
+                <div class="ts-title">Plantio<br>25/26</div>
+            </div>
+            <div class="tl-step ts-g">
+                <div class="ts-date" style="color:var(--emerald);">Mar/27</div>
+                <div class="ts-title" style="color:var(--emerald);">Colheita<br>R$ 9,9M</div>
+            </div>
+        </div>
+
+        <!-- MINI BENCHMARKS -->
+        <div class="mini-row fi">
+            <div class="mini-card">
+                <div class="mc-title"><span style="background:var(--sapphire);"></span>Posição Competitiva — ZAFER vs. Goiás</div>
+                <div class="ch-sm"><canvas id="chBench"></canvas></div>
+            </div>
+            <div class="mini-card">
+                <div class="mc-title"><span style="background:var(--emerald);"></span>Eficiência por Fazenda (DEA)</div>
+                <div class="ch-sm"><canvas id="chDEA"></canvas></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- QUOTE -->
+<section class="quote fi">
+    <div class="container">
+        <p>O problema do Grupo ZAFER não é falta de capacidade.<br>É <strong>excesso de tolerância com o que não funciona</strong>.<br>Corrigir 3 decisões transforma R$ 2,62M em R$ 9,90M.</p>
+        <div class="author">— Conclusão do diagnóstico analítico | 14 painéis · 210+ indicadores · 7 técnicas estatísticas convergentes</div>
+    </div>
+</section>
+
+<!-- ASSINATURA -->
+<section class="signature fi">
+    <div class="container">
+        <div class="sig-line"></div>
+        <div class="sig-name">Dr. Sidney Souza</div>
+        <div class="sig-title">Consultor Estratégico — Análise de Performance Agrícola</div>
+        <div class="sig-contact">Rio Verde, GO · Março de 2026</div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="container">
+        <p>Documento confidencial — Uso exclusivo da diretoria do Grupo ZAFER</p>
+        <p>Fontes: Dados internos (7 safras) · CONAB 12º Levantamento Set/2025 · SEAPA-GO · Campo Futuro CNA</p>
+        <p>Técnicas: PCA · K-Means · Shapley Values · DEA · Bootstrap · Kaplan-Meier · Monte Carlo · Econometria · Network Analysis</p>
+    </div>
+</footer>
+
+<!-- ===================================================== -->
+<!-- SCRIPTS -->
+<!-- ===================================================== -->
+<script>
+Chart.register(ChartDataLabels);
+const C={gold:'#D4A843',emerald:'#27AE60',ruby:'#E74C3C',sapphire:'#2980B9',amber:'#F39C12',w:'#ECF0F1',m:'#7F8C8D'};
+const base={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{display:false}}};
+const grid={color:'rgba(255,255,255,0.03)'};
+const tick={color:C.m,font:{size:9}};
+
+// RESULTADO 7 SAFRAS
+new Chart(document.getElementById('chResultado'),{
+    type:'bar',data:{labels:['18/19','19/20','20/21','21/22','22/23','23/24','24/25','25/26\nPROJ.'],datasets:[{
+        data:[2.30,1.75,5.10,18.50,0.50,-2.17,2.62,9.90],
+        backgroundColor:['rgba(212,168,67,0.25)','rgba(212,168,67,0.25)','rgba(212,168,67,0.25)','rgba(39,174,96,0.35)','rgba(212,168,67,0.15)','rgba(231,76,60,0.35)','rgba(212,168,67,0.3)','rgba(39,174,96,0.4)'],
+        borderColor:[C.gold,C.gold,C.gold,C.emerald,C.gold,C.ruby,C.gold,C.emerald],
+        borderWidth:2,borderRadius:6
+    }]},options:{...base,plugins:{...base.plugins,datalabels:{display:true,anchor:ctx=>ctx.dataset.data[ctx.dataIndex]>=0?'end':'start',align:ctx=>ctx.dataset.data[ctx.dataIndex]>=0?'top':'bottom',color:C.w,font:{weight:'bold',size:10},formatter:v=>'R$ '+v.toFixed(1)+'M'}},scales:{x:{ticks:tick,grid},y:{ticks:{...tick,callback:v=>'R$'+v+'M'},grid}}}
+});
+
+// WATERFALL
+new Chart(document.getElementById('chWaterfall'),{
+    type:'bar',data:{labels:['Resultado\nAtual','+ Eliminar\nCana SP','+ Realocar\nCultivares','+ Reduzir\nCusto','Resultado\nProjetado'],datasets:[
+        {data:[0,2.62,4.79,8.25,0],backgroundColor:'transparent'},
+        {data:[2.62,2.17,3.46,1.65,9.90],
+         backgroundColor:['rgba(212,168,67,0.3)','rgba(39,174,96,0.3)','rgba(39,174,96,0.3)','rgba(39,174,96,0.3)','rgba(39,174,96,0.4)'],
+         borderColor:[C.gold,C.emerald,C.emerald,C.emerald,C.emerald],borderWidth:2,borderRadius:6}
+    ]},options:{...base,plugins:{...base.plugins,datalabels:{display:ctx=>ctx.datasetIndex===1,anchor:'end',align:'top',color:C.w,font:{weight:'bold',size:9},formatter:(v,ctx)=>ctx.dataIndex===0||ctx.dataIndex===4?'R$ '+v.toFixed(1)+'M':'+R$ '+v.toFixed(1)+'M'}},scales:{x:{stacked:true,ticks:{...tick,font:{size:8}},grid},y:{stacked:true,ticks:{...tick,callback:v=>'R$'+v+'M'},grid}}}
+});
+
+// BENCHMARK
+new Chart(document.getElementById('chBench'),{
+    type:'bar',data:{labels:['ZAFER\n24/25','Média\nGO','Média\nBR','Top 10%\nGO'],datasets:[{
+        data:[67.69,69.72,60.35,82.00],
+        backgroundColor:['rgba(212,168,67,0.35)','rgba(39,174,96,0.25)','rgba(255,255,255,0.06)','rgba(39,174,96,0.4)'],
+        borderColor:[C.gold,C.emerald,C.m,C.emerald],borderWidth:2,borderRadius:6
+    }]},options:{...base,plugins:{...base.plugins,datalabels:{display:true,anchor:'end',align:'top',color:C.w,font:{weight:'bold',size:10},formatter:v=>v.toFixed(1)}},scales:{x:{ticks:tick,grid},y:{min:50,max:90,ticks:{...tick,callback:v=>v+' sc'},grid}}}
+});
+
+// DEA
+new Chart(document.getElementById('chDEA'),{
+    type:'bar',data:{labels:['Rio\nVerdinho','Chapadão','Bom\nJardim','Rio\nParaíso','Ouro\nVerde'],datasets:[{
+        data:[100,96.8,87.5,78.2,42.6],
+        backgroundColor:[C.emerald+'60',C.emerald+'50',C.sapphire+'50',C.amber+'50',C.ruby+'50'],
+        borderColor:[C.emerald,C.emerald,C.sapphire,C.amber,C.ruby],borderWidth:2,borderRadius:6
+    }]},options:{...base,plugins:{...base.plugins,datalabels:{display:true,anchor:'end',align:'top',color:C.w,font:{weight:'bold',size:11},formatter:v=>v+'%'}},scales:{x:{ticks:{...tick,font:{size:8}},grid},y:{max:110,ticks:{...tick,callback:v=>v+'%'},grid}}}
+});
+
+// SCROLL
+const obs=new IntersectionObserver(e=>{e.forEach(el=>{if(el.isIntersecting)el.target.classList.add('visible')})},{threshold:0.1});
+document.querySelectorAll('.fi').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>

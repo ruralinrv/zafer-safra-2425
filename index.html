@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grupo ZAFER — Acesso Restrito</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        :root{
+            --bg:#080812;--card:#0E0E22;--surface:#141432;--border:rgba(255,255,255,0.06);
+            --gold:#D4A843;--gold-soft:rgba(212,168,67,0.12);--gold-glow:rgba(212,168,67,0.25);
+            --ruby:#E74C3C;--emerald:#27AE60;
+            --text:#ECF0F1;--text-muted:#7F8C8D;
+        }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
+
+        /* BACKGROUND ANIMATION */
+        body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(212,168,67,0.04),transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(41,128,185,0.03),transparent 50%);pointer-events:none;}
+        .particles{position:fixed;inset:0;pointer-events:none;overflow:hidden;}
+        .particle{position:absolute;width:2px;height:2px;background:var(--gold);border-radius:50%;opacity:0;animation:float linear infinite;}
+        @keyframes float{0%{opacity:0;transform:translateY(100vh) scale(0);}10%{opacity:0.6;}90%{opacity:0.6;}100%{opacity:0;transform:translateY(-10vh) scale(1);}}
+
+        /* LOGIN CARD */
+        .login-wrapper{position:relative;z-index:10;width:100%;max-width:440px;padding:0 24px;}
+        .login-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:48px 40px;text-align:center;position:relative;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,0.5);}
+        .login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),rgba(212,168,67,0.3),var(--gold));}
+
+        /* LOGO */
+        .logo{margin-bottom:32px;}
+        .logo-diamond{width:20px;height:20px;background:var(--gold);transform:rotate(45deg);margin:0 auto 16px;animation:diamondPulse 4s ease-in-out infinite;}
+        @keyframes diamondPulse{0%,100%{box-shadow:0 0 8px var(--gold);}50%{box-shadow:0 0 32px var(--gold),0 0 64px rgba(212,168,67,0.2);}}
+        .logo h1{font-size:1.8rem;font-weight:900;letter-spacing:-0.5px;}
+        .logo h1 span{color:var(--gold);}
+        .logo p{font-size:0.72rem;color:var(--text-muted);margin-top:6px;letter-spacing:2px;text-transform:uppercase;font-weight:600;}
+
+        /* FORM */
+        .form{margin-top:8px;}
+        .input-group{position:relative;margin-bottom:20px;}
+        .input-group label{display:block;text-align:left;font-size:0.68rem;font-weight:600;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+        .input-group input{width:100%;padding:14px 18px 14px 46px;background:var(--surface);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:'Inter',sans-serif;font-size:0.95rem;font-weight:500;outline:none;transition:all 0.3s;}
+        .input-group input:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-soft);}
+        .input-group input::placeholder{color:rgba(255,255,255,0.15);}
+        .input-group .icon{position:absolute;bottom:14px;left:16px;font-size:1.1rem;opacity:0.3;}
+
+        .btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--gold),#B8922E);border:none;border-radius:12px;color:#080812;font-family:'Inter',sans-serif;font-size:0.9rem;font-weight:800;letter-spacing:0.5px;cursor:pointer;transition:all 0.3s;position:relative;overflow:hidden;}
+        .btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(212,168,67,0.3);}
+        .btn:active{transform:translateY(0);}
+        .btn::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent,rgba(255,255,255,0.1),transparent);transform:translateX(-100%);transition:transform 0.5s;}
+        .btn:hover::after{transform:translateX(100%);}
+
+        /* TOGGLE PASSWORD */
+        .toggle-pw{position:absolute;bottom:12px;right:14px;background:none;border:none;color:var(--text-muted);font-size:1.1rem;cursor:pointer;padding:4px;opacity:0.4;transition:opacity 0.3s;}
+        .toggle-pw:hover{opacity:0.8;}
+
+        /* ERROR */
+        .error{color:var(--ruby);font-size:0.78rem;font-weight:600;margin-top:12px;opacity:0;transition:all 0.3s;transform:translateY(-6px);}
+        .error.show{opacity:1;transform:translateY(0);}
+        .shake{animation:shake 0.5s ease;}
+        @keyframes shake{0%,100%{transform:translateX(0);}20%,60%{transform:translateX(-8px);}40%,80%{transform:translateX(8px);}}
+
+        /* SUCCESS */
+        .success-overlay{position:fixed;inset:0;background:rgba(8,8,18,0.95);display:flex;align-items:center;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:all 0.5s;}
+        .success-overlay.show{opacity:1;pointer-events:all;}
+        .success-content{text-align:center;transform:scale(0.8);transition:all 0.5s;}
+        .success-overlay.show .success-content{transform:scale(1);}
+        .success-check{width:60px;height:60px;border-radius:50%;background:var(--emerald);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.8rem;}
+        .success-text{font-size:1.2rem;font-weight:700;color:var(--emerald);}
+        .success-sub{font-size:0.8rem;color:var(--text-muted);margin-top:6px;}
+
+        /* FOOTER */
+        .footer{position:fixed;bottom:20px;left:0;right:0;text-align:center;}
+        .footer p{font-size:0.62rem;color:var(--text-muted);opacity:0.3;}
+
+        /* RESPONSIVE */
+        @media(max-width:480px){
+            .login-card{padding:36px 28px;border-radius:20px;}
+            .logo h1{font-size:1.5rem;}
+        }
+    </style>
+</head>
+<body>
+
+<!-- PARTICLES -->
+<div class="particles" id="particles"></div>
+
+<!-- LOGIN -->
+<div class="login-wrapper">
+    <div class="login-card" id="loginCard">
+        <div class="logo">
+            <div class="logo-diamond"></div>
+            <h1>GRUPO <span>ZAFER</span></h1>
+            <p>Análise Estratégica de Performance</p>
+        </div>
+        <form class="form" id="loginForm" onsubmit="return handleLogin(event)">
+            <div class="input-group">
+                <label>Senha de Acesso</label>
+                <span class="icon">🔒</span>
+                <input type="password" id="pwInput" placeholder="Digite a senha" autocomplete="off" autofocus>
+                <button type="button" class="toggle-pw" id="togglePw" onclick="togglePassword()">👁</button>
+            </div>
+            <button type="submit" class="btn" id="btnLogin">ACESSAR PAINÉIS</button>
+            <div class="error" id="errorMsg">⚠ Senha incorreta. Tente novamente.</div>
+        </form>
+    </div>
+</div>
+
+<!-- SUCCESS OVERLAY -->
+<div class="success-overlay" id="successOverlay">
+    <div class="success-content">
+        <div class="success-check">✓</div>
+        <div class="success-text">Acesso Autorizado</div>
+        <div class="success-sub">Redirecionando para os painéis...</div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+    <p>Dr. Sidney Souza — Consultoria Estratégica Agrícola · Documento Confidencial</p>
+</div>
+
+<script>
+// PASSWORD HASH (SHA-256 de "Zafer2025")
+const HASH = '5e5b64e29b7de482f854f6a1df7a1c769c1679cfa1ec1b4e5e0cc0de32153e0a';
+
+async function sha256(message){
+    const msgBuffer = new TextEncoder().encode(message);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function handleLogin(e){
+    e.preventDefault();
+    const pw = document.getElementById('pwInput').value;
+    const hash = await sha256(pw);
+
+    if(hash === HASH){
+        // SUCCESS
+        document.getElementById('errorMsg').classList.remove('show');
+        document.getElementById('successOverlay').classList.add('show');
+        sessionStorage.setItem('zafer_auth','true');
+        setTimeout(()=>{window.location.href='hub.html';},1200);
+    } else {
+        // ERROR
+        document.getElementById('errorMsg').classList.add('show');
+        document.getElementById('loginCard').classList.add('shake');
+        document.getElementById('pwInput').value='';
+        document.getElementById('pwInput').focus();
+        setTimeout(()=>{document.getElementById('loginCard').classList.remove('shake');},500);
+    }
+    return false;
+}
+
+function togglePassword(){
+    const inp = document.getElementById('pwInput');
+    const btn = document.getElementById('togglePw');
+    if(inp.type==='password'){inp.type='text';btn.textContent='🔐';}
+    else{inp.type='password';btn.textContent='👁';}
+}
+
+// PARTICLES
+const pCont = document.getElementById('particles');
+for(let i=0;i<30;i++){
+    const p = document.createElement('div');
+    p.className='particle';
+    p.style.left=Math.random()*100+'%';
+    p.style.animationDuration=(8+Math.random()*12)+'s';
+    p.style.animationDelay=Math.random()*10+'s';
+    p.style.width=p.style.height=(1+Math.random()*2)+'px';
+    pCont.appendChild(p);
+}
+
+// CHECK IF ALREADY LOGGED
+if(sessionStorage.getItem('zafer_auth')==='true'){
+    window.location.href='hub.html';
+}
+</script>
+</body>
+</html>

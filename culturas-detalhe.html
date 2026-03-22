@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grupo ZAFER — Painel por Cultura | Safra 2024/2025</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <style>
+        :root {
+            --primary:#0B3D2E;--secondary:#D4A843;--success:#27AE60;--warning:#F39C12;
+            --danger:#E74C3C;--info:#2980B9;--orange:#E67E22;--purple:#8E44AD;--teal:#1ABC9C;
+            --dark:#1A1A2E;--dark-card:#16213E;--dark-surface:#0F3460;
+            --text-light:#ECF0F1;--text-muted:#95A5A6;--shadow:0 8px 32px rgba(0,0,0,0.3);
+        }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--dark);color:var(--text-light);line-height:1.7;}
+        .container{max-width:1400px;margin:0 auto;padding:0 24px;}
+
+        .nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(26,26,46,0.96);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.08);}
+        .nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1400px;margin:0 auto;padding:0 24px;height:60px;}
+        .nav-brand{font-weight:800;color:var(--secondary);font-size:1.1rem;}
+        .nav-links{display:flex;gap:8px;}
+        .nav-links a{color:var(--text-muted);text-decoration:none;font-size:0.76rem;font-weight:600;padding:8px 14px;border-radius:10px;transition:all 0.3s;}
+        .nav-links a:hover,.nav-links a.active{color:var(--secondary);background:rgba(212,168,67,0.1);}
+
+        .hero{padding:90px 0 50px;text-align:center;position:relative;overflow:hidden;}
+        .hero::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(39,174,96,0.1),rgba(212,168,67,0.05));z-index:0;}
+        .hero>*{position:relative;z-index:1;}
+        .hero-emoji{font-size:3.5rem;margin-bottom:12px;}
+        .hero h1{font-size:2.8rem;font-weight:900;margin-bottom:8px;background:linear-gradient(135deg,#27AE60,#D4A843);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+        .hero .sub{color:var(--text-muted);font-size:1.05rem;margin-bottom:36px;max-width:750px;margin-left:auto;margin-right:auto;}
+        .hero-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;max-width:1000px;margin:0 auto;}
+        .hc{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px 12px;text-align:center;}
+        .hc .v{font-size:1.6rem;font-weight:900;}
+        .hc .l{font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;}
+        .vr{color:var(--danger);}.vg{color:var(--success);}.vy{color:var(--secondary);}.vb{color:var(--info);}.vo{color:var(--orange);}.vp{color:var(--purple);}.vt{color:var(--teal);}
+
+        .section{padding:60px 0;}.section-alt{background:var(--dark-card);}
+        .sh{margin-bottom:40px;}
+        .sh .over{display:inline-block;font-size:0.78rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--secondary);margin-bottom:8px;}
+        .sh h2{font-size:2rem;font-weight:800;margin-bottom:10px;}
+        .sh p{color:var(--text-muted);max-width:720px;font-size:0.93rem;}
+
+        .card{background:var(--dark-card);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:28px;box-shadow:var(--shadow);margin-bottom:24px;transition:all 0.3s;}
+        .card:hover{border-color:rgba(212,168,67,0.15);}
+        .ct{font-size:1.05rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+        .ci{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.9rem;}
+
+        .g2{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+        .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+        .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+        .g5{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;}
+        .g6{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;}
+
+        .kpi{background:var(--dark-card);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:18px;position:relative;overflow:hidden;text-align:center;}
+        .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+        .kpi.kg::before{background:var(--success);}.kpi.kr::before{background:var(--danger);}
+        .kpi.kb::before{background:var(--info);}.kpi.ky::before{background:var(--secondary);}
+        .kpi.ko::before{background:var(--orange);}.kpi.kp::before{background:var(--purple);}.kpi.kt::before{background:var(--teal);}
+        .kl{font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+        .kv{font-size:1.35rem;font-weight:800;}
+        .kd{font-size:0.76rem;color:var(--text-muted);margin-top:4px;}
+        .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.64rem;font-weight:700;margin-top:5px;}
+        .bu{background:rgba(39,174,96,0.15);color:var(--success);}
+        .bd{background:rgba(231,76,60,0.15);color:var(--danger);}
+        .bw{background:rgba(243,156,18,0.15);color:var(--warning);}
+
+        .ch{position:relative;height:380px;}
+        .chs{position:relative;height:300px;}
+        .chl{position:relative;height:460px;}
+        .chx{position:relative;height:560px;}
+
+        .tw{overflow-x:auto;border-radius:14px;border:1px solid rgba(255,255,255,0.08);}
+        table{width:100%;border-collapse:collapse;}
+        thead th{background:var(--dark-surface);color:var(--secondary);font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:12px 13px;text-align:left;border-bottom:2px solid rgba(212,168,67,0.3);white-space:nowrap;}
+        tbody td{padding:11px 13px;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.85rem;}
+        tbody tr:hover{background:rgba(255,255,255,0.02);}
+        .tr{text-align:right;}.tc{text-align:center;}
+        .tag{display:inline-block;padding:3px 10px;border-radius:16px;font-size:0.68rem;font-weight:700;}
+        .tg{background:rgba(39,174,96,0.15);color:var(--success);}
+        .tre{background:rgba(231,76,60,0.15);color:var(--danger);}
+        .ty{background:rgba(243,156,18,0.15);color:var(--warning);}
+        .tb{background:rgba(41,128,185,0.15);color:var(--info);}
+        .to{background:rgba(230,126,34,0.15);color:var(--orange);}
+
+        .alert{border-radius:14px;padding:22px 26px;margin:20px 0;border-left:4px solid;display:flex;gap:14px;align-items:flex-start;}
+        .ar{background:rgba(231,76,60,0.06);border-color:var(--danger);}
+        .ag{background:rgba(39,174,96,0.06);border-color:var(--success);}
+        .ay{background:rgba(243,156,18,0.06);border-color:var(--warning);}
+        .ab{background:rgba(41,128,185,0.06);border-color:var(--info);}
+        .ai{font-size:1.3rem;flex-shrink:0;}.at{font-weight:700;margin-bottom:4px;}
+        .ax{color:var(--text-muted);font-size:0.85rem;line-height:1.65;}
+
+        .ins{background:linear-gradient(135deg,rgba(212,168,67,0.08),rgba(212,168,67,0.02));border:1px solid rgba(212,168,67,0.2);border-radius:16px;padding:28px;margin:24px 0;}
+        .ins h4{color:var(--secondary);margin-bottom:12px;font-size:1.02rem;}
+        .ins ul{list-style:none;}
+        .ins li{padding:6px 0;padding-left:24px;position:relative;color:rgba(255,255,255,0.82);font-size:0.86rem;}
+        .ins li::before{content:'→';position:absolute;left:0;color:var(--secondary);font-weight:700;}
+
+        /* CULTURE BANNER */
+        .cult-banner{border-radius:24px;padding:40px;position:relative;overflow:hidden;margin-bottom:32px;}
+        .cult-banner::before{content:'';position:absolute;inset:0;z-index:0;}
+        .cult-banner.soja{background:linear-gradient(135deg,rgba(39,174,96,0.12),rgba(26,188,156,0.06));border:2px solid rgba(39,174,96,0.2);}
+        .cult-banner.milho{background:linear-gradient(135deg,rgba(212,168,67,0.12),rgba(230,126,34,0.06));border:2px solid rgba(212,168,67,0.2);}
+        .cult-banner.canago{background:linear-gradient(135deg,rgba(230,126,34,0.12),rgba(243,156,18,0.06));border:2px solid rgba(230,126,34,0.2);}
+        .cult-banner.canasp{background:linear-gradient(135deg,rgba(231,76,60,0.12),rgba(231,76,60,0.04));border:2px solid rgba(231,76,60,0.25);}
+        .cult-banner>*{position:relative;z-index:1;}
+        .cult-banner .cb-row{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:20px;}
+        .cult-banner .cb-info{}
+        .cult-banner .cb-name{font-size:2rem;font-weight:900;}
+        .cult-banner .cb-sub{font-size:0.88rem;color:var(--text-muted);margin-top:4px;}
+        .cult-banner .cb-result{text-align:right;}
+        .cult-banner .cb-result .rv{font-size:2.5rem;font-weight:900;}
+        .cult-banner .cb-result .rl{font-size:0.78rem;color:var(--text-muted);}
+        .cult-kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:24px;}
+        .cult-kpi{text-align:center;background:rgba(255,255,255,0.04);border-radius:12px;padding:14px 8px;}
+        .cult-kpi .ckv{font-size:1.15rem;font-weight:800;}
+        .cult-kpi .ckl{font-size:0.64rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;}
+
+        .sep{height:4px;background:linear-gradient(90deg,transparent,rgba(212,168,67,0.4),transparent);margin:50px 0;}
+
+        .footer{background:var(--dark-card);border-top:1px solid rgba(255,255,255,0.08);padding:40px 0;text-align:center;}
+        .footer p{color:var(--text-muted);font-size:0.82rem;}
+        .footer .brand{color:var(--secondary);font-weight:700;}
+
+        @media(max-width:1024px){.hero-grid,.cult-kpis,.g6{grid-template-columns:repeat(3,1fr);}.g4,.g5{grid-template-columns:repeat(2,1fr);}}
+        @media(max-width:768px){.g2,.g3{grid-template-columns:1fr;}.hero h1{font-size:2rem;}.nav-links{display:none;}.cult-kpis{grid-template-columns:repeat(2,1fr);}.cult-banner .cb-row{flex-direction:column;}}
+
+        .fi{opacity:0;transform:translateY(28px);transition:all 0.7s ease;}
+        .fi.visible{opacity:1;transform:translateY(0);}
+        html{scroll-behavior:smooth;scroll-padding-top:70px;}
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+    <div class="nav-inner">
+        <div class="nav-brand">ZAFER — Culturas 24/25</div>
+        <div class="nav-links">
+            <a href="#visao" class="active">📊 Visão</a>
+            <a href="#soja">🌱 Soja</a>
+            <a href="#milho">🌽 Milho</a>
+            <a href="#canago">🍬 Cana GO</a>
+            <a href="#canasp">🚨 Cana SP</a>
+            <a href="#comparativo">📈 Comparativo</a>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="visao">
+    <div class="container">
+        <div class="hero-emoji">🌾</div>
+        <h1>Painel por Cultura</h1>
+        <p class="sub">Deep-dive individual em cada uma das 4 culturas — produtividade, custos, resultado, evolução e diagnóstico completo</p>
+        <div class="hero-grid">
+            <div class="hc" style="border-left:3px solid var(--success);">
+                <div class="v vg">🌱 Soja</div>
+                <div class="l">+R$ 3,65M | +16,4%</div>
+            </div>
+            <div class="hc" style="border-left:3px solid var(--secondary);">
+                <div class="v vy">🌽 Milho</div>
+                <div class="l">+R$ 1,41M | +15,0%</div>
+            </div>
+            <div class="hc" style="border-left:3px solid var(--orange);">
+                <div class="v vo">🍬 Cana GO</div>
+                <div class="l">-R$ 127K | -1,6%</div>
+            </div>
+            <div class="hc" style="border-left:3px solid var(--danger);">
+                <div class="v vr">🚨 Cana SP</div>
+                <div class="l">-R$ 2,31M | -27,8%</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- ======================= SOJA ==================================== -->
+<!-- ================================================================ -->
+<section class="section" id="soja">
+    <div class="container">
+        <!-- BANNER SOJA -->
+        <div class="cult-banner soja fi">
+            <div class="cb-row">
+                <div class="cb-info">
+                    <div class="cb-name" style="color:var(--success);">🌱 Soja — A Estrela do Grupo</div>
+                    <div class="cb-sub">2.788 ha | 3 Fazendas | 12 Cultivares | Principal cultura — 46,9% da receita</div>
+                </div>
+                <div class="cb-result">
+                    <div class="rv vg">+R$ 3,65M</div>
+                    <div class="rl">Resultado Líquido | Margem 16,4%</div>
+                </div>
+            </div>
+            <div class="cult-kpis">
+                <div class="cult-kpi"><div class="ckv vg">67,69</div><div class="ckl">Prod. Média (sc/ha)</div></div>
+                <div class="cult-kpi"><div class="ckv vy">R$ 118,04</div><div class="ckl">PMV (R$/sc)</div></div>
+                <div class="cult-kpi"><div class="ckv">R$ 7.990</div><div class="ckl">Receita/ha</div></div>
+                <div class="cult-kpi"><div class="ckv">R$ 6.682</div><div class="ckl">Custo/ha</div></div>
+                <div class="cult-kpi"><div class="ckv vg">+R$ 1.308</div><div class="ckl">Resultado/ha</div></div>
+                <div class="cult-kpi"><div class="ckv vg">56,5 sc</div><div class="ckl">Ponto Equil./ha</div></div>
+            </div>
+        </div>
+
+        <div class="sh fi">
+            <div class="over">Soja — Análise Completa</div>
+            <h2>A Cultura que Sustenta o Grupo ZAFER</h2>
+        </div>
+
+        <!-- SOJA: PRODUTIVIDADE POR FAZENDA -->
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(39,174,96,0.15);">📋</div>Soja — Performance por Fazenda</div>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fazenda</th>
+                            <th class="tc">Área (ha)</th>
+                            <th class="tc">Prod. (sc/ha)</th>
+                            <th class="tr">Receita Total</th>
+                            <th class="tr">Custo Total</th>
+                            <th class="tr">Resultado</th>
+                            <th class="tr">Resultado/ha</th>
+                            <th class="tc">Margem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background:rgba(39,174,96,0.05);">
+                            <td><strong>🏆 Monte Alegre</strong></td>
+                            <td class="tc">1.143</td>
+                            <td class="tc" style="color:var(--success);font-weight:700;">74,63</td>
+                            <td class="tr">R$ 10,06M</td>
+                            <td class="tr">R$ 7,63M</td>
+                            <td class="tr" style="color:var(--success);font-weight:700;">+R$ 2,43M</td>
+                            <td class="tr" style="color:var(--success);">+R$ 2.126</td>
+                            <td class="tc"><span class="tag tg">24,2%</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>🌾 Brejo</strong></td>
+                            <td class="tc">800</td>
+                            <td class="tc" style="color:var(--success);">66,21</td>
+                            <td class="tr">R$ 6,26M</td>
+                            <td class="tr">R$ 5,24M</td>
+                            <td class="tr" style="color:var(--success);">+R$ 1,02M</td>
+                            <td class="tr" style="color:var(--success);">+R$ 1.275</td>
+                            <td class="tc"><span class="tag tg">16,3%</span></td>
+                        </tr>
+                        <tr style="background:rgba(243,156,18,0.03);">
+                            <td><strong>🔍 UBV</strong></td>
+                            <td class="tc">845</td>
+                            <td class="tc" style="color:var(--warning);">57,82</td>
+                            <td class="tr">R$ 5,78M</td>
+                            <td class="tr">R$ 5,58M</td>
+                            <td class="tr" style="color:var(--warning);">+R$ 196K</td>
+                            <td class="tr" style="color:var(--warning);">+R$ 232</td>
+                            <td class="tc"><span class="tag ty">3,4%</span></td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr style="background:var(--dark-surface);font-weight:700;">
+                            <td><strong>TOTAL SOJA</strong></td>
+                            <td class="tc">2.788</td>
+                            <td class="tc">67,69</td>
+                            <td class="tr">R$ 22,28M</td>
+                            <td class="tr">R$ 18,63M</td>
+                            <td class="tr" style="color:var(--success);">+R$ 3,65M</td>
+                            <td class="tr">+R$ 1.308</td>
+                            <td class="tc"><span class="tag tg">16,4%</span></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(39,174,96,0.15);">📈</div>Soja — Produtividade Histórica (sc/ha)</div>
+                <div class="ch"><canvas id="chSojaProdHist"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(39,174,96,0.15);">💰</div>Soja — Resultado Histórico (R$ milhões)</div>
+                <div class="ch"><canvas id="chSojaResHist"></canvas></div>
+            </div>
+        </div>
+
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(39,174,96,0.15);">📊</div>Soja — Composição de Custos/ha</div>
+                <div class="ch"><canvas id="chSojaCusto"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(39,174,96,0.15);">📊</div>Soja — Preço Médio vs. Custo/sc Histórico</div>
+                <div class="ch"><canvas id="chSojaPrecoCusto"></canvas></div>
+            </div>
+        </div>
+
+        <div class="alert ag fi">
+            <div class="ai">🌱</div>
+            <div>
+                <div class="at">Soja: 44,2% da área gera R$ 3,65M — a âncora do grupo</div>
+                <div class="ax">Sem a soja, o grupo teria prejuízo de -R$ 1,03M. A produtividade de 67,69 sc/ha está na média regional de Rio Verde, mas o potencial com otimização de variedades (eliminar DM 82I78) é de <strong>73,8 sc/ha (+9%)</strong>, levando o resultado para <strong>R$ 5,52M (+51%)</strong>.</div>
+            </div>
+        </div>
+
+        <div class="ins fi">
+            <h4>🌱 Diagnóstico Soja — 5 Pontos-Chave</h4>
+            <ul>
+                <li><strong>Monte Alegre domina:</strong> 41% da área de soja gera 67% do resultado</li>
+                <li><strong>UBV preocupa:</strong> Margem de 3,4% — qualquer queda de preço gera prejuízo</li>
+                <li><strong>Variedades Elite:</strong> NEO 790, OLIMPO e 78IX80 entregam >74 sc/ha — expandir para 65% da área</li>
+                <li><strong>DM 82I78:</strong> 481 ha gerando prejuízo de R$ 1,87M — eliminação imediata na 25/26</li>
+                <li><strong>Ponto de equilíbrio:</strong> 56,5 sc/ha → 84% das safras ficaram acima nos últimos 10 anos</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<div class="sep"></div>
+
+<!-- ================================================================ -->
+<!-- ======================= MILHO ================================== -->
+<!-- ================================================================ -->
+<section class="section section-alt" id="milho">
+    <div class="container">
+        <div class="cult-banner milho fi">
+            <div class="cb-row">
+                <div class="cb-info">
+                    <div class="cb-name" style="color:var(--secondary);">🌽 Milho Safrinha — O Complemento Lucrativo</div>
+                    <div class="cb-sub">1.377 ha | 2 Fazendas (Monte Alegre + Brejo) | Plantio fev-mar sobre soja precoce</div>
+                </div>
+                <div class="cb-result">
+                    <div class="rv vy">+R$ 1,41M</div>
+                    <div class="rl">Resultado Líquido | Margem 15,0%</div>
+                </div>
+            </div>
+            <div class="cult-kpis">
+                <div class="cult-kpi"><div class="ckv vy">128,45</div><div class="ckl">Prod. Média (sc/ha)</div></div>
+                <div class="cult-kpi"><div class="ckv vy">R$ 53,18</div><div class="ckl">PMV (R$/sc)</div></div>
+                <div class="cult-kpi"><div class="ckv">R$ 6.833</div><div class="ckl">Receita/ha</div></div>
+                <div class="cult-kpi"><div class="ckv">R$ 5.810</div><div class="ckl">Custo/ha</div></div>
+                <div class="cult-kpi"><div class="ckv vg">+R$ 1.023</div><div class="ckl">Resultado/ha</div></div>
+                <div class="cult-kpi"><div class="ckv">109,3 sc</div><div class="ckl">Ponto Equil./ha</div></div>
+            </div>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(212,168,67,0.15);">📋</div>Milho — Performance por Fazenda</div>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fazenda</th>
+                            <th class="tc">Área (ha)</th>
+                            <th class="tc">Prod. (sc/ha)</th>
+                            <th class="tr">Receita Total</th>
+                            <th class="tr">Custo Total</th>
+                            <th class="tr">Resultado</th>
+                            <th class="tr">Resultado/ha</th>
+                            <th class="tc">Margem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background:rgba(39,174,96,0.04);">
+                            <td><strong>🏆 Monte Alegre</strong></td>
+                            <td class="tc">873</td>
+                            <td class="tc" style="color:var(--success);font-weight:700;">142,35</td>
+                            <td class="tr">R$ 6,61M</td>
+                            <td class="tr">R$ 5,56M</td>
+                            <td class="tr" style="color:var(--success);font-weight:700;">+R$ 1,05M</td>
+                            <td class="tr" style="color:var(--success);">+R$ 1.203</td>
+                            <td class="tc"><span class="tag tg">15,9%</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>🌾 Brejo</strong></td>
+                            <td class="tc">504</td>
+                            <td class="tc">104,40</td>
+                            <td class="tr">R$ 2,80M</td>
+                            <td class="tr">R$ 2,44M</td>
+                            <td class="tr" style="color:var(--success);">+R$ 360K</td>
+                            <td class="tr" style="color:var(--success);">+R$ 714</td>
+                            <td class="tc"><span class="tag tg">12,9%</span></td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr style="background:var(--dark-surface);font-weight:700;">
+                            <td><strong>TOTAL MILHO</strong></td>
+                            <td class="tc">1.377</td>
+                            <td class="tc">128,45</td>
+                            <td class="tr">R$ 9,41M</td>
+                            <td class="tr">R$ 8,00M</td>
+                            <td class="tr" style="color:var(--success);">+R$ 1,41M</td>
+                            <td class="tr">+R$ 1.023</td>
+                            <td class="tc"><span class="tag tg">15,0%</span></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(212,168,67,0.15);">📈</div>Milho — Produtividade Histórica (sc/ha)</div>
+                <div class="ch"><canvas id="chMilhoProdHist"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(212,168,67,0.15);">💰</div>Milho — Resultado Histórico (R$ milhões)</div>
+                <div class="ch"><canvas id="chMilhoResHist"></canvas></div>
+            </div>
+        </div>
+
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(212,168,67,0.15);">📊</div>Milho — Janela de Plantio e Risco Climático</div>
+                <div class="ch"><canvas id="chMilhoJanela"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(212,168,67,0.15);">📊</div>Milho — Custo vs. Receita por Hectare</div>
+                <div class="ch"><canvas id="chMilhoCustoRec"></canvas></div>
+            </div>
+        </div>
+
+        <div class="alert ab fi">
+            <div class="ai">🌽</div>
+            <div>
+                <div class="at">Monte Alegre entrega 142,35 sc/ha — 36% acima do Brejo</div>
+                <div class="ax">O gap de produtividade no milho é maior que na soja. Monte Alegre com plantio até 20/02 tem produtividade média de 140+ sc/ha. Brejo com plantio após 05/03 cai para 104 sc/ha. A janela de plantio é o fator decisivo — cada dia de atraso após 25/02 custa ~2 sc/ha.</div>
+            </div>
+        </div>
+
+        <div class="ins fi">
+            <h4>🌽 Diagnóstico Milho — 4 Pontos-Chave</h4>
+            <ul>
+                <li><strong>Monte Alegre é a referência:</strong> 142,35 sc/ha — entre os melhores do cerrado goiano</li>
+                <li><strong>Janela de plantio crítica:</strong> Após 05/03, produtividade cai 20-30% — planejar soja precoce</li>
+                <li><strong>Receita/ha mais baixa que soja:</strong> R$ 6.833 vs R$ 7.990 — mas custo também menor</li>
+                <li><strong>Complemento ideal:</strong> O milho safrinha contribui com R$ 1,41M sem custo de terra adicional</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<div class="sep"></div>
+
+<!-- ================================================================ -->
+<!-- ======================= CANA GO ================================ -->
+<!-- ================================================================ -->
+<section class="section" id="canago">
+    <div class="container">
+        <div class="cult-banner canago fi">
+            <div class="cb-row">
+                <div class="cb-info">
+                    <div class="cb-name" style="color:var(--orange);">🍬 Cana GO — No Limiar do Break-Even</div>
+                    <div class="cb-sub">586 ha | Fazendas Boa Vista + Campo | Goiás | Contrato com usina</div>
+                </div>
+                <div class="cb-result">
+                    <div class="rv vr">-R$ 127K</div>
+                    <div class="rl">Resultado Líquido | Margem -1,6%</div>
+                </div>
+            </div>
+            <div class="cult-kpis">
+                <div class="cult-kpi"><div class="ckv vo">80,38</div><div class="ckl">Prod. (tn/ha)</div></div>
+                <div class="cult-kpi"><div class="ckv vy">R$ 162,92</div><div class="ckl">PMV (R$/tn)</div></div>
+                <div class="cult-kpi"><div class="ckv">R$ 13.094</div><div class="ckl">Receita/ha</div></div>
+                <div class="cult-kpi"><div class="ckv vr">R$ 13.311</div><div class="ckl">Custo/ha</div></div>
+                <div class="cult-kpi"><div class="ckv vr">-R$ 217</div><div class="ckl">Resultado/ha</div></div>
+                <div class="cult-kpi"><div class="ckv">81,7 tn</div><div class="ckl">Ponto Equil./ha</div></div>
+            </div>
+        </div>
+
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(230,126,34,0.15);">📈</div>Cana GO — Produtividade e Preço Histórico</div>
+                <div class="ch"><canvas id="chCanaGOProdHist"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(230,126,34,0.15);">💰</div>Cana GO — Resultado Histórico (R$ milhões)</div>
+                <div class="ch"><canvas id="chCanaGOResHist"></canvas></div>
+            </div>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(230,126,34,0.15);">📊</div>Cana GO — Decomposição de Custos/ha</div>
+            <div class="chs"><canvas id="chCanaGOCusto"></canvas></div>
+        </div>
+
+        <div class="alert ay fi">
+            <div class="ai">🍬</div>
+            <div>
+                <div class="at">Cana GO oscila entre lucro e prejuízo — resultado depende do ATR e preço do açúcar</div>
+                <div class="ax">Nos últimos 8 safras: 5 positivas, 3 negativas. Margem média de +3,2% — insuficiente para cobrir risco. <strong>Para lucrar em 25/26:</strong> produtividade precisa subir para 85+ tn/ha ou preço ATR precisa subir 5%. <strong>Manter com cautela</strong> — não investir em expansão.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="sep"></div>
+
+<!-- ================================================================ -->
+<!-- ======================= CANA SP ================================ -->
+<!-- ================================================================ -->
+<section class="section section-alt" id="canasp">
+    <div class="container">
+        <div class="cult-banner canasp fi">
+            <div class="cb-row">
+                <div class="cb-info">
+                    <div class="cb-name" style="color:var(--danger);">🚨 Cana SP — A Operação Mais Destrutiva</div>
+                    <div class="cb-sub">1.555 ha | Arrendamento | Interior de SP | Operação à distância</div>
+                </div>
+                <div class="cb-result">
+                    <div class="rv vr" style="font-size:2.8rem;">-R$ 2,31M</div>
+                    <div class="rl" style="color:var(--danger);">Resultado Líquido | Margem -27,8%</div>
+                </div>
+            </div>
+            <div class="cult-kpis">
+                <div class="cult-kpi"><div class="ckv vr">61,25</div><div class="ckl">Prod. (tn/ha)</div></div>
+                <div class="cult-kpi"><div class="ckv vr">R$ 87,38</div><div class="ckl">PMV (R$/tn)</div></div>
+                <div class="cult-kpi"><div class="ckv vr">R$ 5.352</div><div class="ckl">Receita/ha</div></div>
+                <div class="cult-kpi"><div class="ckv vr">R$ 6.838</div><div class="ckl">Custo/ha</div></div>
+                <div class="cult-kpi"><div class="ckv vr">-R$ 1.486</div><div class="ckl">Resultado/ha</div></div>
+                <div class="cult-kpi"><div class="ckv vr">78,3 tn</div><div class="ckl">PE inviável</div></div>
+            </div>
+        </div>
+
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(231,76,60,0.15);">📊</div>Cana SP vs. Cana GO — Todos os Indicadores</div>
+                <div class="ch"><canvas id="chCanaSPvsGO"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(231,76,60,0.15);">💸</div>Cana SP — Prejuízo Acumulado (3 Safras)</div>
+                <div class="ch"><canvas id="chCanaSPacum"></canvas></div>
+            </div>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(231,76,60,0.15);">📋</div>Cana SP — Por Que é Inviável: 8 Evidências</div>
+            <div class="tw">
+                <table>
+                    <thead><tr><th>#</th><th>Evidência</th><th class="tc">Cana SP</th><th class="tc">Cana GO</th><th class="tc">Gap</th><th class="tc">Impacto</th></tr></thead>
+                    <tbody>
+                        <tr><td>1</td><td>Produtividade (tn/ha)</td><td class="tc vr">61,25</td><td class="tc">80,38</td><td class="tc vr">-23,8%</td><td class="tc"><span class="tag tre">Crítico</span></td></tr>
+                        <tr><td>2</td><td>Preço médio (R$/tn)</td><td class="tc vr">R$ 87,38</td><td class="tc">R$ 162,92</td><td class="tc vr">-46,4%</td><td class="tc"><span class="tag tre">Crítico</span></td></tr>
+                        <tr><td>3</td><td>Receita/ha</td><td class="tc vr">R$ 5.352</td><td class="tc">R$ 13.094</td><td class="tc vr">-59,1%</td><td class="tc"><span class="tag tre">Crítico</span></td></tr>
+                        <tr><td>4</td><td>Custo/ha</td><td class="tc">R$ 6.838</td><td class="tc">R$ 13.311</td><td class="tc vg">-48,6%</td><td class="tc"><span class="tag tg">Menor</span></td></tr>
+                        <tr><td>5</td><td>Resultado/ha</td><td class="tc vr">-R$ 1.486</td><td class="tc">-R$ 217</td><td class="tc vr">6,8x pior</td><td class="tc"><span class="tag tre">Crítico</span></td></tr>
+                        <tr><td>6</td><td>Distância da gestão</td><td class="tc vr">~800 km</td><td class="tc vg">Local</td><td class="tc vr">Logística</td><td class="tc"><span class="tag tre">Alto</span></td></tr>
+                        <tr><td>7</td><td>Modelo operacional</td><td class="tc vr">Arrendamento</td><td class="tc vg">Própria</td><td class="tc vr">Custo fixo</td><td class="tc"><span class="tag ty">Médio</span></td></tr>
+                        <tr><td>8</td><td>Prejuízo acumulado (3 safras)</td><td class="tc vr" style="font-weight:800;">-R$ 5,82M</td><td class="tc">-R$ 0,55M</td><td class="tc vr">10,6x</td><td class="tc"><span class="tag tre">Crítico</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="alert ar fi">
+            <div class="ai">🚨</div>
+            <div>
+                <div class="at">VEREDICTO: Encerramento imediato da Cana SP — sem cenário de viabilidade</div>
+                <div class="ax">
+                    Mesmo com melhoria de 30% na produtividade e 20% no preço, o resultado ainda seria negativo.<br>
+                    <strong>Prejuízo acumulado de R$ 5,82M em 3 safras</strong> — equivalente a 2,2 anos de lucro inteiro do grupo.<br>
+                    <strong>Impacto do encerramento:</strong> Resultado do grupo sobe de R$ 2,62M → R$ 4,93M (+88%) instantaneamente.
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="sep"></div>
+
+<!-- ================================================================ -->
+<!-- ======================= COMPARATIVO ============================ -->
+<!-- ================================================================ -->
+<section class="section" id="comparativo">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">Comparativo Consolidado</div>
+            <h2>As 4 Culturas Lado a Lado — O Retrato Final</h2>
+            <p>Todos os indicadores em uma visão unificada para embasar decisões de alocação de área e capital</p>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(212,168,67,0.15);">📊</div>Contribuição de Cada Cultura ao Resultado do Grupo</div>
+            <div class="chl"><canvas id="chContribFinal"></canvas></div>
+        </div>
+
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(39,174,96,0.15);">📊</div>Eficiência: Retorno por Real Investido (R$/R$)</div>
+                <div class="ch"><canvas id="chEficCult"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(212,168,67,0.15);">📊</div>Radar de Performance — 4 Culturas</div>
+                <div class="ch"><canvas id="chRadarCult"></canvas></div>
+            </div>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(212,168,67,0.15);">📊</div>Simulação: Resultado do Grupo COM vs. SEM Cana SP</div>
+            <div class="ch"><canvas id="chComSem"></canvas></div>
+        </div>
+
+        <!-- CONCLUSÃO -->
+        <div style="background:linear-gradient(135deg,rgba(11,61,46,0.2),rgba(212,168,67,0.05));border:2px solid rgba(212,168,67,0.2);border-radius:24px;padding:50px 40px;text-align:center;margin-top:40px;" class="fi">
+            <div style="font-size:0.8rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--secondary);margin-bottom:12px;">Conclusão — Culturas</div>
+            <h2 style="font-size:1.8rem;margin-bottom:24px;">Soja + Milho = Motor de Valor | Cana SP = Destruição</h2>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;max-width:900px;margin:0 auto;">
+                <div style="padding:20px;background:rgba(39,174,96,0.08);border-radius:16px;border:1px solid rgba(39,174,96,0.2);">
+                    <div style="font-size:2rem;font-weight:900;color:var(--success);">🌱 Soja</div>
+                    <div style="font-size:1.4rem;font-weight:800;color:var(--success);">+R$ 3,65M</div>
+                    <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">EXPANDIR</div>
+                </div>
+                <div style="padding:20px;background:rgba(212,168,67,0.08);border-radius:16px;border:1px solid rgba(212,168,67,0.2);">
+                    <div style="font-size:2rem;font-weight:900;color:var(--secondary);">🌽 Milho</div>
+                    <div style="font-size:1.4rem;font-weight:800;color:var(--secondary);">+R$ 1,41M</div>
+                    <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">MANTER</div>
+                </div>
+                <div style="padding:20px;background:rgba(230,126,34,0.08);border-radius:16px;border:1px solid rgba(230,126,34,0.2);">
+                    <div style="font-size:2rem;font-weight:900;color:var(--orange);">🍬 Cana GO</div>
+                    <div style="font-size:1.4rem;font-weight:800;color:var(--orange);">-R$ 127K</div>
+                    <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">MONITORAR</div>
+                </div>
+                <div style="padding:20px;background:rgba(231,76,60,0.08);border-radius:16px;border:1px solid rgba(231,76,60,0.2);">
+                    <div style="font-size:2rem;font-weight:900;color:var(--danger);">🚨 Cana SP</div>
+                    <div style="font-size:1.4rem;font-weight:800;color:var(--danger);">-R$ 2,31M</div>
+                    <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">ELIMINAR</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="container">
+        <p class="brand">Dr. Sidney Souza</p>
+        <p>Painel por Cultura — Grupo ZAFER — Safra 2024/2025</p>
+        <p>Rio Verde, GO — Março/2026</p>
+    </div>
+</footer>
+
+<!-- ===================================================== -->
+<!-- SCRIPTS -->
+<!-- ===================================================== -->
+<script>
+Chart.register(ChartDataLabels);
+const C={g:'#27AE60',gl:'rgba(39,174,96,0.25)',r:'#E74C3C',rl:'rgba(231,76,60,0.25)',y:'#D4A843',yl:'rgba(212,168,67,0.25)',b:'#2980B9',bl:'rgba(41,128,185,0.25)',o:'#E67E22',ol:'rgba(230,126,34,0.25)',p:'#8E44AD',t:'#1ABC9C',w:'#ECF0F1',m:'#95A5A6',d:'#1A1A2E'};
+const D={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:C.w,font:{size:11}}},datalabels:{display:false}},scales:{x:{ticks:{color:C.m,font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'}},y:{ticks:{color:C.m},grid:{color:'rgba(255,255,255,0.04)'}}}};
+const safras=['18/19','19/20','20/21','21/22','22/23','23/24','24/25'];
+
+// ===== SOJA PROD HIST =====
+new Chart(document.getElementById('chSojaProdHist'),{
+    type:'line',data:{labels:safras,datasets:[
+        {label:'Monte Alegre',data:[57.5,61.8,72.0,75.2,63.8,58.5,74.63],borderColor:C.g,pointRadius:6,tension:0.3,borderWidth:3},
+        {label:'Brejo',data:[60.2,58.5,65.3,68.0,59.2,63.1,66.21],borderColor:C.t,pointRadius:6,tension:0.3,borderWidth:2},
+        {label:'UBV',data:[32.0,29.5,38.0,42.0,35.0,48.0,57.82],borderColor:C.o,pointRadius:6,tension:0.3,borderWidth:2,borderDash:[5,5]},
+        {label:'Média Grupo',data:[57.3,56.4,63.5,68.9,61.2,62.0,67.69],borderColor:C.y,pointRadius:0,borderWidth:2,borderDash:[3,3],tension:0.3}
+    ]},options:{...D,plugins:{...D.plugins,datalabels:{display:ctx=>ctx.datasetIndex===0&&ctx.dataIndex===6,color:C.w,font:{weight:'bold',size:12},align:'top',formatter:v=>v+' sc'}},scales:{x:D.scales.x,y:{...D.scales.y,min:25,max:85,ticks:{callback:v=>v+' sc'}}}}
+});
+
+// ===== SOJA RESULTADO HIST =====
+new Chart(document.getElementById('chSojaResHist'),{
+    type:'bar',data:{labels:safras,datasets:[{data:[1.80,1.45,4.30,14.50,0.90,-1.10,3.65],backgroundColor:safras.map((_,i)=>[1.80,1.45,4.30,14.50,0.90,-1.10,3.65][i]>=0?C.gl:C.rl),borderColor:safras.map((_,i)=>[1.80,1.45,4.30,14.50,0.90,-1.10,3.65][i]>=0?C.g:C.r),borderWidth:2,borderRadius:6}]},
+    options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:true,anchor:ctx=>ctx.dataset.data[ctx.dataIndex]>=0?'end':'start',align:ctx=>ctx.dataset.data[ctx.dataIndex]>=0?'top':'bottom',color:C.w,font:{weight:'bold',size:11},formatter:v=>(v>=0?'+':'')+v.toFixed(1)+'M'}},scales:{x:D.scales.x,y:{...D.scales.y,ticks:{callback:v=>'R$ '+v+'M'}}}}
+});
+
+// ===== SOJA CUSTO COMPOSIÇÃO =====
+new Chart(document.getElementById('chSojaCusto'),{
+    type:'doughnut',data:{labels:['Defensivos (28%)','Fertilizantes (22%)','Sementes (10%)','Operações (18%)','Arrendamento (12%)','ADM+Financ. (10%)'],
+        datasets:[{data:[1870,1470,668,1202,802,670],backgroundColor:[C.r,C.o,'#F39C12',C.b,C.p,C.m],borderColor:C.d,borderWidth:3}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{legend:{position:'right',labels:{color:C.w,font:{size:10}}},datalabels:{display:true,color:C.w,font:{weight:'bold',size:10},formatter:v=>'R$ '+v}}}
+});
+
+// ===== SOJA PREÇO vs CUSTO/SC =====
+new Chart(document.getElementById('chSojaPrecoCusto'),{
+    type:'line',data:{labels:safras,datasets:[
+        {label:'Preço Médio Venda (R$/sc)',data:[72.50,78.20,95.80,168.50,142.30,105.40,118.04],borderColor:C.g,backgroundColor:'rgba(39,174,96,0.08)',fill:true,pointRadius:6,tension:0.4,borderWidth:3},
+        {label:'Custo/sc Produzida',data:[68.50,73.10,82.30,92.40,104.50,105.80,98.72],borderColor:C.r,pointRadius:6,tension:0.4,borderWidth:2,borderDash:[5,5]}
+    ]},options:{...D,plugins:{...D.plugins,datalabels:{display:ctx=>ctx.dataIndex===6,color:C.w,font:{weight:'bold',size:11},align:'top',formatter:v=>'R$ '+v.toFixed(0)}},scales:{x:D.scales.x,y:{...D.scales.y,ticks:{callback:v=>'R$ '+v}}}}
+});
+
+// ===== MILHO PROD HIST =====
+new Chart(document.getElementById('chMilhoProdHist'),{
+    type:'line',data:{labels:safras,datasets:[
+        {label:'Monte Alegre',data:[82.0,105.0,115.0,145.0,110.0,125.0,142.35],borderColor:C.y,pointRadius:7,tension:0.3,borderWidth:3,pointBackgroundColor:C.y},
+        {label:'Brejo',data:[68.0,80.0,88.0,120.0,85.0,98.0,104.40],borderColor:C.t,pointRadius:6,tension:0.3,borderWidth:2},
+        {label:'Média Grupo',data:[76.0,95.0,104.0,135.0,100.0,114.0,128.45],borderColor:C.w,borderDash:[3,3],pointRadius:0,tension:0.3,borderWidth:1}
+    ]},options:{...D,plugins:{...D.plugins,datalabels:{display:ctx=>ctx.datasetIndex===0&&ctx.dataIndex===6,color:C.w,font:{weight:'bold',size:12},align:'top',formatter:v=>v+' sc'}},scales:{x:D.scales.x,y:{...D.scales.y,min:50,max:160,ticks:{callback:v=>v+' sc'}}}}
+});
+
+// ===== MILHO RESULTADO HIST =====
+new Chart(document.getElementById('chMilhoResHist'),{
+    type:'bar',data:{labels:safras,datasets:[{data:[0.45,0.80,1.20,5.10,0.30,-0.50,1.41],backgroundColor:safras.map((_,i)=>[0.45,0.80,1.20,5.10,0.30,-0.50,1.41][i]>=0?C.yl:C.rl),borderColor:safras.map((_,i)=>[0.45,0.80,1.20,5.10,0.30,-0.50,1.41][i]>=0?C.y:C.r),borderWidth:2,borderRadius:6}]},
+    options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:true,anchor:ctx=>ctx.dataset.data[ctx.dataIndex]>=0?'end':'start',align:ctx=>ctx.dataset.data[ctx.dataIndex]>=0?'top':'bottom',color:C.w,font:{weight:'bold',size:11},formatter:v=>(v>=0?'+':'')+v.toFixed(2)+'M'}},scales:{x:D.scales.x,y:{...D.scales.y,ticks:{callback:v=>'R$ '+v+'M'}}}}
+});
+
+// ===== MILHO JANELA =====
+new Chart(document.getElementById('chMilhoJanela'),{
+    type:'bar',data:{labels:['Até 15/02','16-25/02','26/02-05/03','06-15/03','Após 15/03'],datasets:[
+        {label:'Prod. Média (sc/ha)',data:[148,140,120,98,72],backgroundColor:[C.g,C.g,C.y,C.o,C.r],borderRadius:6}
+    ]},options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:true,anchor:'end',align:'top',color:C.w,font:{weight:'bold',size:13},formatter:v=>v+' sc'}},scales:{x:D.scales.x,y:{...D.scales.y,min:50,max:165,ticks:{callback:v=>v+' sc/ha'}}}}
+});
+
+// ===== MILHO CUSTO vs RECEITA =====
+new Chart(document.getElementById('chMilhoCustoRec'),{
+    type:'bar',data:{labels:['Monte Alegre','Brejo'],datasets:[
+        {label:'Receita/ha',data:[7568,5552],backgroundColor:C.gl,borderColor:C.g,borderWidth:2,borderRadius:4},
+        {label:'Custo/ha',data:[6365,4838],backgroundColor:C.yl,borderColor:C.y,borderWidth:2,borderRadius:4}
+    ]},options:{...D,plugins:{...D.plugins,datalabels:{display:true,anchor:'end',align:'top',color:C.w,font:{weight:'bold',size:10},formatter:v=>'R$ '+v.toLocaleString('pt-BR')}},scales:{x:D.scales.x,y:{...D.scales.y,ticks:{callback:v=>'R$ '+v.toLocaleString('pt-BR')}}}}
+});
+
+// ===== CANA GO PROD+PREÇO =====
+new Chart(document.getElementById('chCanaGOProdHist'),{
+    type:'bar',data:{labels:safras,datasets:[
+        {label:'Produtividade (tn/ha)',data:[78.5,82.1,85.3,92.0,72.4,76.8,80.38],backgroundColor:C.ol,borderColor:C.o,borderWidth:2,borderRadius:4,yAxisID:'y'},
+        {label:'Preço (R$/tn)',data:[105,112,118,148,165,155,162.92],type:'line',borderColor:C.y,pointRadius:6,borderWidth:2,tension:0.3,yAxisID:'y1'}
+    ]},options:{...D,scales:{
+        x:D.scales.x,
+        y:{position:'left',ticks:{color:C.o,callback:v=>v+' tn'},grid:{color:'rgba(255,255,255,0.04)'}},
+        y1:{position:'right',ticks:{color:C.y,callback:v=>'R$'+v},grid:{drawOnChartArea:false}}
+    }}
+});
+
+// ===== CANA GO RESULTADO HIST =====
+new Chart(document.getElementById('chCanaGOResHist'),{
+    type:'bar',data:{labels:safras,datasets:[{data:[0.90,0.16,1.14,1.50,-0.52,0.10,-0.13],backgroundColor:safras.map((_,i)=>[0.90,0.16,1.14,1.50,-0.52,0.10,-0.13][i]>=0?C.ol:C.rl),borderColor:safras.map((_,i)=>[0.90,0.16,1.14,1.50,-0.52,0.10,-0.13][i]>=0?C.o:C.r),borderWidth:2,borderRadius:6}]},
+    options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:true,anchor:ctx=>ctx.dataset.data[ctx.dataIndex]>=0?'end':'start',align:ctx=>ctx.dataset.data[ctx.dataIndex]>=0?'top':'bottom',color:C.w,font:{weight:'bold',size:11},formatter:v=>(v>=0?'+':'')+v.toFixed(2)+'M'}},scales:{x:D.scales.x,y:{...D.scales.y,ticks:{callback:v=>'R$ '+v+'M'}}}}
+});
+
+// ===== CANA GO CUSTO BREAKDOWN =====
+new Chart(document.getElementById('chCanaGOCusto'),{
+    type:'bar',data:{labels:['Cana GO (R$/ha)'],datasets:[
+        {label:'Operações',data:[3500],backgroundColor:C.o,borderRadius:3},
+        {label:'Arrendamento/Terra',data:[3800],backgroundColor:'#F39C12',borderRadius:3},
+        {label:'Insumos',data:[3200],backgroundColor:C.r,borderRadius:3},
+        {label:'ADM + Financeiro',data:[2211],backgroundColor:C.b,borderRadius:3},
+        {label:'Outros',data:[600],backgroundColor:C.m,borderRadius:3}
+    ]},options:{...D,indexAxis:'y',scales:{x:{...D.scales.x,stacked:true,ticks:{callback:v=>'R$ '+v.toLocaleString('pt-BR')}},y:{...D.scales.y,stacked:true}}}
+});
+
+// ===== CANA SP vs GO =====
+new Chart(document.getElementById('chCanaSPvsGO'),{
+    type:'bar',data:{labels:['Prod. (tn/ha)','Preço (R$/tn)','Receita/ha (÷100)','Custo/ha (÷100)','Resultado/ha (÷10)'],datasets:[
+        {label:'Cana SP',data:[61.25,87.38,53.52,68.38,-148.6],backgroundColor:C.rl,borderColor:C.r,borderWidth:2,borderRadius:4},
+        {label:'Cana GO',data:[80.38,162.92,130.94,133.11,-21.7],backgroundColor:C.ol,borderColor:C.o,borderWidth:2,borderRadius:4}
+    ]},options:D
+});
+
+// ===== CANA SP ACUMULADO =====
+new Chart(document.getElementById('chCanaSPacum'),{
+    type:'bar',data:{labels:['22/23','23/24','24/25','ACUMULADO'],datasets:[{data:[-1.85,-1.66,-2.31,-5.82],backgroundColor:[C.r,C.r,C.r,'#8B0000'],borderRadius:6}]},
+    options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:true,anchor:'start',align:'bottom',color:C.w,font:{weight:'bold',size:14},formatter:v=>'R$ '+v.toFixed(2)+'M'}},scales:{x:D.scales.x,y:{...D.scales.y,max:0,ticks:{callback:v=>'R$ '+v+'M'}}}}
+});
+
+// ===== CONTRIBUIÇÃO FINAL =====
+new Chart(document.getElementById('chContribFinal'),{
+    type:'bar',data:{labels:['Soja\n+R$ 3,65M','Milho\n+R$ 1,41M','Cana GO\n-R$ 0,13M','Cana SP\n-R$ 2,31M','TOTAL\nGrupo'],
+        datasets:[
+            {label:'Base',data:[0,3.65,5.06,4.93,0],backgroundColor:'transparent'},
+            {label:'Contribuição',data:[3.65,1.41,-0.13,-2.31,2.62],backgroundColor:[C.g,C.y,C.o,C.r,C.y],borderRadius:8}
+        ]},
+    options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:ctx=>ctx.datasetIndex===1,anchor:ctx=>ctx.dataset.data[ctx.dataIndex]>=0?'end':'start',align:ctx=>ctx.dataset.data[ctx.dataIndex]>=0?'top':'bottom',color:C.w,font:{weight:'bold',size:13},formatter:v=>(v>=0?'+':'')+v.toFixed(2)+'M'}},scales:{x:{...D.scales.x,stacked:true},y:{...D.scales.y,stacked:true,ticks:{callback:v=>'R$ '+v+'M'}}}}
+});
+
+// ===== EFICIÊNCIA POR CULTURA =====
+new Chart(document.getElementById('chEficCult'),{
+    type:'bar',data:{labels:['Soja','Milho Saf.','Cana GO','Cana SP'],datasets:[{data:[1.20,1.18,0.98,0.78],backgroundColor:[C.g,C.y,C.o,C.r],borderRadius:8}]},
+    options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:true,anchor:'end',align:'top',color:C.w,font:{weight:'bold',size:14},formatter:v=>'R$ '+v.toFixed(2)+'/R$'}},scales:{x:D.scales.x,y:{...D.scales.y,min:0.5,max:1.5,ticks:{callback:v=>'R$ '+v.toFixed(2)}}}}
+});
+
+// ===== RADAR 4 CULTURAS =====
+new Chart(document.getElementById('chRadarCult'),{
+    type:'radar',data:{labels:['Produtividade','Receita/ha','Custo Eficiente','Resultado/ha','Margem','Estabilidade'],datasets:[
+        {label:'Soja',data:[80,75,82,78,80,85],borderColor:C.g,backgroundColor:'rgba(39,174,96,0.08)',pointRadius:4,borderWidth:2},
+        {label:'Milho',data:[85,60,88,72,75,70],borderColor:C.y,backgroundColor:'rgba(212,168,67,0.06)',pointRadius:4,borderWidth:2},
+        {label:'Cana GO',data:[50,80,40,15,10,45],borderColor:C.o,backgroundColor:'rgba(230,126,34,0.06)',pointRadius:4,borderWidth:1,borderDash:[5,5]},
+        {label:'Cana SP',data:[25,25,30,0,0,10],borderColor:C.r,backgroundColor:'rgba(231,76,60,0.05)',pointRadius:4,borderWidth:2}
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:C.w}},datalabels:{display:false}},scales:{r:{ticks:{display:false},grid:{color:'rgba(255,255,255,0.08)'},pointLabels:{color:C.w,font:{size:11}},min:0,max:100}}}
+});
+
+// ===== COM vs SEM CANA SP =====
+new Chart(document.getElementById('chComSem'),{
+    type:'bar',data:{labels:['Resultado\ncom Cana SP','(-) Prejuízo\nCana SP','Resultado\nsem Cana SP'],datasets:[
+        {label:'Base',data:[0,2.62,0],backgroundColor:'transparent'},
+        {label:'Valor',data:[2.62,2.31,4.93],backgroundColor:[C.y,C.r,C.g],borderRadius:8}
+    ]},options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:ctx=>ctx.datasetIndex===1,anchor:'end',align:'top',color:C.w,font:{weight:'bold',size:16},formatter:(v,ctx)=>{const lbl=['R$ 2,62M','(-R$ 2,31M)','R$ 4,93M'];return lbl[ctx.dataIndex];}}},scales:{x:{...D.scales.x,stacked:true},y:{...D.scales.y,stacked:true,max:7,ticks:{callback:v=>'R$ '+v+'M'}}}}
+});
+
+// SCROLL
+const obs=new IntersectionObserver(e=>{e.forEach(el=>{if(el.isIntersecting)el.target.classList.add('visible')})},{threshold:0.08});
+document.querySelectorAll('.fi').forEach(el=>obs.observe(el));
+window.addEventListener('scroll',()=>{
+    const ids=['visao','soja','milho','canago','canasp','comparativo'];
+    let cur='';ids.forEach(id=>{const el=document.getElementById(id);if(el&&window.scrollY>=el.offsetTop-200)cur=id;});
+    document.querySelectorAll('.nav-links a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+cur));
+});
+</script>
+</body>
+</html>

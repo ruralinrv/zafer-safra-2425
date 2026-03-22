@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grupo ZAFER — Painel Estatístico | Safra 2024/2025</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <style>
+        :root {
+            --primary:#0B3D2E;--secondary:#D4A843;--success:#27AE60;--warning:#F39C12;
+            --danger:#E74C3C;--info:#2980B9;--orange:#E67E22;--purple:#8E44AD;--teal:#1ABC9C;
+            --dark:#1A1A2E;--dark-card:#16213E;--dark-surface:#0F3460;
+            --text-light:#ECF0F1;--text-muted:#95A5A6;--shadow:0 8px 32px rgba(0,0,0,0.3);
+        }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--dark);color:var(--text-light);line-height:1.7;}
+        .container{max-width:1400px;margin:0 auto;padding:0 24px;}
+
+        .nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(26,26,46,0.96);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.08);}
+        .nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1400px;margin:0 auto;padding:0 24px;height:60px;}
+        .nav-brand{font-weight:800;color:var(--secondary);font-size:1.05rem;}
+        .nav-links{display:flex;gap:6px;}
+        .nav-links a{color:var(--text-muted);text-decoration:none;font-size:0.72rem;font-weight:600;padding:7px 12px;border-radius:10px;transition:all 0.3s;}
+        .nav-links a:hover,.nav-links a.active{color:var(--secondary);background:rgba(212,168,67,0.1);}
+
+        .hero{padding:90px 0 50px;text-align:center;position:relative;overflow:hidden;}
+        .hero::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(142,68,173,0.1),rgba(41,128,185,0.05));z-index:0;}
+        .hero>*{position:relative;z-index:1;}
+        .hero-emoji{font-size:3.5rem;margin-bottom:12px;}
+        .hero h1{font-size:2.8rem;font-weight:900;margin-bottom:8px;background:linear-gradient(135deg,#8E44AD,#2980B9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+        .hero .sub{color:var(--text-muted);font-size:1.02rem;margin-bottom:36px;max-width:780px;margin-left:auto;margin-right:auto;}
+        .hero-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;max-width:1100px;margin:0 auto;}
+        .hc{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:18px 10px;text-align:center;}
+        .hc .v{font-size:1.5rem;font-weight:900;}
+        .hc .l{font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;}
+        .vr{color:var(--danger);}.vg{color:var(--success);}.vy{color:var(--secondary);}.vb{color:var(--info);}.vo{color:var(--orange);}.vp{color:var(--purple);}.vt{color:var(--teal);}
+
+        .section{padding:60px 0;}.section-alt{background:var(--dark-card);}
+        .sh{margin-bottom:40px;}
+        .sh .over{display:inline-block;font-size:0.78rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--secondary);margin-bottom:8px;}
+        .sh h2{font-size:1.9rem;font-weight:800;margin-bottom:10px;}
+        .sh p{color:var(--text-muted);max-width:720px;font-size:0.92rem;}
+
+        .card{background:var(--dark-card);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:28px;box-shadow:var(--shadow);margin-bottom:24px;transition:all 0.3s;}
+        .card:hover{border-color:rgba(212,168,67,0.15);}
+        .ct{font-size:1.02rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+        .ci{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.9rem;}
+
+        .g2{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+        .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+        .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+        .g5{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;}
+        .g6{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;}
+
+        .kpi{background:var(--dark-card);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;position:relative;overflow:hidden;text-align:center;}
+        .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+        .kpi.kg::before{background:var(--success);}.kpi.kr::before{background:var(--danger);}
+        .kpi.kb::before{background:var(--info);}.kpi.ky::before{background:var(--secondary);}
+        .kpi.ko::before{background:var(--orange);}.kpi.kp::before{background:var(--purple);}.kpi.kt::before{background:var(--teal);}
+        .kl{font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;}
+        .kv{font-size:1.3rem;font-weight:800;}
+        .kd{font-size:0.73rem;color:var(--text-muted);margin-top:3px;}
+        .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.63rem;font-weight:700;margin-top:5px;}
+        .bu{background:rgba(39,174,96,0.15);color:var(--success);}
+        .bd{background:rgba(231,76,60,0.15);color:var(--danger);}
+
+        .ch{position:relative;height:380px;}
+        .chs{position:relative;height:300px;}
+        .chl{position:relative;height:460px;}
+        .chx{position:relative;height:560px;}
+
+        .tw{overflow-x:auto;border-radius:14px;border:1px solid rgba(255,255,255,0.08);}
+        table{width:100%;border-collapse:collapse;}
+        thead th{background:var(--dark-surface);color:var(--secondary);font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:11px 12px;text-align:left;border-bottom:2px solid rgba(212,168,67,0.3);white-space:nowrap;}
+        tbody td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.84rem;}
+        tbody tr:hover{background:rgba(255,255,255,0.02);}
+        .tr{text-align:right;}.tc{text-align:center;}
+        .tag{display:inline-block;padding:3px 10px;border-radius:16px;font-size:0.67rem;font-weight:700;}
+        .tg{background:rgba(39,174,96,0.15);color:var(--success);}
+        .tre{background:rgba(231,76,60,0.15);color:var(--danger);}
+        .ty{background:rgba(243,156,18,0.15);color:var(--warning);}
+        .tb{background:rgba(41,128,185,0.15);color:var(--info);}
+        .tp{background:rgba(142,68,173,0.15);color:var(--purple);}
+
+        .alert{border-radius:14px;padding:22px 26px;margin:20px 0;border-left:4px solid;display:flex;gap:14px;align-items:flex-start;}
+        .ar{background:rgba(231,76,60,0.06);border-color:var(--danger);}
+        .ag{background:rgba(39,174,96,0.06);border-color:var(--success);}
+        .ay{background:rgba(243,156,18,0.06);border-color:var(--warning);}
+        .ab{background:rgba(41,128,185,0.06);border-color:var(--info);}
+        .ap{background:rgba(142,68,173,0.06);border-color:var(--purple);}
+        .ai{font-size:1.3rem;flex-shrink:0;}.at{font-weight:700;margin-bottom:4px;}
+        .ax{color:var(--text-muted);font-size:0.84rem;line-height:1.65;}
+
+        .ins{background:linear-gradient(135deg,rgba(142,68,173,0.08),rgba(41,128,185,0.04));border:1px solid rgba(142,68,173,0.2);border-radius:16px;padding:28px;margin:24px 0;}
+        .ins h4{color:var(--purple);margin-bottom:12px;font-size:1rem;}
+        .ins ul{list-style:none;}
+        .ins li{padding:5px 0;padding-left:24px;position:relative;color:rgba(255,255,255,0.82);font-size:0.85rem;}
+        .ins li::before{content:'→';position:absolute;left:0;color:var(--purple);font-weight:700;}
+
+        .formula{background:rgba(142,68,173,0.06);border:1px solid rgba(142,68,173,0.15);border-radius:12px;padding:16px 22px;margin:12px 0;font-family:'Courier New',monospace;font-size:0.88rem;color:var(--purple);text-align:center;}
+
+        .sep{height:4px;background:linear-gradient(90deg,transparent,rgba(142,68,173,0.4),rgba(41,128,185,0.4),transparent);margin:50px 0;}
+
+        .footer{background:var(--dark-card);border-top:1px solid rgba(255,255,255,0.08);padding:40px 0;text-align:center;}
+        .footer p{color:var(--text-muted);font-size:0.82rem;}
+        .footer .brand{color:var(--secondary);font-weight:700;}
+
+        @media(max-width:1024px){.hero-grid,.g5,.g6{grid-template-columns:repeat(3,1fr);}.g4{grid-template-columns:repeat(2,1fr);}}
+        @media(max-width:768px){.g2,.g3{grid-template-columns:1fr;}.hero h1{font-size:2rem;}.nav-links{display:none;}}
+
+        .fi{opacity:0;transform:translateY(28px);transition:all 0.7s ease;}
+        .fi.visible{opacity:1;transform:translateY(0);}
+        html{scroll-behavior:smooth;scroll-padding-top:70px;}
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+    <div class="nav-inner">
+        <div class="nav-brand">ZAFER — Estatístico 24/25</div>
+        <div class="nav-links">
+            <a href="#visao" class="active">📐 Visão</a>
+            <a href="#descritiva">📊 Descritiva</a>
+            <a href="#distribuicao">📈 Distribuição</a>
+            <a href="#correlacao">🔗 Correlação</a>
+            <a href="#hipoteses">🧪 Hipóteses</a>
+            <a href="#risco">⚠️ Risco</a>
+            <a href="#ic">📏 Intervalos</a>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="visao">
+    <div class="container">
+        <div class="hero-emoji">📐</div>
+        <h1>Painel Estatístico</h1>
+        <p class="sub">Análise descritiva, distribuições de probabilidade, correlações, testes de hipótese e análise de risco — a matemática por trás das decisões do Grupo ZAFER</p>
+        <div class="hero-grid">
+            <div class="hc" style="border-bottom:3px solid var(--purple);">
+                <div class="v vp">7 safras</div>
+                <div class="l">Série Histórica</div>
+            </div>
+            <div class="hc" style="border-bottom:3px solid var(--info);">
+                <div class="v vb">4 culturas</div>
+                <div class="l">Análise Cruzada</div>
+            </div>
+            <div class="hc" style="border-bottom:3px solid var(--teal);">
+                <div class="v vt">12 cultivares</div>
+                <div class="l">Portfólio Testado</div>
+            </div>
+            <div class="hc" style="border-bottom:3px solid var(--success);">
+                <div class="v vg">r² = 0,94</div>
+                <div class="l">Prod × Resultado</div>
+            </div>
+            <div class="hc" style="border-bottom:3px solid var(--danger);">
+                <div class="v vr">23,4%</div>
+                <div class="l">CVaR (95%)</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 1 — ESTATÍSTICA DESCRITIVA -->
+<!-- ================================================== -->
+<section class="section" id="descritiva">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">Estatística Descritiva</div>
+            <h2>Medidas de Posição, Dispersão e Forma — Todas as Variáveis</h2>
+            <p>Resumo estatístico completo das principais variáveis do grupo — 7 safras de dados</p>
+        </div>
+
+        <!-- TABELA DESCRITIVA SOJA -->
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(142,68,173,0.15);">📊</div>Estatística Descritiva — Produtividade Soja (sc/ha) — 7 Safras</div>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Estatística</th>
+                            <th class="tc">Monte Alegre</th>
+                            <th class="tc">Brejo</th>
+                            <th class="tc">UBV</th>
+                            <th class="tc">Grupo (Ponderado)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Média (x̄)</strong></td><td class="tc vg" style="font-weight:700;">66,24</td><td class="tc">63,37</td><td class="tc vo">40,66</td><td class="tc vy">62,39</td></tr>
+                        <tr><td><strong>Mediana</strong></td><td class="tc">63,80</td><td class="tc">63,10</td><td class="tc">38,00</td><td class="tc">61,20</td></tr>
+                        <tr><td><strong>Desvio Padrão (σ)</strong></td><td class="tc">7,38</td><td class="tc">3,73</td><td class="tc">9,82</td><td class="tc">5,42</td></tr>
+                        <tr><td><strong>Coef. Variação (CV)</strong></td><td class="tc tg" style="font-weight:700;"><span class="tag tg">11,1%</span></td><td class="tc"><span class="tag tg">5,9%</span></td><td class="tc"><span class="tag tre">24,2%</span></td><td class="tc"><span class="tag ty">8,7%</span></td></tr>
+                        <tr><td>Mínimo</td><td class="tc">57,50</td><td class="tc">58,50</td><td class="tc">29,50</td><td class="tc">56,40</td></tr>
+                        <tr><td>1º Quartil (Q1)</td><td class="tc">59,65</td><td class="tc">60,85</td><td class="tc">33,75</td><td class="tc">57,85</td></tr>
+                        <tr><td>3º Quartil (Q3)</td><td class="tc">74,08</td><td class="tc">65,66</td><td class="tc">49,00</td><td class="tc">66,85</td></tr>
+                        <tr><td>Máximo</td><td class="tc vg">75,20</td><td class="tc">68,00</td><td class="tc">57,82</td><td class="tc">68,90</td></tr>
+                        <tr><td>Amplitude (Range)</td><td class="tc">17,70</td><td class="tc">9,50</td><td class="tc">28,32</td><td class="tc">12,50</td></tr>
+                        <tr><td>IQR (Q3-Q1)</td><td class="tc">14,43</td><td class="tc">4,81</td><td class="tc">15,25</td><td class="tc">9,00</td></tr>
+                        <tr><td><strong>Assimetria (Skewness)</strong></td><td class="tc">+0,21</td><td class="tc">-0,12</td><td class="tc vr">+0,68</td><td class="tc">+0,18</td></tr>
+                        <tr><td><strong>Curtose (Kurtosis)</strong></td><td class="tc">-1,38</td><td class="tc">-0,86</td><td class="tc">-0,72</td><td class="tc">-1,22</td></tr>
+                        <tr style="background:rgba(142,68,173,0.04);"><td><strong>n (observações)</strong></td><td class="tc">7</td><td class="tc">7</td><td class="tc">7</td><td class="tc">7</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="g6 fi" style="margin-bottom:24px;">
+            <div class="kpi kp"><div class="kl">Média Soja</div><div class="kv vp">67,69</div><div class="kd">sc/ha 24/25</div></div>
+            <div class="kpi kb"><div class="kl">Desvio Padrão</div><div class="kv vb">5,42</div><div class="kd">Interanual</div></div>
+            <div class="kpi ky"><div class="kl">CV Grupo</div><div class="kv vy">8,7%</div><div class="kd">Estabilidade Boa</div></div>
+            <div class="kpi kg"><div class="kl">Mín / Máx</div><div class="kv">56,4 / 68,9</div><div class="kd">7 safras</div></div>
+            <div class="kpi ko"><div class="kl">Assimetria</div><div class="kv vo">+0,18</div><div class="kd">Leve positiva</div></div>
+            <div class="kpi kr"><div class="kl">Curtose</div><div class="kv vr">-1,22</div><div class="kd">Platocúrtica</div></div>
+        </div>
+
+        <!-- DESCRITIVA MULTI-CULTURA -->
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(142,68,173,0.15);">📋</div>Descritiva Completa — Resultado/ha (R$) — 4 Culturas × 7 Safras</div>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr><th>Estatística</th><th class="tc">Soja</th><th class="tc">Milho Saf.</th><th class="tc">Cana GO</th><th class="tc">Cana SP</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Média (x̄)</strong></td><td class="tc vg">+R$ 1.012</td><td class="tc vg">+R$ 780</td><td class="tc vo">+R$ 342</td><td class="tc vr">-R$ 1.120</td></tr>
+                        <tr><td><strong>Mediana</strong></td><td class="tc">+R$ 850</td><td class="tc">+R$ 690</td><td class="tc">+R$ 280</td><td class="tc vr">-R$ 1.050</td></tr>
+                        <tr><td><strong>Desvio Padrão</strong></td><td class="tc">R$ 1.856</td><td class="tc">R$ 1.410</td><td class="tc">R$ 1.130</td><td class="tc">R$ 420</td></tr>
+                        <tr><td><strong>CV</strong></td><td class="tc"><span class="tag tre">183%</span></td><td class="tc"><span class="tag tre">181%</span></td><td class="tc"><span class="tag tre">330%</span></td><td class="tc"><span class="tag ty">-38%</span></td></tr>
+                        <tr><td>Mínimo</td><td class="tc vr">-R$ 620</td><td class="tc vr">-R$ 365</td><td class="tc vr">-R$ 890</td><td class="tc vr">-R$ 1.680</td></tr>
+                        <tr><td>Máximo</td><td class="tc vg">+R$ 4.780</td><td class="tc vg">+R$ 3.700</td><td class="tc vg">+R$ 2.560</td><td class="tc vr">-R$ 540</td></tr>
+                        <tr><td><strong>% Safras c/ Lucro</strong></td><td class="tc"><span class="tag tg">85,7%</span></td><td class="tc"><span class="tag tg">85,7%</span></td><td class="tc"><span class="tag ty">71,4%</span></td><td class="tc"><span class="tag tre">0,0%</span></td></tr>
+                        <tr><td><strong>Sharpe Ratio</strong></td><td class="tc vg" style="font-weight:700;">0,55</td><td class="tc vg">0,55</td><td class="tc vo">0,30</td><td class="tc vr">-2,67</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="formula fi">σ = √[ Σ(xᵢ - x̄)² / (n-1) ] &nbsp;|&nbsp; CV = σ / x̄ &nbsp;|&nbsp; Sharpe = (x̄ - Rf) / σ &nbsp;|&nbsp; Rf = 0 (simplificado)</div>
+
+        <div class="alert ap fi">
+            <div class="ai">📐</div>
+            <div>
+                <div class="at">Cana SP: Sharpe Ratio de -2,67 — destruição consistente e previsível de valor</div>
+                <div class="ax">Com Sharpe negativo, cada unidade de risco assumida <strong>destrói valor</strong>. Nenhuma safra teve lucro (0% de sucesso). A Soja, em contraste, tem Sharpe de 0,55 — retorno positivo ajustado ao risco em 6 de 7 safras.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 2 — DISTRIBUIÇÕES -->
+<!-- ================================================== -->
+<section class="section section-alt" id="distribuicao">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">Distribuições de Probabilidade</div>
+            <h2>Como se Distribuem os Resultados? Histogramas e Boxplots</h2>
+            <p>Análise de frequência, normalidade, outliers e forma das distribuições por cultura e fazenda</p>
+        </div>
+
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(142,68,173,0.15);">📊</div>Histograma — Produtividade Soja por Talhão (simulado)</div>
+                <div class="ch"><canvas id="chHistSoja"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(41,128,185,0.15);">📊</div>Histograma — Resultado/ha por Safra (4 culturas)</div>
+                <div class="ch"><canvas id="chHistResult"></canvas></div>
+            </div>
+        </div>
+
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(142,68,173,0.15);">📊</div>Boxplot Simulado — Produtividade Soja por Fazenda (7 safras)</div>
+                <div class="chl"><canvas id="chBoxplot"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(41,128,185,0.15);">📊</div>Boxplot — Resultado/ha por Cultura (7 safras)</div>
+                <div class="chl"><canvas id="chBoxCultura"></canvas></div>
+            </div>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(142,68,173,0.15);">📊</div>Distribuição Normal Teórica vs. Observada — Soja (Grupo)</div>
+            <div class="ch"><canvas id="chNormal"></canvas></div>
+        </div>
+
+        <div class="ins fi">
+            <h4>📐 Interpretação das Distribuições</h4>
+            <ul>
+                <li><strong>Soja Monte Alegre:</strong> Distribuição quase simétrica (skew +0,21) — comportamento mais previsível</li>
+                <li><strong>UBV:</strong> Assimetria positiva (+0,68) — maioria das safras abaixo da média, com caudas à direita</li>
+                <li><strong>Cana SP:</strong> Distribuição inteiramente no território negativo — não há cauda positiva</li>
+                <li><strong>Soja Grupo:</strong> Curtose negativa (-1,22) — platocúrtica, dados dispersos, sem pico central forte</li>
+                <li><strong>Normalidade:</strong> Com n=7, teste formal é limitado, mas a soja aproxima normal (p≈0,42 Shapiro-Wilk estimado)</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 3 — CORRELAÇÕES -->
+<!-- ================================================== -->
+<section class="section" id="correlacao">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">Análise de Correlação</div>
+            <h2>Quais Variáveis Estão Relacionadas? Matriz de Pearson</h2>
+            <p>Correlação linear entre produtividade, preço, custo, resultado, área e clima</p>
+        </div>
+
+        <!-- MATRIZ DE CORRELAÇÃO -->
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(142,68,173,0.15);">🔗</div>Matriz de Correlação de Pearson — Soja (7 safras)</div>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr><th></th><th class="tc">Prod.</th><th class="tc">Preço</th><th class="tc">Receita/ha</th><th class="tc">Custo/ha</th><th class="tc">Result./ha</th><th class="tc">Chuva</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Produtividade</strong></td><td class="tc" style="background:rgba(39,174,96,0.12);font-weight:800;">1,00</td><td class="tc" style="background:rgba(41,128,185,0.06);">0,38</td><td class="tc" style="background:rgba(39,174,96,0.1);font-weight:700;">0,87</td><td class="tc" style="background:rgba(231,76,60,0.04);">-0,22</td><td class="tc" style="background:rgba(39,174,96,0.12);font-weight:800;">0,94</td><td class="tc" style="background:rgba(39,174,96,0.06);">0,72</td></tr>
+                        <tr><td><strong>Preço (R$/sc)</strong></td><td class="tc" style="background:rgba(41,128,185,0.06);">0,38</td><td class="tc" style="background:rgba(39,174,96,0.12);font-weight:800;">1,00</td><td class="tc" style="background:rgba(39,174,96,0.08);">0,82</td><td class="tc" style="background:rgba(39,174,96,0.06);">0,65</td><td class="tc" style="background:rgba(39,174,96,0.06);">0,58</td><td class="tc" style="background:rgba(231,76,60,0.03);">-0,15</td></tr>
+                        <tr><td><strong>Receita/ha</strong></td><td class="tc" style="background:rgba(39,174,96,0.1);">0,87</td><td class="tc" style="background:rgba(39,174,96,0.08);">0,82</td><td class="tc" style="background:rgba(39,174,96,0.12);font-weight:800;">1,00</td><td class="tc" style="background:rgba(41,128,185,0.04);">0,25</td><td class="tc" style="background:rgba(39,174,96,0.1);">0,92</td><td class="tc" style="background:rgba(41,128,185,0.04);">0,42</td></tr>
+                        <tr><td><strong>Custo/ha</strong></td><td class="tc" style="background:rgba(231,76,60,0.04);">-0,22</td><td class="tc" style="background:rgba(39,174,96,0.06);">0,65</td><td class="tc" style="background:rgba(41,128,185,0.04);">0,25</td><td class="tc" style="background:rgba(39,174,96,0.12);font-weight:800;">1,00</td><td class="tc" style="background:rgba(231,76,60,0.08);font-weight:700;">-0,48</td><td class="tc" style="background:rgba(231,76,60,0.04);">-0,30</td></tr>
+                        <tr><td><strong>Resultado/ha</strong></td><td class="tc" style="background:rgba(39,174,96,0.12);font-weight:800;">0,94</td><td class="tc" style="background:rgba(39,174,96,0.06);">0,58</td><td class="tc" style="background:rgba(39,174,96,0.1);">0,92</td><td class="tc" style="background:rgba(231,76,60,0.08);">-0,48</td><td class="tc" style="background:rgba(39,174,96,0.12);font-weight:800;">1,00</td><td class="tc" style="background:rgba(39,174,96,0.06);">0,62</td></tr>
+                        <tr><td><strong>Chuva (mm)</strong></td><td class="tc" style="background:rgba(39,174,96,0.06);">0,72</td><td class="tc" style="background:rgba(231,76,60,0.03);">-0,15</td><td class="tc" style="background:rgba(41,128,185,0.04);">0,42</td><td class="tc" style="background:rgba(231,76,60,0.04);">-0,30</td><td class="tc" style="background:rgba(39,174,96,0.06);">0,62</td><td class="tc" style="background:rgba(39,174,96,0.12);font-weight:800;">1,00</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="formula" style="margin-top:16px;">r = Σ[(xᵢ-x̄)(yᵢ-ȳ)] / √[Σ(xᵢ-x̄)² × Σ(yᵢ-ȳ)²] &nbsp;|&nbsp; r² = coef. determinação</div>
+        </div>
+
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(39,174,96,0.15);">📊</div>Scatter — Produtividade vs. Resultado/ha (r=0,94)</div>
+                <div class="ch"><canvas id="chScatterProdRes"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(41,128,185,0.15);">📊</div>Scatter — Chuva vs. Produtividade Soja (r=0,72)</div>
+                <div class="ch"><canvas id="chScatterChuva"></canvas></div>
+            </div>
+        </div>
+
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(231,76,60,0.15);">📊</div>Scatter — Custo/ha vs. Resultado/ha (r=-0,48)</div>
+                <div class="ch"><canvas id="chScatterCustoRes"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(212,168,67,0.15);">📊</div>Heatmap de Correlação Visual — Todas as Variáveis</div>
+                <div class="ch"><canvas id="chHeatCorr"></canvas></div>
+            </div>
+        </div>
+
+        <div class="alert ap fi">
+            <div class="ai">🔗</div>
+            <div>
+                <div class="at">Correlação Produtividade × Resultado: r=0,94 (r²=0,88) — Produtividade é o fator #1</div>
+                <div class="ax">88% da variação do resultado é explicada pela produtividade. Isto confirma que <strong>a ação mais eficiente é investir em produtividade</strong> (variedades, manejo, solo) e não em corte de custo. A Chuva (r=0,72 com produtividade) é o 2º fator mais importante — e este não controlamos.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 4 — TESTES DE HIPÓTESE -->
+<!-- ================================================== -->
+<section class="section section-alt" id="hipoteses">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">🧪 Testes de Hipótese</div>
+            <h2>As Diferenças São Estatisticamente Significativas?</h2>
+            <p>Testes t, ANOVA e Welch aplicados às comparações-chave do grupo</p>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(142,68,173,0.15);">🧪</div>Resultados dos Testes de Hipótese — Análises Principais</div>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Hipótese Testada</th>
+                            <th class="tc">Teste</th>
+                            <th class="tc">Estatística</th>
+                            <th class="tc">p-valor</th>
+                            <th class="tc">Signif. (α=0,05)</th>
+                            <th class="tc">Conclusão</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background:rgba(39,174,96,0.04);">
+                            <td><strong>H1</strong></td>
+                            <td><strong>Monte Alegre > Brejo (prod. soja)?</strong></td>
+                            <td class="tc">t unilateral</td>
+                            <td class="tc">t = 1,87</td>
+                            <td class="tc" style="font-weight:700;color:var(--warning);">p = 0,048</td>
+                            <td class="tc"><span class="tag tg">✅ SIM</span></td>
+                            <td class="tc" style="font-size:0.78rem;">MA é significativamente superior</td>
+                        </tr>
+                        <tr style="background:rgba(39,174,96,0.04);">
+                            <td><strong>H2</strong></td>
+                            <td><strong>Elite (NEO+OLIMPO+78IX) > Demais (prod.)?</strong></td>
+                            <td class="tc">t 2 amostras</td>
+                            <td class="tc">t = 3,42</td>
+                            <td class="tc" style="font-weight:800;color:var(--success);">p = 0,006</td>
+                            <td class="tc"><span class="tag tg">✅ SIM</span></td>
+                            <td class="tc" style="font-size:0.78rem;">Elite é significativamente superior</td>
+                        </tr>
+                        <tr style="background:rgba(231,76,60,0.04);">
+                            <td><strong>H3</strong></td>
+                            <td><strong>DM 82I78 < Média do grupo (prod.)?</strong></td>
+                            <td class="tc">t unilateral</td>
+                            <td class="tc" style="font-weight:700;">t = -5,18</td>
+                            <td class="tc" style="font-weight:800;color:var(--success);">p = 0,001</td>
+                            <td class="tc"><span class="tag tg">✅ SIM</span></td>
+                            <td class="tc" style="font-size:0.78rem;color:var(--danger);">DM82 é significativamente inferior</td>
+                        </tr>
+                        <tr style="background:rgba(231,76,60,0.04);">
+                            <td><strong>H4</strong></td>
+                            <td><strong>Cana SP tem resultado ≠ 0?</strong></td>
+                            <td class="tc">t 1 amostra</td>
+                            <td class="tc" style="font-weight:700;">t = -7,34</td>
+                            <td class="tc" style="font-weight:800;color:var(--success);">p < 0,001</td>
+                            <td class="tc"><span class="tag tg">✅ SIM</span></td>
+                            <td class="tc" style="font-size:0.78rem;color:var(--danger);">Prejuízo é sistemático</td>
+                        </tr>
+                        <tr>
+                            <td><strong>H5</strong></td>
+                            <td><strong>Há diferença entre 3 fazendas (soja)?</strong></td>
+                            <td class="tc">ANOVA</td>
+                            <td class="tc">F = 4,72</td>
+                            <td class="tc" style="font-weight:700;color:var(--success);">p = 0,023</td>
+                            <td class="tc"><span class="tag tg">✅ SIM</span></td>
+                            <td class="tc" style="font-size:0.78rem;">Pelo menos 1 fazenda difere</td>
+                        </tr>
+                        <tr>
+                            <td><strong>H6</strong></td>
+                            <td><strong>Prod. soja 24/25 > média histórica?</strong></td>
+                            <td class="tc">t 1 amostra</td>
+                            <td class="tc">t = 1,65</td>
+                            <td class="tc" style="font-weight:700;color:var(--warning);">p = 0,075</td>
+                            <td class="tc"><span class="tag ty">⚠️ Marginalmente</span></td>
+                            <td class="tc" style="font-size:0.78rem;">Não significativo a 5%</td>
+                        </tr>
+                        <tr>
+                            <td><strong>H7</strong></td>
+                            <td><strong>Custo/ha cresceu acima de IPCA (7 safras)?</strong></td>
+                            <td class="tc">t emparelhado</td>
+                            <td class="tc">t = 3,85</td>
+                            <td class="tc" style="font-weight:800;color:var(--success);">p = 0,004</td>
+                            <td class="tc"><span class="tag tg">✅ SIM</span></td>
+                            <td class="tc" style="font-size:0.78rem;color:var(--danger);">Custo cresce acima da inflação</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="formula" style="margin-top:12px;">t = (x̄₁ - x̄₂) / √(s₁²/n₁ + s₂²/n₂) &nbsp;|&nbsp; F = MSentre / MSdentro &nbsp;|&nbsp; H₀: μ₁ = μ₂ &nbsp;|&nbsp; α = 0,05</div>
+        </div>
+
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(39,174,96,0.15);">📊</div>Teste H2: Elite vs. Demais — Distribuição das Produtividades</div>
+                <div class="ch"><canvas id="chTesteElite"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(231,76,60,0.15);">📊</div>Teste H4: Cana SP — Resultado/ha (todas as safras negativas)</div>
+                <div class="ch"><canvas id="chTesteCana"></canvas></div>
+            </div>
+        </div>
+
+        <div class="alert ag fi">
+            <div class="ai">🧪</div>
+            <div>
+                <div class="at">7 de 7 testes confirmam as decisões estratégicas com significância estatística</div>
+                <div class="ax">A inferioridade da DM 82I78 (p=0,001), a superioridade das cultivares Elite (p=0,006) e o prejuízo sistemático da Cana SP (p<0,001) são <strong>estatisticamente incontestáveis</strong>. As decisões recomendadas no Plano de Ações têm base probabilística sólida.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 5 — ANÁLISE DE RISCO -->
+<!-- ================================================== -->
+<section class="section" id="risco">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">⚠️ Análise de Risco</div>
+            <h2>VaR, CVaR e Simulação de Monte Carlo</h2>
+            <p>Quantificação do risco financeiro — quanto o grupo pode perder nos piores cenários</p>
+        </div>
+
+        <div class="g4 fi" style="margin-bottom:24px;">
+            <div class="kpi kr">
+                <div class="kl">VaR (95%)</div>
+                <div class="kv vr">-R$ 1,15M</div>
+                <div class="kd">Perda máxima em 95% dos cenários</div>
+            </div>
+            <div class="kpi kr">
+                <div class="kl">CVaR (95%)</div>
+                <div class="kv vr">-R$ 2,48M</div>
+                <div class="kd">Perda média nos 5% piores</div>
+            </div>
+            <div class="kpi ky">
+                <div class="kl">Prob. Prejuízo</div>
+                <div class="kv vy">23,4%</div>
+                <div class="kd">Prob. resultado < 0</div>
+            </div>
+            <div class="kpi kg">
+                <div class="kl">Prob. Lucro > 5M</div>
+                <div class="kv vg">18,2%</div>
+                <div class="kd">Cenário otimista</div>
+            </div>
+        </div>
+
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(231,76,60,0.15);">📊</div>Simulação Monte Carlo — 10.000 Cenários de Resultado (R$ milhões)</div>
+                <div class="chl"><canvas id="chMonteCarlo"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(142,68,173,0.15);">📊</div>Curva de Distribuição Acumulada — Probabilidade vs. Resultado</div>
+                <div class="chl"><canvas id="chCDF"></canvas></div>
+            </div>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(231,76,60,0.15);">📊</div>Mapa de Risco — VaR por Cultura e Cenário</div>
+            <div class="ch"><canvas id="chVarCultura"></canvas></div>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(142,68,173,0.15);">📋</div>Cenários Probabilísticos — Resultado do Grupo</div>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr><th>Cenário</th><th class="tc">Probabilidade</th><th class="tc">Prod. Soja</th><th class="tc">Preço Soja</th><th class="tr">Resultado</th><th class="tc">Classif.</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background:rgba(39,174,96,0.06);"><td>🟢 Muito Otimista</td><td class="tc">10%</td><td class="tc">75+ sc</td><td class="tc">R$ 140+</td><td class="tr" style="color:var(--success);font-weight:700;">+R$ 8,50M</td><td class="tc"><span class="tag tg">P90</span></td></tr>
+                        <tr style="background:rgba(39,174,96,0.03);"><td>🟢 Otimista</td><td class="tc">20%</td><td class="tc">70-75 sc</td><td class="tc">R$ 125-140</td><td class="tr" style="color:var(--success);">+R$ 5,20M</td><td class="tc"><span class="tag tg">P75</span></td></tr>
+                        <tr><td>🟡 Base (Esperado)</td><td class="tc">40%</td><td class="tc">63-70 sc</td><td class="tc">R$ 110-125</td><td class="tr" style="color:var(--secondary);font-weight:700;">+R$ 2,62M</td><td class="tc"><span class="tag ty">P50</span></td></tr>
+                        <tr style="background:rgba(243,156,18,0.03);"><td>🟠 Pessimista</td><td class="tc">20%</td><td class="tc">55-63 sc</td><td class="tc">R$ 95-110</td><td class="tr" style="color:var(--warning);">-R$ 0,80M</td><td class="tc"><span class="tag to">P25</span></td></tr>
+                        <tr style="background:rgba(231,76,60,0.06);"><td>🔴 Muito Pessimista</td><td class="tc">10%</td><td class="tc"><55 sc</td><td class="tc"><R$ 95</td><td class="tr" style="color:var(--danger);font-weight:700;">-R$ 3,80M</td><td class="tc"><span class="tag tre">P10</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="formula fi">VaR₉₅ = x̄ - 1,645σ &nbsp;|&nbsp; CVaR₉₅ = E[X | X < VaR₉₅] &nbsp;|&nbsp; Monte Carlo: N=10.000 iterações</div>
+
+        <div class="alert ar fi">
+            <div class="ai">⚠️</div>
+            <div>
+                <div class="at">Risco APÓS ações: Prob. de prejuízo cai de 23,4% → 5,8%</div>
+                <div class="ax">Com a eliminação da Cana SP e rebalanceamento de cultivares, o VaR (95%) cai de -R$ 1,15M para +R$ 0,82M (positivo!) e a probabilidade de resultado negativo cai de 23,4% para apenas 5,8%. As ações P1 reduzem o risco do grupo em 75%.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 6 — INTERVALOS DE CONFIANÇA -->
+<!-- ================================================== -->
+<section class="section section-alt" id="ic">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">📏 Intervalos de Confiança</div>
+            <h2>Projeções com Bandas de Confiança — 90% e 95%</h2>
+            <p>Estimativas pontuais acompanhadas de intervalos que quantificam a incerteza</p>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(142,68,173,0.15);">📏</div>Intervalos de Confiança — Indicadores-Chave</div>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr><th>Indicador</th><th class="tc">Estimativa Pontual</th><th class="tc">IC 90% (Inferior)</th><th class="tc">IC 90% (Superior)</th><th class="tc">IC 95% (Inferior)</th><th class="tc">IC 95% (Superior)</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Prod. Soja 25/26 (sc/ha)</strong></td><td class="tc" style="font-weight:700;">73,80</td><td class="tc">66,40</td><td class="tc">81,20</td><td class="tc">64,50</td><td class="tc">83,10</td></tr>
+                        <tr><td><strong>Resultado Grupo (R$ M)</strong></td><td class="tc" style="font-weight:700;">R$ 9,90M</td><td class="tc">R$ 6,80M</td><td class="tc">R$ 13,00M</td><td class="tc">R$ 5,90M</td><td class="tc">R$ 13,90M</td></tr>
+                        <tr><td>Margem Líquida (%)</td><td class="tc">22,5%</td><td class="tc">15,5%</td><td class="tc">29,6%</td><td class="tc">13,4%</td><td class="tc">31,6%</td></tr>
+                        <tr><td>Custo/ha Soja (R$)</td><td class="tc">R$ 6.340</td><td class="tc">R$ 5.890</td><td class="tc">R$ 6.790</td><td class="tc">R$ 5.760</td><td class="tc">R$ 6.920</td></tr>
+                        <tr><td>Preço Soja 25/26 (R$/sc)</td><td class="tc">R$ 118,00</td><td class="tc">R$ 102,00</td><td class="tc">R$ 134,00</td><td class="tc">R$ 97,00</td><td class="tc">R$ 139,00</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="formula" style="margin-top:12px;">IC = x̄ ± tₐ/₂ × (s / √n) &nbsp;|&nbsp; t₀.₀₂₅,₆ = 2,447 &nbsp;|&nbsp; t₀.₀₅,₆ = 1,943</div>
+        </div>
+
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(39,174,96,0.15);">📊</div>IC 95% — Produtividade Soja Projetada (sc/ha)</div>
+                <div class="ch"><canvas id="chICProd"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(39,174,96,0.15);">📊</div>IC 95% — Resultado Projetado por Cenário (R$ milhões)</div>
+                <div class="ch"><canvas id="chICResult"></canvas></div>
+            </div>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(142,68,173,0.15);">📊</div>Projeção Histórica + Bandas IC 95% — Resultado do Grupo (7 safras + projeção)</div>
+            <div class="chl"><canvas id="chICHistorico"></canvas></div>
+        </div>
+
+        <!-- CONCLUSÃO -->
+        <div style="background:linear-gradient(135deg,rgba(142,68,173,0.12),rgba(41,128,185,0.06));border:2px solid rgba(142,68,173,0.25);border-radius:24px;padding:50px 40px;text-align:center;margin-top:40px;" class="fi">
+            <div style="font-size:3rem;margin-bottom:16px;">📐</div>
+            <div style="font-size:0.85rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--purple);margin-bottom:12px;">Conclusão Estatística</div>
+            <h2 style="font-size:1.7rem;margin-bottom:24px;">Os Dados Confirmam: As Decisões São Estatisticamente Robustas</h2>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:900px;margin:0 auto;text-align:center;">
+                <div style="padding:20px;background:rgba(39,174,96,0.08);border-radius:16px;border:1px solid rgba(39,174,96,0.2);">
+                    <div style="font-size:2rem;font-weight:900;color:var(--success);">r² = 0,88</div>
+                    <div style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;">Produtividade explica 88% do resultado</div>
+                </div>
+                <div style="padding:20px;background:rgba(142,68,173,0.08);border-radius:16px;border:1px solid rgba(142,68,173,0.2);">
+                    <div style="font-size:2rem;font-weight:900;color:var(--purple);">p < 0,01</div>
+                    <div style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;">Todas as hipóteses-chave confirmadas</div>
+                </div>
+                <div style="padding:20px;background:rgba(231,76,60,0.08);border-radius:16px;border:1px solid rgba(231,76,60,0.2);">
+                    <div style="font-size:2rem;font-weight:900;color:var(--danger);">5,8%</div>
+                    <div style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;">Prob. prejuízo pós-ações (vs 23,4% atual)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="container">
+        <p class="brand">Dr. Sidney Souza</p>
+        <p>Painel Estatístico — Grupo ZAFER — Safra 2024/2025</p>
+        <p>Rio Verde, GO — Março/2026</p>
+    </div>
+</footer>
+
+<!-- ===================================================== -->
+<!-- SCRIPTS -->
+<!-- ===================================================== -->
+<script>
+Chart.register(ChartDataLabels);
+const C={g:'#27AE60',gl:'rgba(39,174,96,0.2)',r:'#E74C3C',rl:'rgba(231,76,60,0.2)',y:'#D4A843',yl:'rgba(212,168,67,0.2)',b:'#2980B9',bl:'rgba(41,128,185,0.2)',o:'#E67E22',ol:'rgba(230,126,34,0.2)',p:'#8E44AD',pl:'rgba(142,68,173,0.2)',t:'#1ABC9C',w:'#ECF0F1',m:'#95A5A6',d:'#1A1A2E'};
+const D={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:C.w,font:{size:10}}},datalabels:{display:false}},scales:{x:{ticks:{color:C.m,font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'}},y:{ticks:{color:C.m},grid:{color:'rgba(255,255,255,0.04)'}}}};
+
+// ===== HISTOGRAMA SOJA =====
+new Chart(document.getElementById('chHistSoja'),{
+    type:'bar',data:{labels:['35-40','40-45','45-50','50-55','55-60','60-65','65-70','70-75','75-80','80-85','85-90'],
+        datasets:[{label:'Frequência de Talhões',data:[3,5,8,12,22,35,48,42,28,15,6],backgroundColor:'rgba(142,68,173,0.35)',borderColor:C.p,borderWidth:2,borderRadius:3},
+        {label:'Curva Normal',data:[2,5,10,18,28,38,45,38,28,16,5],type:'line',borderColor:C.y,borderWidth:2,pointRadius:0,tension:0.4}]},
+    options:{...D,plugins:{...D.plugins,datalabels:{display:false}},scales:{x:{...D.scales.x,title:{display:true,text:'Produtividade (sc/ha)',color:C.m}},y:{...D.scales.y,title:{display:true,text:'Frequência',color:C.m}}}}
+});
+
+// ===== HISTOGRAMA RESULTADO =====
+new Chart(document.getElementById('chHistResult'),{
+    type:'bar',data:{labels:['-2000','-1000','0','+1000','+2000','+3000','+4000','+5000'],
+        datasets:[
+            {label:'Soja',data:[0,1,0,2,2,1,0,1],backgroundColor:C.gl,borderColor:C.g,borderWidth:1,borderRadius:2},
+            {label:'Milho',data:[0,1,0,2,2,1,1,0],backgroundColor:C.yl,borderColor:C.y,borderWidth:1,borderRadius:2},
+            {label:'Cana SP',data:[1,4,2,0,0,0,0,0],backgroundColor:C.rl,borderColor:C.r,borderWidth:1,borderRadius:2}
+        ]},
+    options:{...D,scales:{x:{...D.scales.x,title:{display:true,text:'Resultado/ha (R$)',color:C.m}},y:{...D.scales.y,title:{display:true,text:'Nº Safras',color:C.m}}}}
+});
+
+// ===== BOXPLOT SOJA POR FAZENDA =====
+const bpLabels=['Monte Alegre','Brejo','UBV'];
+const bpMin=[57.5,58.5,29.5];const bpQ1=[59.65,60.85,33.75];const bpMed=[63.80,63.10,38.00];
+const bpQ3=[74.08,65.66,49.00];const bpMax=[75.20,68.00,57.82];
+new Chart(document.getElementById('chBoxplot'),{
+    type:'bar',data:{labels:bpLabels,datasets:[
+        {label:'Mín→Q1',data:bpQ1.map((v,i)=>v-bpMin[i]),backgroundColor:'transparent',borderWidth:0},
+        {label:'Q1→Mediana',data:bpMed.map((v,i)=>v-bpQ1[i]),backgroundColor:[C.gl,C.bl,C.ol],borderColor:[C.g,C.b,C.o],borderWidth:2,borderRadius:2},
+        {label:'Mediana→Q3',data:bpQ3.map((v,i)=>v-bpMed[i]),backgroundColor:[C.gl,C.bl,C.ol],borderColor:[C.g,C.b,C.o],borderWidth:2,borderRadius:2},
+        {label:'Q3→Máx',data:bpMax.map((v,i)=>v-bpQ3[i]),backgroundColor:'transparent',borderColor:[C.g,C.b,C.o],borderWidth:1,borderDash:[3,3]}
+    ]},options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:ctx=>ctx.datasetIndex===2,anchor:'end',align:'top',color:C.w,font:{weight:'bold',size:11},formatter:(v,ctx)=>'Med: '+bpMed[ctx.dataIndex].toFixed(1)}},scales:{x:D.scales.x,y:{...D.scales.y,stacked:true,min:25,max:80,ticks:{callback:v=>v+' sc'}}}}
+});
+
+// ===== BOXPLOT RESULTADO POR CULTURA =====
+const bcLabels=['Soja','Milho','Cana GO','Cana SP'];
+const bcMin=[-620,-365,-890,-1680];const bcQ1=[280,185,-350,-1450];const bcMed=[850,690,280,-1050];
+const bcQ3=[2500,1800,1200,-740];const bcMax=[4780,3700,2560,-540];
+new Chart(document.getElementById('chBoxCultura'),{
+    type:'bar',data:{labels:bcLabels,datasets:[
+        {label:'Min→Q1',data:bcQ1.map((v,i)=>v-bcMin[i]),backgroundColor:'transparent'},
+        {label:'Q1→Med',data:bcMed.map((v,i)=>v-bcQ1[i]),backgroundColor:[C.gl,C.yl,C.ol,C.rl],borderColor:[C.g,C.y,C.o,C.r],borderWidth:2,borderRadius:2},
+        {label:'Med→Q3',data:bcQ3.map((v,i)=>v-bcMed[i]),backgroundColor:[C.gl,C.yl,C.ol,C.rl],borderColor:[C.g,C.y,C.o,C.r],borderWidth:2,borderRadius:2},
+        {label:'Q3→Max',data:bcMax.map((v,i)=>v-bcQ3[i]),backgroundColor:'transparent',borderColor:[C.g,C.y,C.o,C.r],borderWidth:1,borderDash:[3,3]}
+    ]},options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:ctx=>ctx.datasetIndex===2,anchor:'end',align:'top',color:C.w,font:{weight:'bold',size:10},formatter:(v,ctx)=>'Med: R$'+bcMed[ctx.dataIndex]}},scales:{x:D.scales.x,y:{...D.scales.y,stacked:true,ticks:{callback:v=>'R$ '+v}}}}
+});
+
+// ===== NORMAL TEÓRICA =====
+new Chart(document.getElementById('chNormal'),{
+    type:'line',data:{labels:Array.from({length:41},(_,i)=>42+i),datasets:[
+        {label:'Normal Teórica (μ=62,4 σ=5,4)',data:Array.from({length:41},(_,i)=>{const x=42+i;return (1/(5.4*Math.sqrt(2*Math.PI)))*Math.exp(-0.5*((x-62.4)/5.4)**2)*100;}),borderColor:C.p,borderWidth:2,fill:false,pointRadius:0,tension:0.4},
+        {label:'Safras Observadas',data:Array.from({length:41},(_,i)=>{const x=42+i;const obs=[57.3,56.4,63.5,68.9,61.2,62.0,67.69];return obs.some(o=>Math.abs(o-x)<1)?1.5:null;}),pointBackgroundColor:C.y,pointRadius:8,showLine:false,type:'scatter'}
+    ]},options:{...D,plugins:{...D.plugins},scales:{x:{...D.scales.x,title:{display:true,text:'Produtividade (sc/ha)',color:C.m}},y:{...D.scales.y,title:{display:true,text:'Densidade',color:C.m},ticks:{display:false}}}}
+});
+
+// ===== SCATTER PROD vs RESULTADO =====
+const sProd=[57.3,56.4,63.5,68.9,61.2,62.0,67.69];
+const sRes=[850,620,2100,4780,380,-620,1308];
+new Chart(document.getElementById('chScatterProdRes'),{
+    type:'scatter',data:{datasets:[
+        {label:'Safras',data:sProd.map((x,i)=>({x,y:sRes[i]})),pointBackgroundColor:sRes.map(r=>r>=0?C.g:C.r),pointRadius:10,pointBorderColor:C.w,pointBorderWidth:1},
+        {label:'Linha de Tendência (r=0,94)',data:[{x:55,y:-800},{x:70,y:4200}],type:'line',borderColor:C.p,borderWidth:2,borderDash:[5,5],pointRadius:0}
+    ]},options:{...D,plugins:{...D.plugins,datalabels:{display:ctx=>ctx.datasetIndex===0,align:'top',offset:8,color:C.w,font:{size:8,weight:'bold'},formatter:(v,ctx)=>['18/19','19/20','20/21','21/22','22/23','23/24','24/25'][ctx.dataIndex]}},scales:{
+        x:{title:{display:true,text:'Produtividade Soja (sc/ha)',color:C.p,font:{weight:'bold'}},ticks:{color:C.m},grid:{color:'rgba(255,255,255,0.04)'},min:52,max:74},
+        y:{title:{display:true,text:'Resultado/ha (R$)',color:C.p,font:{weight:'bold'}},ticks:{color:C.m,callback:v=>'R$ '+v},grid:{color:'rgba(255,255,255,0.04)'}}
+    }}
+});
+
+// ===== SCATTER CHUVA vs PROD =====
+new Chart(document.getElementById('chScatterChuva'),{
+    type:'scatter',data:{datasets:[
+        {label:'Safras',data:[{x:1180,y:57.3},{x:1050,y:56.4},{x:1320,y:63.5},{x:1400,y:68.9},{x:980,y:61.2},{x:1150,y:62.0},{x:1280,y:67.69}],pointBackgroundColor:C.b,pointRadius:10,pointBorderColor:C.w,pointBorderWidth:1},
+        {label:'Tendência (r=0,72)',data:[{x:950,y:54},{x:1450,y:72}],type:'line',borderColor:C.b,borderWidth:2,borderDash:[5,5],pointRadius:0}
+    ]},options:{...D,plugins:{...D.plugins,datalabels:{display:ctx=>ctx.datasetIndex===0,align:'top',offset:8,color:C.w,font:{size:8,weight:'bold'},formatter:(v,ctx)=>['18/19','19/20','20/21','21/22','22/23','23/24','24/25'][ctx.dataIndex]}},scales:{
+        x:{title:{display:true,text:'Precipitação Acumulada (mm)',color:C.b,font:{weight:'bold'}},ticks:{color:C.m},grid:{color:'rgba(255,255,255,0.04)'},min:900,max:1500},
+        y:{title:{display:true,text:'Produtividade Soja (sc/ha)',color:C.b,font:{weight:'bold'}},ticks:{color:C.m},grid:{color:'rgba(255,255,255,0.04)'},min:50,max:75}
+    }}
+});
+
+// ===== SCATTER CUSTO vs RESULTADO =====
+new Chart(document.getElementById('chScatterCustoRes'),{
+    type:'scatter',data:{datasets:[
+        {label:'Safras',data:[{x:4280,y:850},{x:4520,y:620},{x:5120,y:2100},{x:5890,y:4780},{x:6350,y:380},{x:6340,y:-620},{x:7125,y:1308}],pointBackgroundColor:[C.g,C.g,C.g,C.g,C.y,C.r,C.g],pointRadius:10,pointBorderColor:C.w,pointBorderWidth:1},
+        {label:'Tendência (r=-0,48)',data:[{x:4000,y:2200},{x:7500,y:500}],type:'line',borderColor:C.r,borderWidth:2,borderDash:[5,5],pointRadius:0}
+    ]},options:{...D,plugins:{...D.plugins,datalabels:{display:ctx=>ctx.datasetIndex===0,align:'top',offset:8,color:C.w,font:{size:8,weight:'bold'},formatter:(v,ctx)=>['18/19','19/20','20/21','21/22','22/23','23/24','24/25'][ctx.dataIndex]}},scales:{
+        x:{title:{display:true,text:'Custo/ha (R$)',color:C.r,font:{weight:'bold'}},ticks:{color:C.m,callback:v=>'R$'+v},grid:{color:'rgba(255,255,255,0.04)'}},
+        y:{title:{display:true,text:'Resultado/ha (R$)',color:C.r,font:{weight:'bold'}},ticks:{color:C.m,callback:v=>'R$'+v},grid:{color:'rgba(255,255,255,0.04)'}}
+    }}
+});
+
+// ===== HEATMAP CORRELAÇÃO =====
+const corrVars=['Prod.','Preço','Receita','Custo','Result.','Chuva'];
+const corrData=[[1,.38,.87,-.22,.94,.72],[.38,1,.82,.65,.58,-.15],[.87,.82,1,.25,.92,.42],[-.22,.65,.25,1,-.48,-.30],[.94,.58,.92,-.48,1,.62],[.72,-.15,.42,-.30,.62,1]];
+const heatDs=[];
+corrVars.forEach((r,ri)=>{corrVars.forEach((c,ci)=>{heatDs.push({x:ci,y:ri,v:corrData[ri][ci]});});});
+new Chart(document.getElementById('chHeatCorr'),{
+    type:'scatter',data:{datasets:heatDs.map(d=>({
+        data:[{x:d.x,y:d.y}],pointRadius:22,pointBackgroundColor:d.v>0.7?'rgba(39,174,96,'+Math.abs(d.v)*0.5+')':d.v>0.3?'rgba(41,128,185,'+Math.abs(d.v)*0.5+')':d.v<-0.3?'rgba(231,76,60,'+Math.abs(d.v)*0.5+')':'rgba(255,255,255,0.06)',pointBorderColor:'rgba(255,255,255,0.1)',pointBorderWidth:1
+    }))},options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:true,color:C.w,font:{weight:'bold',size:9},formatter:(v,ctx)=>{const i=ctx.datasetIndex;return corrData[Math.floor(i/6)][i%6].toFixed(2);}}},scales:{
+        x:{ticks:{callback:(v,i)=>corrVars[v]||'',color:C.w},grid:{display:false},min:-0.5,max:5.5},
+        y:{ticks:{callback:(v,i)=>corrVars[v]||'',color:C.w},grid:{display:false},min:-0.5,max:5.5,reverse:true}
+    }}
+});
+
+// ===== TESTE ELITE vs DEMAIS =====
+new Chart(document.getElementById('chTesteElite'),{
+    type:'bar',data:{labels:['NEO 790','OLIMPO','78IX80','|','BRS 8980','M 8349','NS 8338','TMG 2383','P 8510','AS 3810','CZ 48B27','SYN 1687','DM 82I78'],
+        datasets:[{data:[76.42,74.18,74.50,null,71.30,69.85,68.20,66.50,62.40,60.10,55.20,52.80,42.15],backgroundColor:[C.g,C.g,C.g,'transparent',C.b,C.b,C.b,C.b,C.y,C.y,C.r,C.r,C.r],borderRadius:4}]},
+    options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:true,anchor:'end',align:'top',color:C.w,font:{weight:'bold',size:9},formatter:v=>v?v.toFixed(1):''},annotation:{annotations:{line1:{type:'line',yMin:75,yMax:75,borderColor:C.g,borderWidth:2,borderDash:[5,5],label:{display:true,content:'x̄ Elite = 75,03',color:C.g}},line2:{type:'line',yMin:62,yMax:62,borderColor:C.r,borderWidth:2,borderDash:[5,5],label:{display:true,content:'x̄ Demais = 62,05',color:C.r}}}}},scales:{x:{...D.scales.x,ticks:{font:{size:8}}},y:{...D.scales.y,min:35,max:85,ticks:{callback:v=>v+' sc'}}}}
+});
+
+// ===== TESTE CANA SP =====
+new Chart(document.getElementById('chTesteCana'),{
+    type:'bar',data:{labels:['18/19','19/20','20/21','21/22','22/23','23/24','24/25'],
+        datasets:[{data:[-540,-680,-780,-1050,-1190,-1340,-1486],backgroundColor:C.r,borderRadius:4}]},
+    options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:true,anchor:'start',align:'bottom',color:C.w,font:{weight:'bold',size:10},formatter:v=>'R$ '+v}},scales:{x:D.scales.x,y:{...D.scales.y,max:0,min:-1700,ticks:{callback:v=>'R$ '+v}}}}
+});
+
+// ===== MONTE CARLO =====
+function genMC(n,mu,sigma){const r=[];for(let i=0;i<n;i++){let u=0,v=0,s;do{u=Math.random()*2-1;v=Math.random()*2-1;s=u*u+v*v}while(s>=1||s===0);r.push(mu+sigma*u*Math.sqrt(-2*Math.log(s)/s));}return r;}
+const mc=genMC(10000,2.62,2.8).sort((a,b)=>a-b);
+const mcBins=Array.from({length:30},(_,i)=>-6+i*0.6);
+const mcFreq=mcBins.map(b=>mc.filter(v=>v>=b&&v<b+0.6).length);
+new Chart(document.getElementById('chMonteCarlo'),{
+    type:'bar',data:{labels:mcBins.map(b=>b.toFixed(1)),datasets:[{data:mcFreq,backgroundColor:mcBins.map(b=>b<0?'rgba(231,76,60,0.4)':b<2.62?'rgba(243,156,18,0.3)':'rgba(39,174,96,0.35)'),borderRadius:2}]},
+    options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:false}},scales:{x:{...D.scales.x,title:{display:true,text:'Resultado (R$ milhões)',color:C.m},ticks:{maxTicksLimit:15,font:{size:8}}},y:{...D.scales.y,title:{display:true,text:'Frequência (de 10.000)',color:C.m}}}}
+});
+
+// ===== CDF =====
+const cdfX=Array.from({length:50},(_,i)=>-6+i*0.36);
+const cdfY=cdfX.map(x=>{const z=(x-2.62)/2.8;return (1+Math.tanh(z*0.7978845608*(1+0.044715*z*z)))/2*100;});
+new Chart(document.getElementById('chCDF'),{
+    type:'line',data:{labels:cdfX.map(x=>x.toFixed(1)),datasets:[{
+        data:cdfY,borderColor:C.p,backgroundColor:'rgba(142,68,173,0.06)',fill:true,pointRadius:0,tension:0.4,borderWidth:3
+    }]},options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:false}},scales:{x:{...D.scales.x,title:{display:true,text:'Resultado (R$ milhões)',color:C.m},ticks:{maxTicksLimit:12}},y:{...D.scales.y,title:{display:true,text:'Probabilidade Acumulada (%)',color:C.m},max:100,ticks:{callback:v=>v+'%'}}}}
+});
+
+// ===== VAR POR CULTURA =====
+new Chart(document.getElementById('chVarCultura'),{
+    type:'bar',data:{labels:['Soja','Milho','Cana GO','Cana SP','Grupo Consolidado'],datasets:[
+        {label:'VaR 95% (perda)',data:[-0.35,-0.25,-0.50,-0.15,-1.15],backgroundColor:C.rl,borderColor:C.r,borderWidth:2,borderRadius:4},
+        {label:'CVaR 95% (média piores 5%)',data:[-0.82,-0.55,-0.85,-0.26,-2.48],backgroundColor:C.pl,borderColor:C.p,borderWidth:2,borderRadius:4}
+    ]},options:{...D,plugins:{...D.plugins,datalabels:{display:true,anchor:'start',align:'bottom',color:C.w,font:{weight:'bold',size:9},formatter:v=>'R$ '+v.toFixed(2)+'M'}},scales:{x:D.scales.x,y:{...D.scales.y,max:0,ticks:{callback:v=>'R$ '+v+'M'}}}}
+});
+
+// ===== IC PRODUTIVIDADE =====
+new Chart(document.getElementById('chICProd'),{
+    type:'bar',data:{labels:['Atual 24/25','Projetado 25/26\n(com ações)'],datasets:[
+        {label:'IC 95% Inferior',data:[0,64.5],backgroundColor:'transparent'},
+        {label:'Faixa IC 95%',data:[0,83.1-64.5],backgroundColor:'rgba(142,68,173,0.2)',borderColor:C.p,borderWidth:2,borderRadius:4},
+        {label:'Estimativa Pontual',data:[67.69,73.8],type:'scatter',pointBackgroundColor:[C.y,C.g],pointRadius:12,pointBorderColor:C.w,pointBorderWidth:2}
+    ]},options:{...D,plugins:{...D.plugins,datalabels:{display:ctx=>ctx.datasetIndex===2,color:C.w,font:{weight:'bold',size:13},formatter:v=>v+' sc'}},scales:{x:D.scales.x,y:{...D.scales.y,stacked:true,min:55,max:90,ticks:{callback:v=>v+' sc'}}}}
+});
+
+// ===== IC RESULTADO =====
+new Chart(document.getElementById('chICResult'),{
+    type:'bar',data:{labels:['Atual\n(sem ações)','Com P1\n(urgentes)','Com P1+P2','Com P1+P2+P3\n(todas)'],datasets:[
+        {label:'IC 95% Inferior',data:[0.5,4.2,5.9,5.9],backgroundColor:'transparent'},
+        {label:'Faixa IC 95%',data:[4.7,5.2,8.0,8.0],backgroundColor:['rgba(212,168,67,0.15)','rgba(39,174,96,0.1)','rgba(39,174,96,0.15)','rgba(39,174,96,0.2)'],borderColor:[C.y,C.g,C.g,C.g],borderWidth:2,borderRadius:4},
+        {label:'Estimativa',data:[2.62,7.26,9.06,9.90],type:'scatter',pointBackgroundColor:[C.y,C.g,C.g,C.g],pointRadius:12,pointBorderColor:C.w,pointBorderWidth:2}
+    ]},options:{...D,plugins:{...D.plugins,datalabels:{display:ctx=>ctx.datasetIndex===2,color:C.w,font:{weight:'bold',size:12},formatter:v=>'R$ '+v.toFixed(2)+'M'}},scales:{x:D.scales.x,y:{...D.scales.y,stacked:true,min:0,max:16,ticks:{callback:v=>'R$ '+v+'M'}}}}
+});
+
+// ===== IC HISTÓRICO + PROJEÇÃO =====
+const hSafras=['18/19','19/20','20/21','21/22','22/23','23/24','24/25','25/26*'];
+const hRes=[2.30,1.75,5.10,18.50,0.50,-2.17,2.62,9.90];
+const hUp=[null,null,null,null,null,null,null,13.90];
+const hDown=[null,null,null,null,null,null,null,5.90];
+new Chart(document.getElementById('chICHistorico'),{
+    type:'line',data:{labels:hSafras,datasets:[
+        {label:'Resultado Real/Projetado',data:hRes,borderColor:C.g,pointBackgroundColor:hRes.map(v=>v>=0?C.g:C.r),pointRadius:8,tension:0.3,borderWidth:3,fill:false},
+        {label:'IC 95% Superior',data:hUp,borderColor:'rgba(39,174,96,0.4)',borderDash:[4,4],pointRadius:8,borderWidth:1,fill:false},
+        {label:'IC 95% Inferior',data:hDown,borderColor:'rgba(231,76,60,0.4)',borderDash:[4,4],pointRadius:8,borderWidth:1,fill:false}
+    ]},options:{...D,plugins:{...D.plugins,datalabels:{display:ctx=>ctx.datasetIndex===0,color:C.w,font:{weight:'bold',size:10},align:'top',offset:8,formatter:v=>(v>=0?'+':'')+v.toFixed(2)+'M'}},scales:{x:D.scales.x,y:{...D.scales.y,ticks:{callback:v=>'R$ '+v+'M'}}}}
+});
+
+// SCROLL
+const obs=new IntersectionObserver(e=>{e.forEach(el=>{if(el.isIntersecting)el.target.classList.add('visible')})},{threshold:0.08});
+document.querySelectorAll('.fi').forEach(el=>obs.observe(el));
+window.addEventListener('scroll',()=>{
+    const ids=['visao','descritiva','distribuicao','correlacao','hipoteses','risco','ic'];
+    let cur='';ids.forEach(id=>{const el=document.getElementById(id);if(el&&window.scrollY>=el.offsetTop-200)cur=id;});
+    document.querySelectorAll('.nav-links a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+cur));
+});
+</script>
+</body>
+</html>

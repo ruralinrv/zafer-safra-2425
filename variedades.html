@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grupo ZAFER — Análise de Variedades de Soja | Safra 2024/2025</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <style>
+        :root {
+            --primary:#0B3D2E;--secondary:#D4A843;--success:#27AE60;--warning:#F39C12;
+            --danger:#E74C3C;--info:#2980B9;--orange:#E67E22;--purple:#8E44AD;--teal:#1ABC9C;
+            --dark:#1A1A2E;--dark-card:#16213E;--dark-surface:#0F3460;
+            --text-light:#ECF0F1;--text-muted:#95A5A6;--shadow:0 8px 32px rgba(0,0,0,0.3);
+        }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--dark);color:var(--text-light);line-height:1.7;}
+        .container{max-width:1400px;margin:0 auto;padding:0 24px;}
+
+        /* NAV */
+        .nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(26,26,46,0.96);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.08);padding:0;}
+        .nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1400px;margin:0 auto;padding:0 24px;height:60px;}
+        .nav-brand{font-weight:800;color:var(--secondary);font-size:1.1rem;}
+        .nav-links{display:flex;gap:10px;}
+        .nav-links a{color:var(--text-muted);text-decoration:none;font-size:0.78rem;font-weight:600;padding:8px 14px;border-radius:10px;transition:all 0.3s;}
+        .nav-links a:hover,.nav-links a.active{color:var(--secondary);background:rgba(212,168,67,0.1);}
+
+        /* HERO */
+        .hero{padding:90px 0 50px;text-align:center;position:relative;overflow:hidden;}
+        .hero::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(39,174,96,0.1),rgba(212,168,67,0.05));z-index:0;}
+        .hero>*{position:relative;z-index:1;}
+        .hero-emoji{font-size:3.5rem;margin-bottom:12px;}
+        .hero h1{font-size:3rem;font-weight:900;margin-bottom:8px;background:linear-gradient(135deg,#27AE60,#1ABC9C);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+        .hero .sub{color:var(--text-muted);font-size:1.05rem;margin-bottom:36px;max-width:750px;margin-left:auto;margin-right:auto;}
+        .hero-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;max-width:1000px;margin:0 auto;}
+        .hero-card{background:rgba(255,255,255,0.04);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:22px 14px;text-align:center;}
+        .hero-card .v{font-size:1.8rem;font-weight:900;}
+        .hero-card .l{font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;}
+        .vr{color:var(--danger);}.vg{color:var(--success);}.vy{color:var(--secondary);}.vb{color:var(--info);}.vo{color:var(--orange);}.vt{color:var(--teal);}.vp{color:var(--purple);}
+
+        /* SECTIONS */
+        .section{padding:60px 0;}
+        .section-alt{background:var(--dark-card);}
+        .sh{margin-bottom:40px;}
+        .sh .over{display:inline-block;font-size:0.78rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--secondary);margin-bottom:8px;}
+        .sh h2{font-size:2rem;font-weight:800;margin-bottom:10px;}
+        .sh p{color:var(--text-muted);max-width:720px;font-size:0.93rem;}
+
+        /* CARDS */
+        .card{background:var(--dark-card);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:28px;box-shadow:var(--shadow);margin-bottom:24px;transition:all 0.3s;}
+        .card:hover{border-color:rgba(212,168,67,0.15);}
+        .ct{font-size:1.05rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+        .ci{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.9rem;}
+
+        /* GRIDS */
+        .g2{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+        .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+        .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+        .g5{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;}
+
+        /* KPI */
+        .kpi{background:var(--dark-card);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:20px;position:relative;overflow:hidden;text-align:center;}
+        .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+        .kpi.kg::before{background:var(--success);}.kpi.kr::before{background:var(--danger);}
+        .kpi.kb::before{background:var(--info);}.kpi.ky::before{background:var(--secondary);}
+        .kpi.ko::before{background:var(--orange);}.kpi.kp::before{background:var(--purple);}
+        .kl{font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+        .kv{font-size:1.45rem;font-weight:800;}
+        .kd{font-size:0.78rem;color:var(--text-muted);margin-top:4px;}
+        .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.66rem;font-weight:700;margin-top:6px;}
+        .bu{background:rgba(39,174,96,0.15);color:var(--success);}
+        .bd{background:rgba(231,76,60,0.15);color:var(--danger);}
+        .bw{background:rgba(243,156,18,0.15);color:var(--warning);}
+
+        /* CHARTS */
+        .ch{position:relative;height:380px;}
+        .chs{position:relative;height:300px;}
+        .chl{position:relative;height:460px;}
+        .chx{position:relative;height:560px;}
+
+        /* TABLES */
+        .tw{overflow-x:auto;border-radius:14px;border:1px solid rgba(255,255,255,0.08);}
+        table{width:100%;border-collapse:collapse;}
+        thead th{background:var(--dark-surface);color:var(--secondary);font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:13px 14px;text-align:left;border-bottom:2px solid rgba(212,168,67,0.3);white-space:nowrap;}
+        tbody td{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.87rem;}
+        tbody tr:hover{background:rgba(255,255,255,0.02);}
+        .tr{text-align:right;}.tc{text-align:center;}
+        .tag{display:inline-block;padding:3px 10px;border-radius:16px;font-size:0.7rem;font-weight:700;}
+        .tg{background:rgba(39,174,96,0.15);color:var(--success);}
+        .tre{background:rgba(231,76,60,0.15);color:var(--danger);}
+        .ty{background:rgba(243,156,18,0.15);color:var(--warning);}
+        .tb{background:rgba(41,128,185,0.15);color:var(--info);}
+        .tp{background:rgba(142,68,173,0.15);color:var(--purple);}
+        .tt{background:rgba(26,188,156,0.15);color:var(--teal);}
+
+        /* ALERTS */
+        .alert{border-radius:14px;padding:22px 26px;margin:20px 0;border-left:4px solid;display:flex;gap:14px;align-items:flex-start;}
+        .ar{background:rgba(231,76,60,0.06);border-color:var(--danger);}
+        .ag{background:rgba(39,174,96,0.06);border-color:var(--success);}
+        .ay{background:rgba(243,156,18,0.06);border-color:var(--warning);}
+        .ab{background:rgba(41,128,185,0.06);border-color:var(--info);}
+        .ai{font-size:1.3rem;flex-shrink:0;}.at{font-weight:700;margin-bottom:4px;}
+        .ax{color:var(--text-muted);font-size:0.86rem;line-height:1.65;}
+
+        /* INSIGHT */
+        .ins{background:linear-gradient(135deg,rgba(212,168,67,0.08),rgba(212,168,67,0.02));border:1px solid rgba(212,168,67,0.2);border-radius:16px;padding:28px;margin:24px 0;}
+        .ins h4{color:var(--secondary);margin-bottom:12px;font-size:1.02rem;}
+        .ins ul{list-style:none;}
+        .ins li{padding:6px 0;padding-left:24px;position:relative;color:rgba(255,255,255,0.82);font-size:0.88rem;}
+        .ins li::before{content:'→';position:absolute;left:0;color:var(--secondary);font-weight:700;}
+
+        /* CULTIVAR CARD */
+        .cv-card{border-radius:18px;padding:24px;border:2px solid;transition:all 0.3s;position:relative;overflow:hidden;}
+        .cv-card:hover{transform:translateY(-3px);}
+        .cv-card.cv-elite{background:rgba(39,174,96,0.04);border-color:rgba(39,174,96,0.25);}
+        .cv-card.cv-ok{background:rgba(212,168,67,0.03);border-color:rgba(212,168,67,0.2);}
+        .cv-card.cv-bad{background:rgba(231,76,60,0.04);border-color:rgba(231,76,60,0.25);}
+        .cv-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+        .cv-name{font-size:1.2rem;font-weight:800;}
+        .cv-rank{font-size:0.75rem;font-weight:700;padding:4px 12px;border-radius:12px;}
+        .cv-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+        .cv-stat{text-align:center;padding:10px 6px;background:rgba(255,255,255,0.03);border-radius:10px;}
+        .cv-stat .sv{font-size:1.1rem;font-weight:800;}
+        .cv-stat .sl{font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;}
+
+        /* SEPARATOR */
+        .sep{height:3px;background:linear-gradient(90deg,transparent,rgba(39,174,96,0.4),rgba(212,168,67,0.4),transparent);margin:40px 0;}
+
+        /* FOOTER */
+        .footer{background:var(--dark-card);border-top:1px solid rgba(255,255,255,0.08);padding:40px 0;text-align:center;}
+        .footer p{color:var(--text-muted);font-size:0.82rem;}
+        .footer .brand{color:var(--secondary);font-weight:700;}
+
+        /* RESPONSIVE */
+        @media(max-width:1024px){.g4,.g5,.hero-grid{grid-template-columns:repeat(2,1fr);}}
+        @media(max-width:768px){.g2,.g3{grid-template-columns:1fr;}.hero h1{font-size:2.1rem;}.nav-links{display:none;}.cv-stats{grid-template-columns:1fr 1fr;}}
+
+        /* ANIMATIONS */
+        .fi{opacity:0;transform:translateY(28px);transition:all 0.7s ease;}
+        .fi.visible{opacity:1;transform:translateY(0);}
+        html{scroll-behavior:smooth;scroll-padding-top:70px;}
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+    <div class="nav-inner">
+        <div class="nav-brand">ZAFER — Variedades Soja 24/25</div>
+        <div class="nav-links">
+            <a href="#visao" class="active">📊 Visão</a>
+            <a href="#ranking">🏆 Ranking</a>
+            <a href="#elite">⭐ Elite</a>
+            <a href="#eliminacao">🚫 Eliminação</a>
+            <a href="#fazendas">🏠 Por Fazenda</a>
+            <a href="#dispersao">📈 Dispersão</a>
+            <a href="#decisao">🎯 Decisão 25/26</a>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="visao">
+    <div class="container">
+        <div class="hero-emoji">🌱</div>
+        <h1>Análise de Variedades — Soja</h1>
+        <p class="sub">Deep-dive no portfólio de cultivares: quais geram valor, quais destroem e como otimizar o mix para a safra 25/26</p>
+        <div class="hero-grid">
+            <div class="hero-card">
+                <div class="v vy">12</div>
+                <div class="l">Cultivares Plantadas</div>
+            </div>
+            <div class="hero-card">
+                <div class="v vg">67,69 sc/ha</div>
+                <div class="l">Produtividade Média</div>
+            </div>
+            <div class="hero-card">
+                <div class="v vg">+R$ 1.308/ha</div>
+                <div class="l">Resultado Médio</div>
+            </div>
+            <div class="hero-card">
+                <div class="v vr">R$ 3,74M</div>
+                <div class="l">Destruição por Cultivares Ruins</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 1 — RANKING COMPLETO -->
+<!-- ================================================== -->
+<section class="section" id="ranking">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">Ranking de Cultivares</div>
+            <h2>12 Variedades — Da Mais Lucrativa à Mais Destrutiva</h2>
+            <p>Classificação por resultado econômico/ha considerando produtividade, preço, custo de semente e custo operacional</p>
+        </div>
+
+        <!-- TABELA RANKING MASTER -->
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(212,168,67,0.15);">🏆</div>Ranking Completo — Todas as Variedades de Soja — Safra 24/25</div>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Pos.</th>
+                            <th>Cultivar</th>
+                            <th class="tc">Área (ha)</th>
+                            <th class="tc">Prod. (sc/ha)</th>
+                            <th class="tr">Receita/ha</th>
+                            <th class="tr">Custo/ha</th>
+                            <th class="tr">Resultado/ha</th>
+                            <th class="tr">Resultado Total</th>
+                            <th class="tc">Classificação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background:rgba(39,174,96,0.06);">
+                            <td><strong>🥇 1º</strong></td>
+                            <td><strong style="color:var(--success);">NEO 790</strong></td>
+                            <td class="tc">389</td>
+                            <td class="tc" style="color:var(--success);font-weight:700;">76,42</td>
+                            <td class="tr">R$ 9.020</td>
+                            <td class="tr">R$ 6.480</td>
+                            <td class="tr" style="color:var(--success);font-weight:800;">+R$ 2.540</td>
+                            <td class="tr" style="color:var(--success);font-weight:800;">+R$ 988K</td>
+                            <td class="tc"><span class="tag tg">⭐ ELITE</span></td>
+                        </tr>
+                        <tr style="background:rgba(39,174,96,0.04);">
+                            <td><strong>🥈 2º</strong></td>
+                            <td><strong style="color:var(--success);">OLIMPO</strong></td>
+                            <td class="tc">312</td>
+                            <td class="tc" style="color:var(--success);font-weight:700;">74,18</td>
+                            <td class="tr">R$ 8.756</td>
+                            <td class="tr">R$ 6.350</td>
+                            <td class="tr" style="color:var(--success);font-weight:800;">+R$ 2.406</td>
+                            <td class="tr" style="color:var(--success);font-weight:700;">+R$ 751K</td>
+                            <td class="tc"><span class="tag tg">⭐ ELITE</span></td>
+                        </tr>
+                        <tr style="background:rgba(39,174,96,0.03);">
+                            <td><strong>🥉 3º</strong></td>
+                            <td><strong style="color:var(--success);">78IX80</strong></td>
+                            <td class="tc">245</td>
+                            <td class="tc" style="color:var(--success);">74,50</td>
+                            <td class="tr">R$ 8.794</td>
+                            <td class="tr">R$ 6.520</td>
+                            <td class="tr" style="color:var(--success);font-weight:700;">+R$ 2.274</td>
+                            <td class="tr" style="color:var(--success);">+R$ 557K</td>
+                            <td class="tc"><span class="tag tg">⭐ ELITE</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>4º</strong></td>
+                            <td><strong>BRS 8980</strong></td>
+                            <td class="tc">198</td>
+                            <td class="tc">71,30</td>
+                            <td class="tr">R$ 8.417</td>
+                            <td class="tr">R$ 6.410</td>
+                            <td class="tr" style="color:var(--success);">+R$ 2.007</td>
+                            <td class="tr" style="color:var(--success);">+R$ 397K</td>
+                            <td class="tc"><span class="tag tt">✅ BOM</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>5º</strong></td>
+                            <td><strong>M 8349 IPRO</strong></td>
+                            <td class="tc">176</td>
+                            <td class="tc">69,85</td>
+                            <td class="tr">R$ 8.246</td>
+                            <td class="tr">R$ 6.550</td>
+                            <td class="tr" style="color:var(--success);">+R$ 1.696</td>
+                            <td class="tr" style="color:var(--success);">+R$ 298K</td>
+                            <td class="tc"><span class="tag tt">✅ BOM</span></td>
+                        </tr>
+                        <tr>
+                            <td>6º</td>
+                            <td>NS 8338</td>
+                            <td class="tc">155</td>
+                            <td class="tc">68,20</td>
+                            <td class="tr">R$ 8.051</td>
+                            <td class="tr">R$ 6.490</td>
+                            <td class="tr" style="color:var(--success);">+R$ 1.561</td>
+                            <td class="tr" style="color:var(--success);">+R$ 242K</td>
+                            <td class="tc"><span class="tag tb">👍 ACEITÁVEL</span></td>
+                        </tr>
+                        <tr>
+                            <td>7º</td>
+                            <td>TMG 2383</td>
+                            <td class="tc">140</td>
+                            <td class="tc">66,50</td>
+                            <td class="tr">R$ 7.850</td>
+                            <td class="tr">R$ 6.600</td>
+                            <td class="tr" style="color:var(--success);">+R$ 1.250</td>
+                            <td class="tr" style="color:var(--success);">+R$ 175K</td>
+                            <td class="tc"><span class="tag tb">👍 ACEITÁVEL</span></td>
+                        </tr>
+                        <tr style="background:rgba(243,156,18,0.03);">
+                            <td>8º</td>
+                            <td>P 8510</td>
+                            <td class="tc">127</td>
+                            <td class="tc" style="color:var(--warning);">62,40</td>
+                            <td class="tr">R$ 7.367</td>
+                            <td class="tr">R$ 6.780</td>
+                            <td class="tr" style="color:var(--warning);">+R$ 587</td>
+                            <td class="tr" style="color:var(--warning);">+R$ 75K</td>
+                            <td class="tc"><span class="tag ty">⚠️ MARGINAL</span></td>
+                        </tr>
+                        <tr style="background:rgba(243,156,18,0.03);">
+                            <td>9º</td>
+                            <td>AS 3810 IPRO</td>
+                            <td class="tc">115</td>
+                            <td class="tc" style="color:var(--warning);">60,10</td>
+                            <td class="tr">R$ 7.096</td>
+                            <td class="tr">R$ 6.710</td>
+                            <td class="tr" style="color:var(--warning);">+R$ 386</td>
+                            <td class="tr" style="color:var(--warning);">+R$ 44K</td>
+                            <td class="tc"><span class="tag ty">⚠️ MARGINAL</span></td>
+                        </tr>
+                        <tr style="background:rgba(231,76,60,0.03);">
+                            <td>10º</td>
+                            <td style="color:var(--danger);">CZ 48B27</td>
+                            <td class="tc">168</td>
+                            <td class="tc" style="color:var(--danger);">55,20</td>
+                            <td class="tr">R$ 6.515</td>
+                            <td class="tr">R$ 6.890</td>
+                            <td class="tr" style="color:var(--danger);">-R$ 375</td>
+                            <td class="tr" style="color:var(--danger);">-R$ 63K</td>
+                            <td class="tc"><span class="tag tre">🚫 ELIMINAR</span></td>
+                        </tr>
+                        <tr style="background:rgba(231,76,60,0.04);">
+                            <td>11º</td>
+                            <td style="color:var(--danger);">SYN 1687 IPRO</td>
+                            <td class="tc">282</td>
+                            <td class="tc" style="color:var(--danger);">52,80</td>
+                            <td class="tr">R$ 6.232</td>
+                            <td class="tr">R$ 7.050</td>
+                            <td class="tr" style="color:var(--danger);font-weight:700;">-R$ 818</td>
+                            <td class="tr" style="color:var(--danger);font-weight:700;">-R$ 231K</td>
+                            <td class="tc"><span class="tag tre">🚫 ELIMINAR</span></td>
+                        </tr>
+                        <tr style="background:rgba(231,76,60,0.08);">
+                            <td><strong>12º</strong></td>
+                            <td><strong style="color:var(--danger);font-size:1.05rem;">DM 82I78</strong></td>
+                            <td class="tc" style="font-weight:700;">481</td>
+                            <td class="tc" style="color:var(--danger);font-weight:800;">42,15</td>
+                            <td class="tr">R$ 4.973</td>
+                            <td class="tr">R$ 8.867</td>
+                            <td class="tr" style="color:var(--danger);font-weight:900;font-size:1rem;">-R$ 3.894</td>
+                            <td class="tr" style="color:var(--danger);font-weight:900;font-size:1rem;">-R$ 1,87M</td>
+                            <td class="tc"><span class="tag tre" style="font-size:0.8rem;">💀 ELIMINAR JÁ</span></td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr style="background:var(--dark-surface);font-weight:700;">
+                            <td colspan="2"><strong>MÉDIA / TOTAL</strong></td>
+                            <td class="tc">2.788</td>
+                            <td class="tc">67,69</td>
+                            <td class="tr">R$ 7.990</td>
+                            <td class="tr">R$ 6.682</td>
+                            <td class="tr" style="color:var(--success);">+R$ 1.308</td>
+                            <td class="tr" style="color:var(--success);">+R$ 3,65M</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <!-- GRÁFICOS RANKING -->
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(39,174,96,0.15);">📊</div>Resultado por Hectare — Ranking de Cultivares (R$/ha)</div>
+                <div class="chx"><canvas id="chRankRes"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(212,168,67,0.15);">📊</div>Produtividade vs. Resultado/ha — Correlação</div>
+                <div class="chx"><canvas id="chCorrel"></canvas></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 2 — CULTIVARES ELITE -->
+<!-- ================================================== -->
+<section class="section section-alt" id="elite">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">⭐ Cultivares Elite</div>
+            <h2>TOP 3 — O Portfólio que Deve Ser Expandido</h2>
+            <p>NEO 790, OLIMPO e 78IX80 respondem por 34% da área e geram 63% do resultado total positivo</p>
+        </div>
+
+        <!-- CARDS ELITE -->
+        <div class="g3 fi">
+            <div class="cv-card cv-elite">
+                <div class="cv-header">
+                    <div class="cv-name" style="color:var(--success);">🥇 NEO 790</div>
+                    <div class="cv-rank tag tg">ELITE #1</div>
+                </div>
+                <div class="cv-stats">
+                    <div class="cv-stat"><div class="sv vg">76,42</div><div class="sl">Prod. sc/ha</div></div>
+                    <div class="cv-stat"><div class="sv vg">+R$ 2.540</div><div class="sl">Resultado/ha</div></div>
+                    <div class="cv-stat"><div class="sv vy">389 ha</div><div class="sl">Área 24/25</div></div>
+                </div>
+                <div style="margin-top:14px;font-size:0.82rem;color:var(--text-muted);">
+                    ✅ Maior produtividade do portfólio<br>
+                    ✅ Melhor resultado absoluto e por hectare<br>
+                    ✅ Estável em todas as fazendas
+                </div>
+            </div>
+            <div class="cv-card cv-elite">
+                <div class="cv-header">
+                    <div class="cv-name" style="color:var(--success);">🥈 OLIMPO</div>
+                    <div class="cv-rank tag tg">ELITE #2</div>
+                </div>
+                <div class="cv-stats">
+                    <div class="cv-stat"><div class="sv vg">74,18</div><div class="sl">Prod. sc/ha</div></div>
+                    <div class="cv-stat"><div class="sv vg">+R$ 2.406</div><div class="sl">Resultado/ha</div></div>
+                    <div class="cv-stat"><div class="sv vy">312 ha</div><div class="sl">Área 24/25</div></div>
+                </div>
+                <div style="margin-top:14px;font-size:0.82rem;color:var(--text-muted);">
+                    ✅ Excelente ciclo e adaptação<br>
+                    ✅ Custo de semente competitivo<br>
+                    ✅ Destaque em Monte Alegre
+                </div>
+            </div>
+            <div class="cv-card cv-elite">
+                <div class="cv-header">
+                    <div class="cv-name" style="color:var(--success);">🥉 78IX80</div>
+                    <div class="cv-rank tag tg">ELITE #3</div>
+                </div>
+                <div class="cv-stats">
+                    <div class="cv-stat"><div class="sv vg">74,50</div><div class="sl">Prod. sc/ha</div></div>
+                    <div class="cv-stat"><div class="sv vg">+R$ 2.274</div><div class="sl">Resultado/ha</div></div>
+                    <div class="cv-stat"><div class="sv vy">245 ha</div><div class="sl">Área 24/25</div></div>
+                </div>
+                <div style="margin-top:14px;font-size:0.82rem;color:var(--text-muted);">
+                    ✅ Produtividade consistente<br>
+                    ✅ Boa performance no Brejo<br>
+                    ✅ Excelente relação custo/retorno
+                </div>
+            </div>
+        </div>
+
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(39,174,96,0.15);">📊</div>Área x Resultado/ha — Elite vs. Demais</div>
+                <div class="ch"><canvas id="chEliteArea"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(39,174,96,0.15);">📊</div>Contribuição ao Resultado Total — Por Grupo</div>
+                <div class="ch"><canvas id="chEliteContrib"></canvas></div>
+            </div>
+        </div>
+
+        <div class="alert ag fi">
+            <div class="ai">⭐</div>
+            <div>
+                <div class="at">As 3 cultivares elite geram R$ 2,30M — 63% de todo o resultado positivo da soja</div>
+                <div class="ax">Se expandissem de 946 ha (34%) para 1.800 ha (65%) substituindo as cultivares ruins, o resultado adicional seria de <strong>+R$ 1,87M/ano</strong>. Esta é a ação de variedade com maior impacto econômico do portfólio.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 3 — ELIMINAÇÃO -->
+<!-- ================================================== -->
+<section class="section" id="eliminacao">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">🚫 Cultivares para Eliminação</div>
+            <h2>As 3 Variedades que Destroem Valor — R$ 2,16M de Prejuízo</h2>
+            <p>DM 82I78 é a pior cultivar do portfólio por larga margem. Junto com SYN 1687 e CZ 48B27, destroem R$ 2,16M/ano</p>
+        </div>
+
+        <!-- CARDS ELIMINAÇÃO -->
+        <div class="g3 fi">
+            <div class="cv-card cv-bad" style="border-width:3px;">
+                <div class="cv-header">
+                    <div class="cv-name" style="color:var(--danger);font-size:1.3rem;">💀 DM 82I78</div>
+                    <div class="cv-rank tag tre">PIOR DO GRUPO</div>
+                </div>
+                <div class="cv-stats">
+                    <div class="cv-stat"><div class="sv vr">42,15</div><div class="sl">Prod. sc/ha</div></div>
+                    <div class="cv-stat"><div class="sv vr">-R$ 3.894</div><div class="sl">Resultado/ha</div></div>
+                    <div class="cv-stat"><div class="sv vr">481 ha</div><div class="sl">17,2% da área!</div></div>
+                </div>
+                <div style="margin-top:14px;font-size:0.82rem;color:var(--text-muted);">
+                    🚨 Produz 38% menos que NEO 790<br>
+                    🚨 Custo/ha 37% acima da média<br>
+                    🚨 Prejuízo total: <strong style="color:var(--danger);">-R$ 1,87M</strong><br>
+                    🚨 Sozinha destrói 51% do lucro da soja
+                </div>
+            </div>
+            <div class="cv-card cv-bad">
+                <div class="cv-header">
+                    <div class="cv-name" style="color:var(--danger);">🚫 SYN 1687 IPRO</div>
+                    <div class="cv-rank tag tre">ELIMINAR</div>
+                </div>
+                <div class="cv-stats">
+                    <div class="cv-stat"><div class="sv vr">52,80</div><div class="sl">Prod. sc/ha</div></div>
+                    <div class="cv-stat"><div class="sv vr">-R$ 818</div><div class="sl">Resultado/ha</div></div>
+                    <div class="cv-stat"><div class="sv vo">282 ha</div><div class="sl">10,1% da área</div></div>
+                </div>
+                <div style="margin-top:14px;font-size:0.82rem;color:var(--text-muted);">
+                    ❌ 22% abaixo da produtividade média<br>
+                    ❌ Custo elevado de semente IPRO<br>
+                    ❌ Prejuízo: <strong style="color:var(--danger);">-R$ 231K</strong>
+                </div>
+            </div>
+            <div class="cv-card cv-bad">
+                <div class="cv-header">
+                    <div class="cv-name" style="color:var(--danger);">🚫 CZ 48B27</div>
+                    <div class="cv-rank tag tre">ELIMINAR</div>
+                </div>
+                <div class="cv-stats">
+                    <div class="cv-stat"><div class="sv vr">55,20</div><div class="sl">Prod. sc/ha</div></div>
+                    <div class="cv-stat"><div class="sv vr">-R$ 375</div><div class="sl">Resultado/ha</div></div>
+                    <div class="cv-stat"><div class="sv">168 ha</div><div class="sl">6,0% da área</div></div>
+                </div>
+                <div style="margin-top:14px;font-size:0.82rem;color:var(--text-muted);">
+                    ❌ 18% abaixo da produtividade média<br>
+                    ❌ Custo/ha desalinhado<br>
+                    ❌ Prejuízo: <strong style="color:var(--danger);">-R$ 63K</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(231,76,60,0.15);">📊</div>DM 82I78 em Detalhe — Comparação com o Portfólio</div>
+            <div class="chl"><canvas id="chDM82detail"></canvas></div>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(231,76,60,0.15);">💸</div>Impacto Econômico: Se DM 82I78 Fosse Substituída por NEO 790</div>
+            <div class="ch"><canvas id="chDM82swap"></canvas></div>
+        </div>
+
+        <div class="alert ar fi">
+            <div class="ai">🚨</div>
+            <div>
+                <div class="at">DM 82I78: Ocupa 17,2% da área e destrói R$ 1,87M — Eliminação imediata</div>
+                <div class="ax">
+                    Se os <strong>481 hectares da DM 82I78</strong> fossem plantados com NEO 790 (prod. 76,42 sc/ha):<br>
+                    • Resultado sairia de <strong>-R$ 1,87M → +R$ 1,22M</strong> = ganho de <strong>R$ 3,09M</strong><br>
+                    • Resultado total da soja saltaria de <strong>R$ 3,65M → R$ 6,74M (+85%)</strong><br>
+                    • Margem da soja: <strong>16,4% → 27,5%</strong><br><br>
+                    Esta é a <strong>ação agronômica com maior impacto financeiro</strong> de todo o relatório.
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 4 — POR FAZENDA -->
+<!-- ================================================== -->
+<section class="section section-alt" id="fazendas">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">Performance por Fazenda</div>
+            <h2>Como Cada Cultivar Performa em Cada Fazenda?</h2>
+            <p>A mesma variedade pode ter resultados diferentes dependendo do solo, altitude e manejo local</p>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(212,168,67,0.15);">🏠</div>Produtividade por Cultivar × Fazenda (sc/ha)</div>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Cultivar</th>
+                            <th class="tc">Monte Alegre</th>
+                            <th class="tc">Brejo</th>
+                            <th class="tc">UBV</th>
+                            <th class="tc">Média Grupo</th>
+                            <th class="tc">Variação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background:rgba(39,174,96,0.04);">
+                            <td><strong style="color:var(--success);">NEO 790</strong></td>
+                            <td class="tc" style="color:var(--success);font-weight:700;">80,15</td>
+                            <td class="tc" style="color:var(--success);">74,80</td>
+                            <td class="tc" style="color:var(--success);">71,50</td>
+                            <td class="tc" style="font-weight:700;">76,42</td>
+                            <td class="tc"><span class="tag tg">±5,6%</span></td>
+                        </tr>
+                        <tr style="background:rgba(39,174,96,0.03);">
+                            <td><strong style="color:var(--success);">OLIMPO</strong></td>
+                            <td class="tc" style="color:var(--success);">78,30</td>
+                            <td class="tc">72,40</td>
+                            <td class="tc">68,20</td>
+                            <td class="tc" style="font-weight:700;">74,18</td>
+                            <td class="tc"><span class="tag tg">±6,8%</span></td>
+                        </tr>
+                        <tr style="background:rgba(39,174,96,0.02);">
+                            <td><strong style="color:var(--success);">78IX80</strong></td>
+                            <td class="tc" style="color:var(--success);">77,20</td>
+                            <td class="tc">74,60</td>
+                            <td class="tc">69,10</td>
+                            <td class="tc" style="font-weight:700;">74,50</td>
+                            <td class="tc"><span class="tag tg">±5,4%</span></td>
+                        </tr>
+                        <tr>
+                            <td>BRS 8980</td>
+                            <td class="tc">74,50</td>
+                            <td class="tc">70,80</td>
+                            <td class="tc">65,40</td>
+                            <td class="tc">71,30</td>
+                            <td class="tc"><span class="tag tb">±6,4%</span></td>
+                        </tr>
+                        <tr>
+                            <td>M 8349 IPRO</td>
+                            <td class="tc">73,20</td>
+                            <td class="tc">68,50</td>
+                            <td class="tc">64,80</td>
+                            <td class="tc">69,85</td>
+                            <td class="tc"><span class="tag tb">±6,0%</span></td>
+                        </tr>
+                        <tr>
+                            <td>NS 8338</td>
+                            <td class="tc">71,40</td>
+                            <td class="tc">67,80</td>
+                            <td class="tc">62,10</td>
+                            <td class="tc">68,20</td>
+                            <td class="tc"><span class="tag tb">±6,8%</span></td>
+                        </tr>
+                        <tr>
+                            <td>TMG 2383</td>
+                            <td class="tc">70,20</td>
+                            <td class="tc">65,30</td>
+                            <td class="tc">60,80</td>
+                            <td class="tc">66,50</td>
+                            <td class="tc"><span class="tag ty">±7,1%</span></td>
+                        </tr>
+                        <tr style="background:rgba(231,76,60,0.03);">
+                            <td style="color:var(--danger);">DM 82I78</td>
+                            <td class="tc" style="color:var(--danger);">48,20</td>
+                            <td class="tc" style="color:var(--danger);">40,50</td>
+                            <td class="tc" style="color:var(--danger);font-weight:700;">34,30</td>
+                            <td class="tc" style="color:var(--danger);font-weight:700;">42,15</td>
+                            <td class="tc"><span class="tag tre">±16,5%</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(39,174,96,0.15);">📊</div>Produtividade por Cultivar × Fazenda</div>
+                <div class="chl"><canvas id="chFazCult"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(212,168,67,0.15);">📊</div>Heatmap: Resultado/ha por Cultivar × Fazenda</div>
+                <div class="chl"><canvas id="chHeatmap"></canvas></div>
+            </div>
+        </div>
+
+        <div class="ins fi">
+            <h4>🏠 Insights por Fazenda × Cultivar</h4>
+            <ul>
+                <li><strong>Monte Alegre:</strong> Todas as cultivares performam acima da média — solo e manejo superiores</li>
+                <li><strong>Brejo:</strong> Performance alinhada com a média — bom potencial de ganho com cultivares elite</li>
+                <li><strong>UBV:</strong> Todas as cultivares performam abaixo — <strong>indica problema de solo/ambiente, não de cultivar</strong></li>
+                <li><strong>DM 82I78:</strong> Pior em TODAS as fazendas — problema é da cultivar, não do ambiente. Confirmação de eliminação.</li>
+                <li><strong>NEO 790:</strong> Melhor em TODAS as fazendas — confirmação de expansão universal</li>
+                <li><strong>Variação UBV vs Monte Alegre:</strong> Média de -11 sc/ha → reforça necessidade de diagnóstico de solo da UBV</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 5 — DISPERSÃO E RISCO -->
+<!-- ================================================== -->
+<section class="section" id="dispersao">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">Dispersão e Consistência</div>
+            <h2>Risco Agronômico — Qual Cultivar é Mais Confiável?</h2>
+            <p>Além da produtividade, importa a consistência: cultivares com menor variação entre talhões e fazendas são mais seguras</p>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(41,128,185,0.15);">📈</div>Dispersão de Produtividade entre Talhões — Box Plot Simulado</div>
+            <div class="chx"><canvas id="chDispersao"></canvas></div>
+        </div>
+
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(142,68,173,0.15);">📊</div>Produtividade Média vs. Coeficiente de Variação</div>
+                <div class="ch"><canvas id="chProdCV"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(26,188,156,0.15);">📊</div>Resultado/ha × Área Plantada — Mapa de Decisão</div>
+                <div class="ch"><canvas id="chBubble"></canvas></div>
+            </div>
+        </div>
+
+        <div class="alert ab fi">
+            <div class="ai">📐</div>
+            <div>
+                <div class="at">NEO 790 e 78IX80: Altas produtividades COM baixa variação — o melhor dos dois mundos</div>
+                <div class="ax">Estas cultivares combinam produtividade ≥74 sc/ha com coeficiente de variação ≤8%. São as mais confiáveis para expansão. DM 82I78 tem CV de 16,5% — além de baixa produtividade, é instável.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 6 — DECISÃO 25/26 -->
+<!-- ================================================== -->
+<section class="section section-alt" id="decisao">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">🎯 Decisão Safra 2025/2026</div>
+            <h2>Portfólio Recomendado — Rebalanceamento de Cultivares</h2>
+            <p>Como realocar a área entre cultivares para maximizar resultado com risco controlado</p>
+        </div>
+
+        <!-- ANTES vs DEPOIS -->
+        <div class="g2 fi">
+            <div class="card" style="border-left:4px solid var(--danger);">
+                <div class="ct" style="color:var(--danger);">📅 Portfólio 24/25 (Atual)</div>
+                <div class="chs"><canvas id="chPortAtual"></canvas></div>
+                <div style="text-align:center;margin-top:14px;">
+                    <div style="font-size:0.82rem;color:var(--text-muted);">Resultado Total Soja</div>
+                    <div style="font-size:1.8rem;font-weight:900;color:var(--success);">R$ 3,65M</div>
+                    <div style="font-size:0.78rem;color:var(--text-muted);">12 cultivares | 33% área com prejuízo</div>
+                </div>
+            </div>
+            <div class="card" style="border-left:4px solid var(--success);">
+                <div class="ct" style="color:var(--success);">🎯 Portfólio 25/26 (Recomendado)</div>
+                <div class="chs"><canvas id="chPortNovo"></canvas></div>
+                <div style="text-align:center;margin-top:14px;">
+                    <div style="font-size:0.82rem;color:var(--text-muted);">Resultado Projetado Soja</div>
+                    <div style="font-size:1.8rem;font-weight:900;color:var(--success);">R$ 5,52M</div>
+                    <div style="font-size:0.78rem;color:var(--success);">7 cultivares | 0% área com prejuízo | +51%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABELA REBALANCEAMENTO -->
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(212,168,67,0.15);">📋</div>Plano de Rebalanceamento — 24/25 → 25/26</div>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Cultivar</th>
+                            <th class="tc">Área 24/25</th>
+                            <th class="tc">Área 25/26</th>
+                            <th class="tc">Variação</th>
+                            <th class="tc">Ação</th>
+                            <th class="tr">Impacto R$/ano</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background:rgba(39,174,96,0.05);">
+                            <td><strong style="color:var(--success);">NEO 790</strong></td>
+                            <td class="tc">389 ha (14%)</td>
+                            <td class="tc" style="font-weight:700;color:var(--success);">750 ha (27%)</td>
+                            <td class="tc" style="color:var(--success);">+361 ha</td>
+                            <td class="tc"><span class="tag tg">⬆ EXPANDIR</span></td>
+                            <td class="tr" style="color:var(--success);font-weight:700;">+R$ 917K</td>
+                        </tr>
+                        <tr style="background:rgba(39,174,96,0.04);">
+                            <td><strong style="color:var(--success);">OLIMPO</strong></td>
+                            <td class="tc">312 ha (11%)</td>
+                            <td class="tc" style="font-weight:700;color:var(--success);">600 ha (21%)</td>
+                            <td class="tc" style="color:var(--success);">+288 ha</td>
+                            <td class="tc"><span class="tag tg">⬆ EXPANDIR</span></td>
+                            <td class="tr" style="color:var(--success);">+R$ 693K</td>
+                        </tr>
+                        <tr style="background:rgba(39,174,96,0.03);">
+                            <td><strong style="color:var(--success);">78IX80</strong></td>
+                            <td class="tc">245 ha (9%)</td>
+                            <td class="tc" style="font-weight:700;color:var(--success);">500 ha (18%)</td>
+                            <td class="tc" style="color:var(--success);">+255 ha</td>
+                            <td class="tc"><span class="tag tg">⬆ EXPANDIR</span></td>
+                            <td class="tr" style="color:var(--success);">+R$ 580K</td>
+                        </tr>
+                        <tr>
+                            <td>BRS 8980</td>
+                            <td class="tc">198 ha (7%)</td>
+                            <td class="tc">350 ha (13%)</td>
+                            <td class="tc" style="color:var(--info);">+152 ha</td>
+                            <td class="tc"><span class="tag tb">⬆ EXPANDIR</span></td>
+                            <td class="tr" style="color:var(--success);">+R$ 305K</td>
+                        </tr>
+                        <tr>
+                            <td>M 8349 IPRO</td>
+                            <td class="tc">176 ha (6%)</td>
+                            <td class="tc">280 ha (10%)</td>
+                            <td class="tc" style="color:var(--info);">+104 ha</td>
+                            <td class="tc"><span class="tag tb">⬆ MANTER+</span></td>
+                            <td class="tr" style="color:var(--success);">+R$ 176K</td>
+                        </tr>
+                        <tr>
+                            <td>NS 8338</td>
+                            <td class="tc">155 ha (6%)</td>
+                            <td class="tc">180 ha (6%)</td>
+                            <td class="tc">+25 ha</td>
+                            <td class="tc"><span class="tag tb">= MANTER</span></td>
+                            <td class="tr">+R$ 39K</td>
+                        </tr>
+                        <tr>
+                            <td>TMG 2383</td>
+                            <td class="tc">140 ha (5%)</td>
+                            <td class="tc">140 ha (5%)</td>
+                            <td class="tc">—</td>
+                            <td class="tc"><span class="tag tb">= MANTER</span></td>
+                            <td class="tr">—</td>
+                        </tr>
+                        <tr style="background:rgba(243,156,18,0.03);">
+                            <td style="color:var(--warning);">P 8510</td>
+                            <td class="tc">127 ha (5%)</td>
+                            <td class="tc" style="color:var(--warning);">0 ha</td>
+                            <td class="tc" style="color:var(--danger);">-127 ha</td>
+                            <td class="tc"><span class="tag ty">⬇ REMOVER</span></td>
+                            <td class="tc">Libera área</td>
+                        </tr>
+                        <tr style="background:rgba(243,156,18,0.03);">
+                            <td style="color:var(--warning);">AS 3810 IPRO</td>
+                            <td class="tc">115 ha (4%)</td>
+                            <td class="tc" style="color:var(--warning);">0 ha</td>
+                            <td class="tc" style="color:var(--danger);">-115 ha</td>
+                            <td class="tc"><span class="tag ty">⬇ REMOVER</span></td>
+                            <td class="tc">Libera área</td>
+                        </tr>
+                        <tr style="background:rgba(231,76,60,0.04);">
+                            <td style="color:var(--danger);">CZ 48B27</td>
+                            <td class="tc">168 ha (6%)</td>
+                            <td class="tc" style="color:var(--danger);font-weight:700;">0 ha</td>
+                            <td class="tc" style="color:var(--danger);">-168 ha</td>
+                            <td class="tc"><span class="tag tre">🚫 ELIMINAR</span></td>
+                            <td class="tr" style="color:var(--success);">+R$ 63K</td>
+                        </tr>
+                        <tr style="background:rgba(231,76,60,0.04);">
+                            <td style="color:var(--danger);">SYN 1687 IPRO</td>
+                            <td class="tc">282 ha (10%)</td>
+                            <td class="tc" style="color:var(--danger);font-weight:700;">0 ha</td>
+                            <td class="tc" style="color:var(--danger);">-282 ha</td>
+                            <td class="tc"><span class="tag tre">🚫 ELIMINAR</span></td>
+                            <td class="tr" style="color:var(--success);">+R$ 231K</td>
+                        </tr>
+                        <tr style="background:rgba(231,76,60,0.08);">
+                            <td><strong style="color:var(--danger);">DM 82I78</strong></td>
+                            <td class="tc" style="font-weight:700;">481 ha (17%)</td>
+                            <td class="tc" style="color:var(--danger);font-weight:900;">0 ha</td>
+                            <td class="tc" style="color:var(--danger);font-weight:700;">-481 ha</td>
+                            <td class="tc"><span class="tag tre" style="font-size:0.8rem;">💀 ELIMINAR</span></td>
+                            <td class="tr" style="color:var(--success);font-weight:800;">+R$ 1,87M</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr style="background:var(--dark-surface);font-weight:700;">
+                            <td><strong>TOTAL</strong></td>
+                            <td class="tc">2.788 ha</td>
+                            <td class="tc">2.800 ha</td>
+                            <td class="tc">+12 ha</td>
+                            <td></td>
+                            <td class="tr" style="color:var(--success);font-weight:800;">+R$ 1,87M</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <!-- WATERFALL RESULTADO -->
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(39,174,96,0.15);">🚀</div>Impacto no Resultado — De R$ 3,65M para R$ 5,52M</div>
+            <div class="chl"><canvas id="chWaterfall"></canvas></div>
+        </div>
+
+        <!-- CONCLUSÃO -->
+        <div style="background:linear-gradient(135deg,var(--primary),var(--primary-light,#146B4A));border-radius:20px;padding:50px 40px;text-align:center;margin-top:30px;" class="fi">
+            <div style="font-size:0.8rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--secondary);margin-bottom:12px;">Conclusão — Variedades</div>
+            <h2 style="font-size:1.8rem;margin-bottom:20px;">O portfólio de variedades é a segunda maior alavanca de resultado</h2>
+            <p style="color:rgba(255,255,255,0.7);font-size:1rem;max-width:700px;margin:0 auto 30px;">
+                Apenas reorganizando as variedades — sem mudar área, sem mudar preço, sem investimento adicional — 
+                o resultado da soja salta <strong style="color:var(--secondary);">51%</strong>. A DM 82I78 sozinha custa 
+                <strong style="color:var(--danger);">R$ 1,87M/ano</strong> ao grupo.
+            </p>
+            <div style="display:flex;justify-content:center;gap:50px;flex-wrap:wrap;">
+                <div>
+                    <div style="font-size:2.2rem;font-weight:900;color:var(--secondary);">R$ 3,65M</div>
+                    <div style="color:rgba(255,255,255,0.5);font-size:0.8rem;">Soja 24/25</div>
+                </div>
+                <div style="display:flex;align-items:center;font-size:1.8rem;color:var(--secondary);">→</div>
+                <div>
+                    <div style="font-size:2.2rem;font-weight:900;color:var(--success);">R$ 5,52M</div>
+                    <div style="color:rgba(255,255,255,0.5);font-size:0.8rem;">Soja 25/26 (projetado)</div>
+                </div>
+                <div style="display:flex;align-items:center;font-size:1.8rem;color:var(--secondary);">→</div>
+                <div>
+                    <div style="font-size:2.2rem;font-weight:900;color:var(--secondary);">+51%</div>
+                    <div style="color:rgba(255,255,255,0.5);font-size:0.8rem;">Crescimento</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="container">
+        <p class="brand">Dr. Sidney Souza</p>
+        <p>Análise de Variedades de Soja — Grupo ZAFER — Safra 2024/2025</p>
+        <p>Rio Verde, GO — Março/2026</p>
+    </div>
+</footer>
+
+<!-- ===================================================== -->
+<!-- SCRIPTS -->
+<!-- ===================================================== -->
+<script>
+Chart.register(ChartDataLabels);
+const C={g:'#27AE60',gl:'rgba(39,174,96,0.25)',r:'#E74C3C',rl:'rgba(231,76,60,0.25)',y:'#D4A843',yl:'rgba(212,168,67,0.25)',b:'#2980B9',bl:'rgba(41,128,185,0.25)',o:'#E67E22',ol:'rgba(230,126,34,0.25)',p:'#8E44AD',t:'#1ABC9C',w:'#ECF0F1',m:'#95A5A6',d:'#1A1A2E'};
+const D={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:C.w,font:{size:11}}},datalabels:{display:false}},scales:{x:{ticks:{color:C.m,font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'}},y:{ticks:{color:C.m},grid:{color:'rgba(255,255,255,0.04)'}}}};
+
+const cvNomes=['NEO 790','OLIMPO','78IX80','BRS 8980','M 8349','NS 8338','TMG 2383','P 8510','AS 3810','CZ 48B27','SYN 1687','DM 82I78'];
+const cvProd=[76.42,74.18,74.50,71.30,69.85,68.20,66.50,62.40,60.10,55.20,52.80,42.15];
+const cvResHa=[2540,2406,2274,2007,1696,1561,1250,587,386,-375,-818,-3894];
+const cvAreas=[389,312,245,198,176,155,140,127,115,168,282,481];
+const cvCores=[C.g,C.g,C.g,C.t,C.t,C.b,C.b,C.y,C.y,C.r,C.r,C.r];
+
+// ===== RANKING RESULTADO/HA =====
+new Chart(document.getElementById('chRankRes'),{
+    type:'bar',
+    data:{labels:cvNomes,datasets:[{data:cvResHa,backgroundColor:cvCores,borderRadius:6}]},
+    options:{...D,indexAxis:'y',plugins:{...D.plugins,legend:{display:false},datalabels:{display:true,anchor:ctx=>ctx.dataset.data[ctx.dataIndex]>=0?'end':'start',align:ctx=>ctx.dataset.data[ctx.dataIndex]>=0?'right':'left',color:C.w,font:{weight:'bold',size:10},formatter:v=>(v>=0?'+':'')+v.toLocaleString('pt-BR')}},scales:{x:{...D.scales.x,ticks:{callback:v=>'R$ '+v.toLocaleString('pt-BR')}},y:{...D.scales.y,grid:{display:false}}}}
+});
+
+// ===== CORRELAÇÃO PROD vs RESULTADO =====
+new Chart(document.getElementById('chCorrel'),{
+    type:'scatter',
+    data:{datasets:cvNomes.map((n,i)=>({
+        label:n,data:[{x:cvProd[i],y:cvResHa[i]}],backgroundColor:cvCores[i],pointRadius:Math.max(8,cvAreas[i]/30),pointHoverRadius:Math.max(12,cvAreas[i]/25)
+    }))},
+    options:{...D,plugins:{...D.plugins,datalabels:{display:true,align:'right',offset:10,color:C.w,font:{size:8,weight:'bold'},formatter:(v,ctx)=>ctx.dataset.label}},scales:{
+        x:{title:{display:true,text:'Produtividade (sc/ha) →',color:C.y,font:{weight:'bold'}},ticks:{color:C.m},grid:{color:'rgba(255,255,255,0.04)'},min:35,max:85},
+        y:{title:{display:true,text:'Resultado (R$/ha) →',color:C.y,font:{weight:'bold'}},ticks:{color:C.m,callback:v=>'R$ '+v},grid:{color:'rgba(255,255,255,0.04)'},min:-4500,max:3500}
+    }}
+});
+
+// ===== ELITE: ÁREA x RESULTADO =====
+new Chart(document.getElementById('chEliteArea'),{
+    type:'bar',
+    data:{labels:cvNomes,datasets:[
+        {label:'Área (ha)',data:cvAreas,backgroundColor:cvCores.map(c=>c+'40'),borderColor:cvCores,borderWidth:2,borderRadius:4,yAxisID:'y'},
+        {label:'Resultado/ha (R$)',data:cvResHa,type:'line',borderColor:C.y,pointBackgroundColor:cvCores,pointRadius:7,borderWidth:2,tension:0.3,yAxisID:'y1'}
+    ]},
+    options:{...D,scales:{
+        x:{...D.scales.x,ticks:{maxRotation:45,font:{size:9}}},
+        y:{position:'left',ticks:{color:C.m},grid:{color:'rgba(255,255,255,0.04)'},title:{display:true,text:'Área (ha)',color:C.m}},
+        y1:{position:'right',ticks:{color:C.y,callback:v=>'R$'+v},grid:{drawOnChartArea:false},title:{display:true,text:'Resultado/ha',color:C.y}}
+    }}
+});
+
+// ===== ELITE: CONTRIBUIÇÃO =====
+new Chart(document.getElementById('chEliteContrib'),{
+    type:'doughnut',
+    data:{labels:['Elite (NEO+OLIMPO+78IX) — R$2,30M','Boas (BRS+M8349) — R$0,70M','Aceitáveis (NS+TMG) — R$0,42M','Marginais (P8510+AS) — R$0,12M','Destrutivas (CZ+SYN+DM) — -R$2,16M'],
+        datasets:[{data:[2.30,0.70,0.42,0.12,2.16],backgroundColor:[C.g,C.t,C.b,C.y,C.r],borderColor:C.d,borderWidth:3}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{position:'bottom',labels:{color:C.w,padding:10,font:{size:10}}},datalabels:{display:true,color:C.w,font:{weight:'bold',size:12},formatter:v=>'R$'+v.toFixed(1)+'M'}}}
+});
+
+// ===== DM 82I78 DETAIL =====
+new Chart(document.getElementById('chDM82detail'),{
+    type:'bar',
+    data:{labels:['Produtividade\n(sc/ha)','Receita/ha\n(R$)','Custo/ha\n(R$)','Resultado/ha\n(R$)'],
+        datasets:[
+            {label:'DM 82I78',data:[42.15,4973,8867,-3894],backgroundColor:C.rl,borderColor:C.r,borderWidth:2,borderRadius:4},
+            {label:'NEO 790 (Best)',data:[76.42,9020,6480,2540],backgroundColor:C.gl,borderColor:C.g,borderWidth:2,borderRadius:4},
+            {label:'Média Grupo',data:[67.69,7990,6682,1308],backgroundColor:C.yl,borderColor:C.y,borderWidth:2,borderRadius:4}
+        ]},
+    options:{...D,plugins:{...D.plugins,datalabels:{display:true,anchor:'end',align:'top',color:C.w,font:{weight:'bold',size:9}}}}
+});
+
+// ===== DM82 SWAP =====
+new Chart(document.getElementById('chDM82swap'),{
+    type:'bar',
+    data:{labels:['DM 82I78\n(481 ha × -R$3.894)','Substituir por\nNEO 790','Ganho Líquido\n(na mesma área)'],
+        datasets:[
+            {label:'Base',data:[0,-1.87,0],backgroundColor:'transparent'},
+            {label:'Valor',data:[-1.87,3.09,1.22],backgroundColor:[C.r,C.g,C.y],borderRadius:8}
+        ]},
+    options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:ctx=>ctx.datasetIndex===1,anchor:ctx=>ctx.dataset.data[ctx.dataIndex]>=0?'end':'start',align:ctx=>ctx.dataset.data[ctx.dataIndex]>=0?'top':'bottom',color:C.w,font:{weight:'bold',size:14},formatter:v=>(v>=0?'+':'')+v.toFixed(2)+'M'}},scales:{x:{...D.scales.x,stacked:true},y:{...D.scales.y,stacked:true,ticks:{callback:v=>'R$ '+v+'M'}}}}
+});
+
+// ===== FAZ x CULT =====
+new Chart(document.getElementById('chFazCult'),{
+    type:'bar',
+    data:{labels:['NEO 790','OLIMPO','78IX80','BRS 8980','M 8349','NS 8338','TMG 2383','DM 82I78'],
+        datasets:[
+            {label:'Monte Alegre',data:[80.15,78.30,77.20,74.50,73.20,71.40,70.20,48.20],backgroundColor:C.g,borderRadius:3},
+            {label:'Brejo',data:[74.80,72.40,74.60,70.80,68.50,67.80,65.30,40.50],backgroundColor:C.t,borderRadius:3},
+            {label:'UBV',data:[71.50,68.20,69.10,65.40,64.80,62.10,60.80,34.30],backgroundColor:C.o,borderRadius:3}
+        ]},
+    options:{...D,plugins:{...D.plugins,datalabels:{display:false}},scales:{x:{...D.scales.x,ticks:{maxRotation:45,font:{size:9}}},y:{...D.scales.y,min:25,max:90,ticks:{callback:v=>v+' sc'}}}}
+});
+
+// ===== HEATMAP =====
+const heatLabels=['NEO 790','OLIMPO','78IX80','BRS 8980','DM 82I78'];
+const heatMA=[2900,2750,2680,2350,-2200];
+const heatBJ=[2300,2100,2400,1900,-3200];
+const heatUBV=[1700,1400,1500,1050,-4800];
+new Chart(document.getElementById('chHeatmap'),{
+    type:'bar',
+    data:{labels:heatLabels,datasets:[
+        {label:'Monte Alegre',data:heatMA,backgroundColor:heatMA.map(v=>v>0?C.g:C.r),borderRadius:3},
+        {label:'Brejo',data:heatBJ,backgroundColor:heatBJ.map(v=>v>0?C.t:C.r),borderRadius:3},
+        {label:'UBV',data:heatUBV,backgroundColor:heatUBV.map(v=>v>0?C.o:C.r),borderRadius:3}
+    ]},
+    options:{...D,plugins:{...D.plugins,datalabels:{display:true,color:C.w,font:{weight:'bold',size:8},formatter:v=>(v>=0?'+':'')+v}},scales:{x:D.scales.x,y:{...D.scales.y,ticks:{callback:v=>'R$ '+v}}}}
+});
+
+// ===== DISPERSÃO =====
+const dispData=cvNomes.slice(0,7).concat(['DM 82I78']);
+const dispMin=[70,68,69,65,63,62,60,32];
+const dispMax=[82,80,81,78,76,74,73,52];
+const dispMed=[76.42,74.18,74.50,71.30,69.85,68.20,66.50,42.15];
+new Chart(document.getElementById('chDispersao'),{
+    type:'bar',
+    data:{labels:dispData,datasets:[
+        {label:'Mín.',data:dispMin,backgroundColor:'transparent',borderColor:C.r,borderWidth:2,borderRadius:4},
+        {label:'Amplitude',data:dispMax.map((v,i)=>v-dispMin[i]),backgroundColor:dispData.map((_,i)=>i<3?C.gl:i<7?C.bl:C.rl),borderRadius:4},
+        {label:'Média',data:dispMed,type:'line',borderColor:C.y,pointBackgroundColor:dispData.map((_,i)=>i<3?C.g:i<7?C.b:C.r),pointRadius:8,borderWidth:2,borderDash:[5,5]}
+    ]},
+    options:{...D,plugins:{...D.plugins,datalabels:{display:ctx=>ctx.datasetIndex===2,color:C.w,font:{weight:'bold',size:11},formatter:v=>v.toFixed(1)}},scales:{x:{...D.scales.x,stacked:true,ticks:{maxRotation:45,font:{size:9}}},y:{...D.scales.y,stacked:true,min:25,max:90,ticks:{callback:v=>v+' sc'}}}}
+});
+
+// ===== PROD vs CV =====
+new Chart(document.getElementById('chProdCV'),{
+    type:'scatter',
+    data:{datasets:[
+        {label:'NEO 790',data:[{x:76.42,y:5.6}],backgroundColor:C.g,pointRadius:16},
+        {label:'OLIMPO',data:[{x:74.18,y:6.8}],backgroundColor:C.g,pointRadius:14},
+        {label:'78IX80',data:[{x:74.50,y:5.4}],backgroundColor:C.g,pointRadius:12},
+        {label:'BRS 8980',data:[{x:71.30,y:6.4}],backgroundColor:C.t,pointRadius:11},
+        {label:'M 8349',data:[{x:69.85,y:6.0}],backgroundColor:C.b,pointRadius:10},
+        {label:'TMG 2383',data:[{x:66.50,y:7.1}],backgroundColor:C.b,pointRadius:9},
+        {label:'DM 82I78',data:[{x:42.15,y:16.5}],backgroundColor:C.r,pointRadius:18}
+    ]},
+    options:{...D,plugins:{...D.plugins,datalabels:{display:true,align:'right',offset:12,color:C.w,font:{size:9,weight:'bold'},formatter:(v,ctx)=>ctx.dataset.label}},scales:{
+        x:{title:{display:true,text:'Produtividade (sc/ha) →',color:C.y,font:{weight:'bold'}},ticks:{color:C.m},grid:{color:'rgba(255,255,255,0.04)'},min:35,max:85},
+        y:{title:{display:true,text:'← Coef. Variação (%) — menor = mais estável',color:C.y,font:{weight:'bold'}},ticks:{color:C.m},grid:{color:'rgba(255,255,255,0.04)'},min:0,max:20,reverse:false}
+    }}
+});
+
+// ===== BUBBLE MAP =====
+new Chart(document.getElementById('chBubble'),{
+    type:'bubble',
+    data:{datasets:cvNomes.map((n,i)=>({
+        label:n,data:[{x:cvResHa[i],y:cvProd[i],r:Math.max(5,cvAreas[i]/25)}],backgroundColor:cvCores[i]+'80',borderColor:cvCores[i],borderWidth:2
+    }))},
+    options:{...D,plugins:{...D.plugins,datalabels:{display:true,color:C.w,font:{size:7,weight:'bold'},formatter:(v,ctx)=>ctx.dataset.label}},scales:{
+        x:{title:{display:true,text:'Resultado/ha (R$) →',color:C.y,font:{weight:'bold'}},ticks:{color:C.m,callback:v=>'R$'+v},grid:{color:'rgba(255,255,255,0.04)'}},
+        y:{title:{display:true,text:'Produtividade (sc/ha) →',color:C.y,font:{weight:'bold'}},ticks:{color:C.m},grid:{color:'rgba(255,255,255,0.04)'},min:35,max:85}
+    }}
+});
+
+// ===== PORTFÓLIO ATUAL =====
+new Chart(document.getElementById('chPortAtual'),{
+    type:'doughnut',
+    data:{labels:['NEO 790 (14%)','OLIMPO (11%)','78IX80 (9%)','BRS 8980 (7%)','M 8349 (6%)','NS 8338 (6%)','TMG 2383 (5%)','Marginais (9%)','Destrutivas (33%)'],
+        datasets:[{data:[389,312,245,198,176,155,140,242,931],backgroundColor:[C.g,C.g,C.g,C.t,C.t,C.b,C.b,C.y,C.r],borderColor:C.d,borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{legend:{position:'right',labels:{color:C.w,padding:8,font:{size:9}}},datalabels:{display:false}}}
+});
+
+// ===== PORTFÓLIO NOVO =====
+new Chart(document.getElementById('chPortNovo'),{
+    type:'doughnut',
+    data:{labels:['NEO 790 (27%)','OLIMPO (21%)','78IX80 (18%)','BRS 8980 (13%)','M 8349 (10%)','NS 8338 (6%)','TMG 2383 (5%)'],
+        datasets:[{data:[750,600,500,350,280,180,140],backgroundColor:[C.g,C.g,C.g,C.t,C.t,C.b,C.b],borderColor:C.d,borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{legend:{position:'right',labels:{color:C.w,padding:8,font:{size:9}}},datalabels:{display:false}}}
+});
+
+// ===== WATERFALL =====
+new Chart(document.getElementById('chWaterfall'),{
+    type:'bar',
+    data:{labels:['Resultado\n24/25','Eliminar\nDM 82I78','Eliminar\nSYN 1687','Eliminar\nCZ 48B27','Expandir\nElite','Resultado\n25/26'],
+        datasets:[
+            {label:'Base',data:[0,3.65,5.52,5.75,5.14,0],backgroundColor:'transparent'},
+            {label:'Valor',data:[3.65,1.87,0.23,0.06,0.38,5.52],backgroundColor:[C.y,C.g,C.g,C.g,C.g,C.y],borderRadius:8}
+        ]},
+    options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:ctx=>ctx.datasetIndex===1,anchor:'end',align:'top',color:C.w,font:{weight:'bold',size:13},formatter:v=>'+R$ '+v.toFixed(2)+'M'}},scales:{x:{...D.scales.x,stacked:true},y:{...D.scales.y,stacked:true,max:8,ticks:{callback:v=>'R$ '+v+'M'}}}}
+});
+
+// SCROLL
+const obs=new IntersectionObserver(e=>{e.forEach(el=>{if(el.isIntersecting)el.target.classList.add('visible')})},{threshold:0.08});
+document.querySelectorAll('.fi').forEach(el=>obs.observe(el));
+window.addEventListener('scroll',()=>{
+    const ids=['visao','ranking','elite','eliminacao','fazendas','dispersao','decisao'];
+    let cur='';ids.forEach(id=>{const el=document.getElementById(id);if(el&&window.scrollY>=el.offsetTop-200)cur=id;});
+    document.querySelectorAll('.nav-links a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+cur));
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grupo ZAFER — Central de Painéis</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        :root{
+            --bg:#080812;--card:#0E0E22;--surface:#141432;--border:rgba(255,255,255,0.06);
+            --gold:#D4A843;--gold-soft:rgba(212,168,67,0.12);
+            --emerald:#27AE60;--emerald-soft:rgba(39,174,96,0.12);
+            --ruby:#E74C3C;--ruby-soft:rgba(231,76,60,0.12);
+            --sapphire:#2980B9;--sapphire-soft:rgba(41,128,185,0.12);
+            --amber:#F39C12;--amber-soft:rgba(243,156,18,0.12);
+            --purple:#9B59B6;--purple-soft:rgba(155,89,182,0.12);
+            --text:#ECF0F1;--text-muted:#7F8C8D;--platinum:#BDC3C7;
+        }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased;min-height:100vh;}
+
+        /* HEADER */
+        .header{padding:32px 0 24px;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(8,8,18,0.95);backdrop-filter:blur(20px);z-index:50;}
+        .container{max-width:1200px;margin:0 auto;padding:0 24px;}
+        .header-inner{display:flex;justify-content:space-between;align-items:center;}
+        .header-left{display:flex;align-items:center;gap:14px;}
+        .logo-diamond{width:14px;height:14px;background:var(--gold);transform:rotate(45deg);animation:pulse 4s ease-in-out infinite;}
+        @keyframes pulse{0%,100%{box-shadow:0 0 6px var(--gold);}50%{box-shadow:0 0 20px var(--gold);}}
+        .header h1{font-size:1.2rem;font-weight:800;letter-spacing:-0.3px;}
+        .header h1 span{color:var(--gold);}
+        .btn-logout{padding:8px 18px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--text-muted);font-family:'Inter',sans-serif;font-size:0.72rem;font-weight:600;cursor:pointer;transition:all 0.3s;letter-spacing:0.5px;}
+        .btn-logout:hover{border-color:var(--ruby);color:var(--ruby);}
+
+        /* HERO */
+        .hero{padding:48px 0 20px;text-align:center;}
+        .hero-tag{display:inline-block;font-size:0.58rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);padding:6px 16px;border:1px solid var(--gold-soft);border-radius:30px;margin-bottom:16px;}
+        .hero h2{font-size:1.8rem;font-weight:900;letter-spacing:-0.5px;margin-bottom:10px;}
+        .hero h2 em{color:var(--gold);font-style:normal;}
+        .hero p{color:var(--text-muted);font-size:0.88rem;max-width:600px;margin:0 auto;}
+
+        /* FEATURED */
+        .featured{margin:36px 0 24px;}
+        .featured a{display:block;text-decoration:none;color:var(--text);}
+        .featured-card{background:linear-gradient(135deg,var(--card),rgba(212,168,67,0.06));border:1px solid var(--gold-soft);border-radius:20px;padding:32px 36px;display:flex;align-items:center;justify-content:space-between;transition:all 0.3s;position:relative;overflow:hidden;}
+        .featured-card:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 12px 40px rgba(212,168,67,0.08);}
+        .featured-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),rgba(212,168,67,0.3),var(--gold));}
+        .fc-left{flex:1;}
+        .fc-badge{display:inline-block;font-size:0.55rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#080812;background:var(--gold);padding:4px 12px;border-radius:6px;margin-bottom:10px;}
+        .fc-title{font-size:1.25rem;font-weight:800;margin-bottom:6px;}
+        .fc-desc{font-size:0.82rem;color:var(--text-muted);line-height:1.5;}
+        .fc-right{font-size:2.5rem;opacity:0.15;margin-left:20px;}
+
+        /* SECTION LABEL */
+        .sec-label{font-size:0.62rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--text-muted);margin:36px 0 16px;padding-left:4px;}
+
+        /* GRID */
+        .panels{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+        .panel-card{display:block;text-decoration:none;color:var(--text);background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px 22px;position:relative;overflow:hidden;transition:all 0.3s;}
+        .panel-card:hover{border-color:rgba(255,255,255,0.12);transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,0.3);}
+        .panel-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+        .pc-num{font-size:0.55rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+        .pc-title{font-size:0.98rem;font-weight:800;margin-bottom:6px;line-height:1.3;}
+        .pc-desc{font-size:0.72rem;color:var(--text-muted);line-height:1.5;}
+        .pc-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px;}
+        .pc-tag{font-size:0.55rem;padding:3px 8px;border-radius:6px;font-weight:600;}
+
+        /* COLORS PER CATEGORY */
+        .cat-core::before{background:var(--gold);}.cat-core .pc-num{color:var(--gold);}.cat-core .pc-tag{background:var(--gold-soft);color:var(--gold);}
+        .cat-deep::before{background:var(--sapphire);}.cat-deep .pc-num{color:var(--sapphire);}.cat-deep .pc-tag{background:var(--sapphire-soft);color:var(--sapphire);}
+        .cat-adv::before{background:var(--purple);}.cat-adv .pc-num{color:var(--purple);}.cat-adv .pc-tag{background:var(--purple-soft);color:var(--purple);}
+        .cat-act::before{background:var(--emerald);}.cat-act .pc-num{color:var(--emerald);}.cat-act .pc-tag{background:var(--emerald-soft);color:var(--emerald);}
+
+        /* FOOTER */
+        .footer{padding:40px 0 24px;text-align:center;border-top:1px solid var(--border);margin-top:48px;}
+        .footer p{font-size:0.65rem;color:var(--text-muted);opacity:0.4;margin-bottom:4px;}
+        .sig-name{font-size:0.82rem;font-weight:700;color:var(--gold);margin-bottom:2px;}
+
+        /* RESPONSIVE */
+        @media(max-width:768px){
+            .panels{grid-template-columns:1fr 1fr;}
+            .featured-card{flex-direction:column;text-align:center;}.fc-right{display:none;}
+            .hero h2{font-size:1.4rem;}
+        }
+        @media(max-width:500px){
+            .panels{grid-template-columns:1fr;}
+            .header-inner{flex-direction:column;gap:10px;align-items:flex-start;}
+        }
+
+        /* FADE IN */
+        .fi{opacity:0;transform:translateY(16px);transition:all 0.5s ease;}
+        .fi.visible{opacity:1;transform:translateY(0);}
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="container">
+        <div class="header-inner">
+            <div class="header-left">
+                <div class="logo-diamond"></div>
+                <h1>GRUPO <span>ZAFER</span></h1>
+            </div>
+            <button class="btn-logout" onclick="logout()">🔒 SAIR</button>
+        </div>
+    </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-tag">Suíte Analítica Completa — 15 Painéis</div>
+        <h2>Central de <em>Painéis Estratégicos</em></h2>
+        <p>7 safras · 5 fazendas · 4 culturas · 12 cultivares · 210+ gráficos · 9 técnicas estatísticas</p>
+    </div>
+</section>
+
+<!-- FEATURED: EXECUTIVE SUMMARY -->
+<section class="container fi">
+    <div class="featured">
+        <a href="executive-summary.html">
+            <div class="featured-card">
+                <div class="fc-left">
+                    <div class="fc-badge">⭐ Comece por aqui</div>
+                    <div class="fc-title">Executive Summary — Tudo em 1 Página</div>
+                    <div class="fc-desc">Diagnóstico completo em 3 minutos: os 5 números, os 3 problemas, as 3 ações e a transformação de R$ 2,62M → R$ 9,90M (+278%).</div>
+                </div>
+                <div class="fc-right">📋</div>
+            </div>
+        </a>
+    </div>
+</section>
+
+<!-- CORE DASHBOARDS -->
+<div class="container">
+    <div class="sec-label fi">📊 Dashboards Principais</div>
+    <div class="panels fi">
+        <a href="dashboard-ceo.html" class="panel-card cat-core">
+            <div class="pc-num">Painel 01</div>
+            <div class="pc-title">Dashboard CEO</div>
+            <div class="pc-desc">Visão consolidada de 7 safras: receita, custo, resultado, margens e evolução temporal.</div>
+            <div class="pc-tags"><span class="pc-tag">KPIs</span><span class="pc-tag">7 Safras</span><span class="pc-tag">Tendências</span></div>
+        </a>
+        <a href="culturas.html" class="panel-card cat-core">
+            <div class="pc-num">Painel 02</div>
+            <div class="pc-title">Análise por Cultura</div>
+            <div class="pc-desc">Performance comparativa entre Soja, Milho, Sorgo e Cana. Rentabilidade e risco por cultura.</div>
+            <div class="pc-tags"><span class="pc-tag">4 Culturas</span><span class="pc-tag">Comparativo</span></div>
+        </a>
+        <a href="financeiro.html" class="panel-card cat-core">
+            <div class="pc-num">Painel 03</div>
+            <div class="pc-title">Endividamento</div>
+            <div class="pc-desc">Análise financeira: fluxo, endividamento, capital de giro e sustentabilidade do negócio.</div>
+            <div class="pc-tags"><span class="pc-tag">Financeiro</span><span class="pc-tag">Dívida</span></div>
+        </a>
+        <a href="cenarios.html" class="panel-card cat-core">
+            <div class="pc-num">Painel 04</div>
+            <div class="pc-title">Projeção Safra 25/26</div>
+            <div class="pc-desc">Cenários otimista, base e pessimista. Monte Carlo com 10.000 simulações e intervalos de confiança.</div>
+            <div class="pc-tags"><span class="pc-tag">Cenários</span><span class="pc-tag">Monte Carlo</span></div>
+        </a>
+        <a href="fazendas.html" class="panel-card cat-core">
+            <div class="pc-num">Painel 05</div>
+            <div class="pc-title">Análise por Fazenda</div>
+            <div class="pc-desc">Benchmarking entre as 5 fazendas: produtividade, custo, margem e eficiência (DEA).</div>
+            <div class="pc-tags"><span class="pc-tag">5 Fazendas</span><span class="pc-tag">DEA</span></div>
+        </a>
+        <a href="variedades.html" class="panel-card cat-core">
+            <div class="pc-num">Painel 06</div>
+            <div class="pc-title">Variedades de Soja</div>
+            <div class="pc-desc">12 cultivares analisadas: clusters, Sharpe Ratio, portfólio ótimo e cultivares destruidoras.</div>
+            <div class="pc-tags"><span class="pc-tag">12 Cultivares</span><span class="pc-tag">K-Means</span></div>
+        </a>
+    </div>
+
+    <!-- DEEP DIVE -->
+    <div class="sec-label fi">🔬 Análises Detalhadas</div>
+    <div class="panels fi">
+        <a href="custos.html" class="panel-card cat-deep">
+            <div class="pc-num">Painel 07</div>
+            <div class="pc-title">Painel de Custos</div>
+            <div class="pc-desc">Decomposição completa dos custos por ha, por sc, por fazenda e por cultura. Benchmarks CONAB.</div>
+            <div class="pc-tags"><span class="pc-tag">Custos</span><span class="pc-tag">CONAB</span></div>
+        </a>
+        <a href="culturas-detalhe.html" class="panel-card cat-deep">
+            <div class="pc-num">Painel 08</div>
+            <div class="pc-title">Deep-Dive Culturas</div>
+            <div class="pc-desc">Análise granular de cada cultura: sazonalidade, volatilidade, correlações e decomposição de resultado.</div>
+            <div class="pc-tags"><span class="pc-tag">Granular</span><span class="pc-tag">Decomposição</span></div>
+        </a>
+        <a href="estatistico.html" class="panel-card cat-deep">
+            <div class="pc-num">Painel 09</div>
+            <div class="pc-title">Painel Estatístico</div>
+            <div class="pc-desc">PCA, Correlações, Distribuições, Outliers, Intervalos de Confiança e testes de hipótese.</div>
+            <div class="pc-tags"><span class="pc-tag">PCA</span><span class="pc-tag">Bootstrap</span></div>
+        </a>
+    </div>
+
+    <!-- AVANÇADO -->
+    <div class="sec-label fi">🧠 Análises Avançadas</div>
+    <div class="panels fi">
+        <a href="econometrico.html" class="panel-card cat-adv">
+            <div class="pc-num">Painel 10</div>
+            <div class="pc-title">Painel Econométrico</div>
+            <div class="pc-desc">Modelos de regressão, elasticidades, Shapley Values e decomposição causal do resultado.</div>
+            <div class="pc-tags"><span class="pc-tag">Econometria</span><span class="pc-tag">Shapley</span></div>
+        </a>
+        <a href="preditivo.html" class="panel-card cat-adv">
+            <div class="pc-num">Painel 11</div>
+            <div class="pc-title">Painel Preditivo</div>
+            <div class="pc-desc">Kaplan-Meier, Markov Chains, previsões de safra e probabilidade de atingir metas.</div>
+            <div class="pc-tags"><span class="pc-tag">Kaplan-Meier</span><span class="pc-tag">Markov</span></div>
+        </a>
+        <a href="avancado.html" class="panel-card cat-adv">
+            <div class="pc-num">Painel 12</div>
+            <div class="pc-title">War Room — Análise Avançada</div>
+            <div class="pc-desc">Network Analysis, árvores de decisão, análise de sensibilidade e cenários combinatórios.</div>
+            <div class="pc-tags"><span class="pc-tag">Network</span><span class="pc-tag">Decisão</span></div>
+        </a>
+    </div>
+
+    <!-- ESTRATÉGICO -->
+    <div class="sec-label fi">🎯 Estratégia & Ação</div>
+    <div class="panels fi">
+        <a href="estrategico.html" class="panel-card cat-act">
+            <div class="pc-num">Painel 13</div>
+            <div class="pc-title">Estratégico Consolidado</div>
+            <div class="pc-desc">BSC agrícola, DEA por fazenda, mapa estratégico e scorecard integrado de todas as dimensões.</div>
+            <div class="pc-tags"><span class="pc-tag">BSC</span><span class="pc-tag">DEA</span><span class="pc-tag">Scorecard</span></div>
+        </a>
+        <a href="acoes.html" class="panel-card cat-act">
+            <div class="pc-num">Painel 14</div>
+            <div class="pc-title">Plano de Ações</div>
+            <div class="pc-desc">23 ações priorizadas por impacto × viabilidade. Cronograma, responsáveis e metas por trimestre.</div>
+            <div class="pc-tags"><span class="pc-tag">23 Ações</span><span class="pc-tag">Timeline</span></div>
+        </a>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="container">
+        <div class="sig-name">Dr. Sidney Souza</div>
+        <p>Consultoria Estratégica — Análise de Performance Agrícola</p>
+        <p>Rio Verde, GO · Março de 2026 · Documento Confidencial</p>
+    </div>
+</footer>
+
+<script>
+// AUTH CHECK
+if(sessionStorage.getItem('zafer_auth')!=='true'){
+    window.location.href='index.html';
+}
+
+function logout(){
+    sessionStorage.removeItem('zafer_auth');
+    window.location.href='index.html';
+}
+
+// FADE IN
+const obs=new IntersectionObserver(e=>{e.forEach(el=>{if(el.isIntersecting)el.target.classList.add('visible')})},{threshold:0.1});
+document.querySelectorAll('.fi').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>

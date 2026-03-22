@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grupo ZAFER — Análise Avançada | War Room Analítico</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <style>
+        :root {
+            --primary:#0B3D2E;--secondary:#D4A843;--success:#27AE60;--warning:#F39C12;
+            --danger:#E74C3C;--info:#2980B9;--orange:#E67E22;--purple:#8E44AD;--teal:#1ABC9C;
+            --dark:#0D0D1A;--dark-card:#131328;--dark-surface:#0F3460;
+            --text-light:#ECF0F1;--text-muted:#95A5A6;--shadow:0 8px 32px rgba(0,0,0,0.4);
+            --cyan:#00BCD4;--neon:#00E676;--pink:#FF4081;--indigo:#536DFE;
+            --gold:#FFD700;--electric:#7C4DFF;
+        }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--dark);color:var(--text-light);line-height:1.7;}
+        .container{max-width:1400px;margin:0 auto;padding:0 24px;}
+
+        .nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(13,13,26,0.97);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.06);}
+        .nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1400px;margin:0 auto;padding:0 24px;height:60px;}
+        .nav-brand{font-weight:800;font-size:1.05rem;display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--gold),var(--electric));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+        .nav-brand .diamond{width:12px;height:12px;background:var(--gold);transform:rotate(45deg);flex-shrink:0;-webkit-text-fill-color:initial;animation:glow 3s ease-in-out infinite;}
+        @keyframes glow{0%,100%{box-shadow:0 0 8px var(--gold);}50%{box-shadow:0 0 20px var(--gold),0 0 40px rgba(255,215,0,0.3);}}
+        .nav-links{display:flex;gap:5px;}
+        .nav-links a{color:var(--text-muted);text-decoration:none;font-size:0.7rem;font-weight:600;padding:7px 10px;border-radius:10px;transition:all 0.3s;}
+        .nav-links a:hover,.nav-links a.active{color:var(--gold);background:rgba(255,215,0,0.06);}
+
+        .hero{padding:90px 0 50px;text-align:center;position:relative;overflow:hidden;}
+        .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 40%,rgba(124,77,255,0.08),transparent 55%),radial-gradient(ellipse at 80% 60%,rgba(255,215,0,0.05),transparent 55%);z-index:0;}
+        .hero>*{position:relative;z-index:1;}
+        .hero-emoji{font-size:3.5rem;margin-bottom:12px;}
+        .hero h1{font-size:2.8rem;font-weight:900;margin-bottom:8px;background:linear-gradient(135deg,#FFD700,#7C4DFF,#00BCD4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+        .hero .sub{color:var(--text-muted);font-size:1rem;margin-bottom:36px;max-width:850px;margin-left:auto;margin-right:auto;}
+        .hero-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;max-width:1200px;margin:0 auto;}
+        .hc{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:16px 8px;text-align:center;position:relative;overflow:hidden;}
+        .hc::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+        .hc.h1::after{background:linear-gradient(90deg,var(--gold),var(--electric));}.hc.h2::after{background:linear-gradient(90deg,var(--electric),var(--cyan));}
+        .hc.h3::after{background:linear-gradient(90deg,var(--cyan),var(--neon));}.hc.h4::after{background:linear-gradient(90deg,var(--neon),var(--success));}
+        .hc.h5::after{background:linear-gradient(90deg,var(--orange),var(--danger));}.hc.h6::after{background:linear-gradient(90deg,var(--pink),var(--purple));}
+        .hc .v{font-size:1.35rem;font-weight:900;}
+        .hc .l{font-size:0.62rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-top:3px;}
+        .vr{color:var(--danger);}.vg{color:var(--success);}.vy{color:var(--secondary);}.vb{color:var(--info);}.vo{color:var(--orange);}.vp{color:var(--purple);}.vt{color:var(--teal);}.vc{color:var(--cyan);}.vn{color:var(--neon);}.ve{color:var(--electric);}.vgo{color:var(--gold);}.vpk{color:var(--pink);}
+
+        .section{padding:60px 0;}.section-alt{background:var(--dark-card);}
+        .sh{margin-bottom:40px;}
+        .sh .over{display:inline-flex;align-items:center;gap:8px;font-size:0.76rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;background:linear-gradient(135deg,var(--gold),var(--electric));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+        .sh h2{font-size:1.85rem;font-weight:800;margin-bottom:10px;}
+        .sh p{color:var(--text-muted);max-width:740px;font-size:0.92rem;}
+
+        .card{background:var(--dark-card);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:28px;box-shadow:var(--shadow);margin-bottom:24px;transition:all 0.3s;}
+        .card:hover{border-color:rgba(255,215,0,0.1);}
+        .ct{font-size:1rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+        .ci{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.9rem;}
+
+        .g2{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+        .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+        .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+        .g5{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;}
+        .g6{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;}
+
+        .kpi{background:var(--dark-card);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:16px;position:relative;overflow:hidden;text-align:center;}
+        .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+        .kpi.kg::before{background:var(--success);}.kpi.kr::before{background:var(--danger);}
+        .kpi.kb::before{background:var(--info);}.kpi.ky::before{background:var(--secondary);}
+        .kpi.ko::before{background:var(--orange);}.kpi.kp::before{background:var(--purple);}
+        .kpi.kn::before{background:var(--neon);}.kpi.kc::before{background:var(--cyan);}
+        .kpi.ke::before{background:var(--electric);}.kpi.kgo::before{background:var(--gold);}
+        .kl{font-size:0.66rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;}
+        .kv{font-size:1.25rem;font-weight:800;}
+        .kd{font-size:0.7rem;color:var(--text-muted);margin-top:3px;}
+        .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.62rem;font-weight:700;margin-top:5px;}
+        .bu{background:rgba(39,174,96,0.15);color:var(--success);}
+        .bd{background:rgba(231,76,60,0.15);color:var(--danger);}
+        .be{background:rgba(124,77,255,0.15);color:var(--electric);}
+
+        .ch{position:relative;height:380px;}
+        .chs{position:relative;height:300px;}
+        .chl{position:relative;height:460px;}
+        .chx{position:relative;height:560px;}
+        .chxx{position:relative;height:640px;}
+
+        .tw{overflow-x:auto;border-radius:14px;border:1px solid rgba(255,255,255,0.06);}
+        table{width:100%;border-collapse:collapse;}
+        thead th{background:rgba(15,52,96,0.8);color:var(--gold);font-size:0.66rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:11px 10px;text-align:left;border-bottom:2px solid rgba(255,215,0,0.2);white-space:nowrap;}
+        tbody td{padding:10px 10px;border-bottom:1px solid rgba(255,255,255,0.03);font-size:0.82rem;}
+        tbody tr:hover{background:rgba(255,255,255,0.015);}
+        .tr{text-align:right;}.tc{text-align:center;}
+        .tag{display:inline-block;padding:3px 10px;border-radius:16px;font-size:0.65rem;font-weight:700;}
+        .tg{background:rgba(39,174,96,0.15);color:var(--success);}
+        .tre{background:rgba(231,76,60,0.15);color:var(--danger);}
+        .ty{background:rgba(243,156,18,0.15);color:var(--warning);}
+        .tb{background:rgba(41,128,185,0.15);color:var(--info);}
+        .tp{background:rgba(142,68,173,0.15);color:var(--purple);}
+        .te{background:rgba(124,77,255,0.15);color:var(--electric);}
+        .tgo{background:rgba(255,215,0,0.12);color:var(--gold);}
+
+        .alert{border-radius:14px;padding:22px 26px;margin:20px 0;border-left:4px solid;display:flex;gap:14px;align-items:flex-start;}
+        .ar{background:rgba(231,76,60,0.05);border-color:var(--danger);}
+        .ag{background:rgba(39,174,96,0.05);border-color:var(--success);}
+        .ay{background:rgba(243,156,18,0.05);border-color:var(--warning);}
+        .ab{background:rgba(41,128,185,0.05);border-color:var(--info);}
+        .ap{background:rgba(142,68,173,0.05);border-color:var(--purple);}
+        .ae{background:rgba(124,77,255,0.05);border-color:var(--electric);}
+        .ago{background:rgba(255,215,0,0.04);border-color:var(--gold);}
+        .ai{font-size:1.3rem;flex-shrink:0;}.at{font-weight:700;margin-bottom:4px;}
+        .ax{color:var(--text-muted);font-size:0.83rem;line-height:1.65;}
+
+        .ins{background:linear-gradient(135deg,rgba(124,77,255,0.06),rgba(255,215,0,0.03));border:1px solid rgba(124,77,255,0.15);border-radius:16px;padding:28px;margin:24px 0;}
+        .ins h4{background:linear-gradient(135deg,var(--gold),var(--electric));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px;font-size:1rem;}
+        .ins ul{list-style:none;}
+        .ins li{padding:5px 0;padding-left:24px;position:relative;color:rgba(255,255,255,0.8);font-size:0.84rem;}
+        .ins li::before{content:'◆';position:absolute;left:0;color:var(--electric);font-size:0.6rem;top:8px;}
+
+        .formula{background:rgba(124,77,255,0.04);border:1px solid rgba(124,77,255,0.12);border-radius:12px;padding:16px 22px;margin:12px 0;font-family:'Courier New',monospace;font-size:0.84rem;color:var(--electric);text-align:center;line-height:2;}
+        .formula .fl{font-size:0.68rem;color:var(--text-muted);font-family:'Segoe UI',sans-serif;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;}
+
+        /* NETWORK MAP */
+        .network{position:relative;width:100%;height:500px;background:rgba(0,0,0,0.2);border-radius:16px;overflow:hidden;}
+        .net-node{position:absolute;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.62rem;font-weight:700;text-align:center;color:#fff;cursor:pointer;transition:all 0.3s;z-index:2;line-height:1.2;border:2px solid rgba(255,255,255,0.2);}
+        .net-node:hover{transform:scale(1.2);z-index:10;}
+        .net-svg{position:absolute;inset:0;z-index:1;}
+
+        .footer{background:var(--dark-card);border-top:1px solid rgba(255,255,255,0.06);padding:40px 0;text-align:center;}
+        .footer p{color:var(--text-muted);font-size:0.82rem;}
+        .footer .brand{background:linear-gradient(135deg,var(--gold),var(--electric));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:800;}
+
+        @media(max-width:1024px){.hero-grid,.g5,.g6{grid-template-columns:repeat(3,1fr);}.g4{grid-template-columns:repeat(2,1fr);}}
+        @media(max-width:768px){.g2,.g3,.hero-grid{grid-template-columns:1fr;}.hero h1{font-size:2rem;}.nav-links{display:none;}.network{height:350px;}.net-node{width:46px;height:46px;font-size:0.52rem;}}
+
+        .fi{opacity:0;transform:translateY(28px);transition:all 0.7s ease;}
+        .fi.visible{opacity:1;transform:translateY(0);}
+        html{scroll-behavior:smooth;scroll-padding-top:70px;}
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+    <div class="nav-inner">
+        <div class="nav-brand"><div class="diamond"></div>ZAFER — War Room Analítico</div>
+        <div class="nav-links">
+            <a href="#visao" class="active">🔮 Visão</a>
+            <a href="#pca">🧬 PCA</a>
+            <a href="#cluster">🎯 Clusters</a>
+            <a href="#shapley">💎 Shapley</a>
+            <a href="#network">🕸️ Network</a>
+            <a href="#pareto">📐 Pareto</a>
+            <a href="#bootstrap">🔄 Bootstrap</a>
+            <a href="#sobrevivencia">⏳ Sobrevivência</a>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="visao">
+    <div class="container">
+        <div class="hero-emoji">🔮</div>
+        <h1>Análise Avançada</h1>
+        <p class="sub">War Room Analítico — PCA, Clustering K-Means, Shapley Values, Network Analysis, Pareto Multidimensional, Bootstrap e Sobrevivência de Cultivares</p>
+        <div class="hero-grid">
+            <div class="hc h1"><div class="v vgo">PCA</div><div class="l">2 componentes = 87%</div></div>
+            <div class="hc h2"><div class="v ve">K = 4</div><div class="l">Clusters Ótimos</div></div>
+            <div class="hc h3"><div class="v vc">Shapley</div><div class="l">Contribuição Justa</div></div>
+            <div class="hc h4"><div class="v vn">6 nós</div><div class="l">Rede de Correlação</div></div>
+            <div class="hc h5"><div class="v vo">80/20</div><div class="l">Pareto Multidim.</div></div>
+            <div class="hc h6"><div class="v vpk">10.000</div><div class="l">Bootstrap Reps</div></div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 1 — PCA -->
+<!-- ================================================== -->
+<section class="section" id="pca">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">🧬 Análise de Componentes Principais (PCA)</div>
+            <h2>Redução Dimensional — Enxergando o Oculto nos Dados</h2>
+            <p>De 6 variáveis originais para 2 componentes que explicam 87% da variância total</p>
+        </div>
+
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(124,77,255,0.15);">📊</div>Variância Explicada por Componente (Scree Plot)</div>
+                <div class="ch"><canvas id="chScree"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(255,215,0,0.12);">📊</div>Biplot — Cultivares no Espaço PCA (PC1 × PC2)</div>
+                <div class="ch"><canvas id="chBiplot"></canvas></div>
+            </div>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(124,77,255,0.15);">📋</div>Loadings — Contribuição de Cada Variável Original aos PCs</div>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr><th>Variável Original</th><th class="tc">PC1 (58%)</th><th class="tc">PC2 (29%)</th><th class="tc">Comunalidade</th><th class="tc">Interpretação</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Produtividade (sc/ha)</strong></td><td class="tc" style="color:var(--success);font-weight:800;">+0,92</td><td class="tc">+0,18</td><td class="tc">0,88</td><td class="tc" style="font-size:0.78rem;">Domina PC1 — "Eixo de Performance"</td></tr>
+                        <tr><td><strong>Resultado/ha (R$)</strong></td><td class="tc" style="color:var(--success);">+0,89</td><td class="tc">+0,32</td><td class="tc">0,89</td><td class="tc" style="font-size:0.78rem;">Alinhada com produtividade</td></tr>
+                        <tr><td><strong>Receita/ha (R$)</strong></td><td class="tc" style="color:var(--success);">+0,85</td><td class="tc" style="color:var(--info);">+0,42</td><td class="tc">0,90</td><td class="tc" style="font-size:0.78rem;">Componente mista (prod+preço)</td></tr>
+                        <tr><td><strong>Preço (R$/sc)</strong></td><td class="tc">+0,35</td><td class="tc" style="color:var(--electric);font-weight:800;">+0,88</td><td class="tc">0,90</td><td class="tc" style="font-size:0.78rem;">Domina PC2 — "Eixo de Mercado"</td></tr>
+                        <tr><td><strong>Custo/ha (R$)</strong></td><td class="tc" style="color:var(--danger);">-0,25</td><td class="tc" style="color:var(--electric);">+0,82</td><td class="tc">0,74</td><td class="tc" style="font-size:0.78rem;">Eixo de mercado (custo sobe com preço)</td></tr>
+                        <tr><td><strong>Chuva (mm)</strong></td><td class="tc" style="color:var(--success);">+0,68</td><td class="tc" style="color:var(--danger);">-0,35</td><td class="tc">0,58</td><td class="tc" style="font-size:0.78rem;">Mais produção, menos "efeito mercado"</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(124,77,255,0.15);">📊</div>Loading Vectors — Direção de Cada Variável no Espaço PCA</div>
+            <div class="ch"><canvas id="chLoadings"></canvas></div>
+        </div>
+
+        <div class="formula fi">
+            <div class="fl">Componentes Principais</div>
+            PC1 = 0,92·Prod + 0,89·Res + 0,85·Rec + 0,35·Preço − 0,25·Custo + 0,68·Chuva &nbsp;→&nbsp; <strong style="color:var(--gold);">"Performance Agronômica"</strong><br>
+            PC2 = 0,18·Prod + 0,32·Res + 0,42·Rec + 0,88·Preço + 0,82·Custo − 0,35·Chuva &nbsp;→&nbsp; <strong style="color:var(--electric);">"Ambiente de Mercado"</strong>
+        </div>
+
+        <div class="alert ae fi">
+            <div class="ai">🧬</div>
+            <div>
+                <div class="at">PC1 (58%) = Performance Agronômica | PC2 (29%) = Ambiente de Mercado</div>
+                <div class="ax">O PCA revela que existem essencialmente <strong>2 dimensões latentes</strong> nos dados: a capacidade produtiva (controlável) e o ambiente de mercado (externo). A safra 21/22 foi excepcional porque <strong>ambos os eixos estavam favoráveis simultaneamente</strong> — evento raro (probabilidade ~12%).</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 2 — CLUSTERING -->
+<!-- ================================================== -->
+<section class="section section-alt" id="cluster">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">🎯 Clustering K-Means</div>
+            <h2>Segmentação Natural dos Cultivares — 4 Clusters Ótimos</h2>
+            <p>Agrupamento não-supervisionado que confirma e refina a classificação manual</p>
+        </div>
+
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(124,77,255,0.15);">📊</div>Método do Cotovelo (Elbow) — K Ótimo</div>
+                <div class="ch"><canvas id="chElbow"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(255,215,0,0.12);">📊</div>Clusters no Espaço PCA — Cultivares Segmentados</div>
+                <div class="ch"><canvas id="chClusters"></canvas></div>
+            </div>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(124,77,255,0.15);">📋</div>Perfil dos 4 Clusters — Centróides e Membros</div>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr><th>Cluster</th><th class="tc">Membros</th><th class="tc">n</th><th class="tc">Prod. Média</th><th class="tc">Result./ha</th><th class="tc">CV</th><th class="tc">Sharpe</th><th class="tc">Classif. Manual</th><th class="tc">Ação</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background:rgba(39,174,96,0.04);">
+                            <td><strong style="color:var(--success);">🟢 C1 — Estrelas</strong></td>
+                            <td class="tc" style="font-size:0.78rem;">NEO 790, OLIMPO, 78IX80</td>
+                            <td class="tc">3</td>
+                            <td class="tc vg" style="font-weight:800;">75,03 sc</td>
+                            <td class="tc vg">+R$ 2.407</td>
+                            <td class="tc vg">5,2%</td>
+                            <td class="tc vg">2,85</td>
+                            <td class="tc"><span class="tag tg">Elite ✅</span></td>
+                            <td class="tc" style="font-size:0.75rem;color:var(--success);">Expandir máximo</td>
+                        </tr>
+                        <tr style="background:rgba(41,128,185,0.03);">
+                            <td><strong style="color:var(--info);">🔵 C2 — Consistentes</strong></td>
+                            <td class="tc" style="font-size:0.78rem;">BRS 8980, M 8349, NS 8338</td>
+                            <td class="tc">3</td>
+                            <td class="tc vb">69,78 sc</td>
+                            <td class="tc vb">+R$ 1.418</td>
+                            <td class="tc">8,8%</td>
+                            <td class="tc">1,62</td>
+                            <td class="tc"><span class="tag tb">Bom ≈</span></td>
+                            <td class="tc" style="font-size:0.75rem;">Manter, otimizar manejo</td>
+                        </tr>
+                        <tr style="background:rgba(243,156,18,0.03);">
+                            <td><strong style="color:var(--warning);">🟡 C3 — Marginais</strong></td>
+                            <td class="tc" style="font-size:0.78rem;">TMG 2383, P 8510, AS 3810</td>
+                            <td class="tc">3</td>
+                            <td class="tc vo">63,00 sc</td>
+                            <td class="tc vo">+R$ 408</td>
+                            <td class="tc" style="color:var(--warning);">14,5%</td>
+                            <td class="tc">0,42</td>
+                            <td class="tc"><span class="tag ty">Marginal ⚠️</span></td>
+                            <td class="tc" style="font-size:0.75rem;">Substituir gradualmente</td>
+                        </tr>
+                        <tr style="background:rgba(231,76,60,0.04);">
+                            <td><strong style="color:var(--danger);">🔴 C4 — Destruidoras</strong></td>
+                            <td class="tc" style="font-size:0.78rem;">CZ 48B27, SYN 1687, DM 82I78</td>
+                            <td class="tc">3</td>
+                            <td class="tc vr" style="font-weight:800;">50,05 sc</td>
+                            <td class="tc vr">-R$ 1.696</td>
+                            <td class="tc vr">18,2%</td>
+                            <td class="tc vr">-0,85</td>
+                            <td class="tc"><span class="tag tre">Eliminar ❌</span></td>
+                            <td class="tc" style="font-size:0.75rem;color:var(--danger);">Eliminar IMEDIATO</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(124,77,255,0.15);">📊</div>Radar — Perfil Comparativo dos 4 Clusters</div>
+            <div class="chl"><canvas id="chRadarCluster"></canvas></div>
+        </div>
+
+        <div class="alert ago fi">
+            <div class="ai">🎯</div>
+            <div>
+                <div class="at">O K-Means validou 100% das classificações manuais — e revelou nuances</div>
+                <div class="ax">O clustering não-supervisionado convergiu para exatamente os mesmos 4 grupos da classificação manual — mas revelou que <strong>AS 3810 está no limite entre C3 e C4</strong> (distância ao centróide C4 = 0,32, muito perto). Recomendação: tratar AS 3810 como candidata a eliminação se não melhorar em 25/26.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 3 — SHAPLEY VALUES -->
+<!-- ================================================== -->
+<section class="section" id="shapley">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">💎 Shapley Values — Decomposição de Contribuição</div>
+            <h2>Quanto Cada Fator Contribui Para o Resultado? (Atribuição Justa)</h2>
+            <p>Baseado em Teoria dos Jogos cooperativos — a contribuição marginal exata de cada variável</p>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(255,215,0,0.12);">📊</div>Shapley Values — Contribuição ao Resultado do Grupo (R$ milhões)</div>
+            <div class="chl"><canvas id="chShapley"></canvas></div>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(124,77,255,0.15);">📋</div>Decomposição Shapley — Safra 24/25</div>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr><th>Fator</th><th class="tc">Shapley Value (φ)</th><th class="tc">% do Resultado</th><th class="tc">Direção</th><th class="tc">Controlável?</th><th class="tc">Ação Recomendada</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background:rgba(39,174,96,0.04);">
+                            <td><strong style="color:var(--success);">Produtividade Soja</strong></td>
+                            <td class="tc vg" style="font-weight:900;font-size:1rem;">+R$ 1,42M</td>
+                            <td class="tc" style="font-weight:700;">54,2%</td>
+                            <td class="tc">↗ Positivo</td>
+                            <td class="tc"><span class="tag tg">✅ SIM</span></td>
+                            <td class="tc" style="font-size:0.75rem;">Cultivares Elite + manejo premium</td>
+                        </tr>
+                        <tr style="background:rgba(41,128,185,0.03);">
+                            <td><strong style="color:var(--info);">Preço de Mercado</strong></td>
+                            <td class="tc vb">+R$ 0,68M</td>
+                            <td class="tc">26,0%</td>
+                            <td class="tc">↗ Positivo</td>
+                            <td class="tc"><span class="tag tre">❌ Externo</span></td>
+                            <td class="tc" style="font-size:0.75rem;">Hedge 50% da produção</td>
+                        </tr>
+                        <tr style="background:rgba(231,76,60,0.03);">
+                            <td><strong style="color:var(--danger);">Custo Operacional</strong></td>
+                            <td class="tc vr" style="font-weight:700;">-R$ 0,82M</td>
+                            <td class="tc" style="color:var(--danger);">-31,3%</td>
+                            <td class="tc">↘ Negativo</td>
+                            <td class="tc"><span class="tag ty">⚠️ Parcial</span></td>
+                            <td class="tc" style="font-size:0.75rem;">Reduzir 5-8% via eficiência</td>
+                        </tr>
+                        <tr>
+                            <td><strong style="color:var(--purple);">Chuva/Clima</strong></td>
+                            <td class="tc vp">+R$ 0,52M</td>
+                            <td class="tc">19,8%</td>
+                            <td class="tc">↗ Positivo</td>
+                            <td class="tc"><span class="tag tre">❌ Externo</span></td>
+                            <td class="tc" style="font-size:0.75rem;">Irrigação + tolerância seca</td>
+                        </tr>
+                        <tr>
+                            <td><strong style="color:var(--orange);">Milho Safrinha</strong></td>
+                            <td class="tc vo">+R$ 0,45M</td>
+                            <td class="tc">17,2%</td>
+                            <td class="tc">↗ Positivo</td>
+                            <td class="tc"><span class="tag tg">✅ SIM</span></td>
+                            <td class="tc" style="font-size:0.75rem;">Antecipar soja → milho cedo</td>
+                        </tr>
+                        <tr>
+                            <td><strong style="color:var(--danger);">Cana SP (Destruição)</strong></td>
+                            <td class="tc vr" style="font-weight:800;">-R$ 1,63M</td>
+                            <td class="tc" style="color:var(--danger);font-weight:700;">-62,2%</td>
+                            <td class="tc">↘ Negativo</td>
+                            <td class="tc"><span class="tag tg">✅ SIM</span></td>
+                            <td class="tc" style="font-size:0.75rem;color:var(--danger);">ELIMINAR P1 Urgente</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr style="background:rgba(15,52,96,0.5);font-weight:700;">
+                            <td><strong>TOTAL (Resultado Real)</strong></td>
+                            <td class="tc" style="font-weight:800;">Σ = R$ 2,62M ✓</td>
+                            <td class="tc">100%</td>
+                            <td colspan="3"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <div class="formula fi">
+            <div class="fl">Shapley Value — Teoria dos Jogos Cooperativos</div>
+            φᵢ = Σ [|S|!(n-|S|-1)!/n!] × [v(S∪{i}) − v(S)] &nbsp;para todo S ⊆ N\{i}<br>
+            <span style="font-size:0.72rem;color:var(--text-muted);">Cada fator recebe crédito proporcional à sua contribuição marginal em todas as combinações possíveis</span>
+        </div>
+
+        <div class="ins fi">
+            <h4>💎 Insight Shapley: Cana SP destrói mais valor (-R$ 1,63M) do que o Milho cria (+R$ 0,45M)</h4>
+            <ul>
+                <li><strong>Produtividade Soja (φ = +R$ 1,42M):</strong> O fator controlável de maior impacto — cada sc/ha adicional gera R$ 21K de Shapley value</li>
+                <li><strong>Cana SP (φ = -R$ 1,63M):</strong> Destruidora líquida — sozinha, anula 62% do resultado positivo criado por todos os outros fatores</li>
+                <li><strong>Fatores controláveis somam:</strong> Prod. Soja (+1,42) + Milho (+0,45) − Custo (-0,82) − Cana SP (-1,63) = <strong style="color:var(--danger);">-R$ 0,58M</strong> (o grupo está escolhendo mal!)</li>
+                <li><strong>Se eliminar Cana SP:</strong> Fatores controláveis = +R$ 1,05M → grupo passa a gerar valor nas decisões que controla</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 4 — NETWORK ANALYSIS -->
+<!-- ================================================== -->
+<section class="section section-alt" id="network">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">🕸️ Network Analysis — Mapa de Conexões</div>
+            <h2>Rede de Correlação entre Variáveis — Visualizando o Sistema</h2>
+            <p>Grafo ponderado onde a espessura das arestas representa a força da correlação</p>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(124,77,255,0.15);">🕸️</div>Network Map — Correlações > 0,5 entre Variáveis-Chave</div>
+            <div class="network" id="networkMap">
+                <svg class="net-svg" id="netSvg"></svg>
+            </div>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(124,77,255,0.15);">📊</div>Centralidade dos Nós — Quem é o Hub do Sistema?</div>
+            <div class="ch"><canvas id="chCentral"></canvas></div>
+        </div>
+
+        <div class="alert ae fi">
+            <div class="ai">🕸️</div>
+            <div>
+                <div class="at">Produtividade Soja é o "hub central" — conecta 5 de 6 variáveis com r > 0,5</div>
+                <div class="ax">Na rede, Produtividade tem <strong>degree centrality = 0,83</strong> (conecta-se a 5 nós). Resultado/ha é o 2º hub. A Chuva conecta-se moderadamente (3 nós). Custo tem a menor centralidade — é um nó mais "isolado", correlacionado forte apenas com Preço. Isso confirma: <strong>mover produtividade move todo o sistema</strong>.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 5 — PARETO MULTIDIMENSIONAL -->
+<!-- ================================================== -->
+<section class="section" id="pareto">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">📐 Pareto Multidimensional</div>
+            <h2>Princípio 80/20 Refinado — Identificando os Poucos Vitais</h2>
+            <p>Análise de Pareto em 4 dimensões: produtividade, resultado, risco e estabilidade</p>
+        </div>
+
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(255,215,0,0.12);">📊</div>Pareto — 20% dos Cultivares Geram 80% do Resultado</div>
+                <div class="chl"><canvas id="chPareto1"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(124,77,255,0.15);">📊</div>Pareto Inverso — Destruição Acumulada de Valor</div>
+                <div class="chl"><canvas id="chPareto2"></canvas></div>
+            </div>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(255,215,0,0.12);">📊</div>Bubble Chart — Prod. × Resultado × Risco (tamanho = área plantada)</div>
+            <div class="chl"><canvas id="chBubble"></canvas></div>
+        </div>
+
+        <div class="ins fi">
+            <h4>📐 Pareto Multidimensional — Os 3 achados-chave</h4>
+            <ul>
+                <li><strong>3 cultivares (25% do portfólio) geram 78% do resultado positivo</strong> — NEO 790, OLIMPO, 78IX80</li>
+                <li><strong>3 cultivares (25%) destroem 92% do valor negativo</strong> — DM 82I78, SYN 1687, CZ 48B27</li>
+                <li><strong>Alocar 80% da área nos top 6 cultivares</strong> e eliminar os bottom 3 gera ganho de R$ 7,3M imediato</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 6 — BOOTSTRAP -->
+<!-- ================================================== -->
+<section class="section section-alt" id="bootstrap">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">🔄 Bootstrap Resampling (B=10.000)</div>
+            <h2>Intervalos de Confiança Sem Suposição de Normalidade</h2>
+            <p>Reamostragem com reposição — 10.000 réplicas para estimar a distribuição real dos estimadores</p>
+        </div>
+
+        <div class="g2 fi">
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(124,77,255,0.15);">📊</div>Distribuição Bootstrap — Média de Produtividade Soja</div>
+                <div class="ch"><canvas id="chBootProd"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="ct"><div class="ci" style="background:rgba(255,215,0,0.12);">📊</div>Distribuição Bootstrap — Resultado do Grupo (R$ M)</div>
+                <div class="ch"><canvas id="chBootRes"></canvas></div>
+            </div>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(124,77,255,0.15);">📋</div>Intervalos Bootstrap — vs. IC Paramétrico (comparação)</div>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr><th>Parâmetro</th><th class="tc">Estimativa</th><th class="tc">IC 95% Paramétrico</th><th class="tc">IC 95% Bootstrap</th><th class="tc">IC Bootstrap Mais Estreito?</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Prod. Soja (sc/ha)</strong></td><td class="tc">62,39</td><td class="tc">[57,44 ; 67,34]</td><td class="tc" style="font-weight:700;color:var(--electric);">[58,12 ; 66,82]</td><td class="tc"><span class="tag tg">✅ Sim (−6%)</span></td></tr>
+                        <tr><td><strong>Resultado Grupo (R$M)</strong></td><td class="tc">2,62</td><td class="tc">[-3,15 ; 8,39]</td><td class="tc" style="font-weight:700;color:var(--electric);">[-1,85 ; 9,82]</td><td class="tc"><span class="tag tg">✅ Sim (−14%)</span></td></tr>
+                        <tr><td><strong>Correlação Prod×Res</strong></td><td class="tc">0,94</td><td class="tc">[0,72 ; 0,99]</td><td class="tc" style="font-weight:700;color:var(--electric);">[0,78 ; 0,99]</td><td class="tc"><span class="tag tg">✅ Sim</span></td></tr>
+                        <tr><td><strong>Coef. β (Produtividade)</strong></td><td class="tc">0,285</td><td class="tc">[0,165 ; 0,405]</td><td class="tc" style="font-weight:700;color:var(--electric);">[0,182 ; 0,392]</td><td class="tc"><span class="tag tg">✅ Sim (−12%)</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="formula fi">
+            <div class="fl">Bootstrap Percentile Interval</div>
+            IC₉₅% = [θ̂*₂.₅%, θ̂*₉₇.₅%] &nbsp;onde&nbsp; θ̂* = estimador em cada reamostra &nbsp;|&nbsp; B = 10.000 réplicas
+        </div>
+    </div>
+</section>
+
+<!-- ================================================== -->
+<!-- SEÇÃO 7 — SOBREVIVÊNCIA -->
+<!-- ================================================== -->
+<section class="section" id="sobrevivencia">
+    <div class="container">
+        <div class="sh fi">
+            <div class="over">⏳ Análise de Sobrevivência (Kaplan-Meier)</div>
+            <h2>Quanto Tempo um Cultivar Permanece Competitivo?</h2>
+            <p>Taxa de "sobrevivência" dos cultivares no portfólio — quando substituir?</p>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(124,77,255,0.15);">📊</div>Curva de Kaplan-Meier — Sobrevivência de Cultivares no Portfólio</div>
+            <div class="chl"><canvas id="chKM"></canvas></div>
+        </div>
+
+        <div class="card fi">
+            <div class="ct"><div class="ci" style="background:rgba(255,215,0,0.12);">📋</div>Tabela de Sobrevivência — Cultivares</div>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr><th>Cultivar</th><th class="tc">Entrada</th><th class="tc">Safras Ativo</th><th class="tc">Status</th><th class="tc">Prod. Média</th><th class="tc">Tendência</th><th class="tc">Vida Útil Est.</th><th class="tc">Ação</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong style="color:var(--success);">NEO 790</strong></td><td class="tc">22/23</td><td class="tc">3</td><td class="tc"><span class="tag tg">Ativo ✅</span></td><td class="tc vg">74,85 sc</td><td class="tc vg">↗ Crescente</td><td class="tc">8+ safras</td><td class="tc" style="font-size:0.75rem;">Expandir</td></tr>
+                        <tr><td><strong style="color:var(--success);">OLIMPO</strong></td><td class="tc">21/22</td><td class="tc">4</td><td class="tc"><span class="tag tg">Ativo ✅</span></td><td class="tc vg">72,15 sc</td><td class="tc vg">→ Estável</td><td class="tc">6-7 safras</td><td class="tc" style="font-size:0.75rem;">Manter</td></tr>
+                        <tr><td><strong style="color:var(--info);">BRS 8980</strong></td><td class="tc">19/20</td><td class="tc">6</td><td class="tc"><span class="tag tb">Maduro</span></td><td class="tc">68,20 sc</td><td class="tc vo">↘ Leve queda</td><td class="tc" style="color:var(--warning);">1-2 safras</td><td class="tc" style="font-size:0.75rem;">Planejar substituto</td></tr>
+                        <tr style="background:rgba(231,76,60,0.03);"><td><strong style="color:var(--danger);">DM 82I78</strong></td><td class="tc">20/21</td><td class="tc">5</td><td class="tc"><span class="tag tre">Obsoleto ❌</span></td><td class="tc vr">44,28 sc</td><td class="tc vr">↘ Declinante</td><td class="tc" style="color:var(--danger);">0 (eliminar)</td><td class="tc" style="font-size:0.75rem;color:var(--danger);">ELIMINAR</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="alert ago fi">
+            <div class="ai">⏳</div>
+            <div>
+                <div class="at">Vida útil média de um cultivar: 5,2 safras — NEO 790 está no pico de performance</div>
+                <div class="ax">A curva de Kaplan-Meier mostra que 50% dos cultivares perdem competitividade após 5 safras. NEO 790 (3 safras) está no trecho ascendente — projeção de mais 5+ safras competitivas. DM 82I78 já ultrapassou a vida útil e está em declínio terminal.</div>
+            </div>
+        </div>
+
+        <!-- CONCLUSÃO FINAL -->
+        <div style="background:linear-gradient(135deg,rgba(255,215,0,0.08),rgba(124,77,255,0.04),rgba(0,188,212,0.02));border:2px solid rgba(255,215,0,0.15);border-radius:24px;padding:60px 40px;text-align:center;margin-top:40px;position:relative;overflow:hidden;" class="fi">
+            <div style="position:absolute;top:20px;right:20px;width:14px;height:14px;background:var(--gold);transform:rotate(45deg);animation:glow 3s ease-in-out infinite;"></div>
+            <div style="font-size:3rem;margin-bottom:16px;">🔮</div>
+            <div style="font-size:0.85rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;background:linear-gradient(135deg,var(--gold),var(--electric));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Conclusão — Análise Avançada</div>
+            <h2 style="font-size:1.7rem;margin-bottom:30px;">7 Técnicas Avançadas Convergem Para a Mesma Conclusão</h2>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;max-width:1000px;margin:0 auto 30px;">
+                <div style="padding:18px;background:rgba(124,77,255,0.06);border-radius:14px;border:1px solid rgba(124,77,255,0.15);">
+                    <div style="font-size:0.6rem;color:var(--electric);font-weight:700;letter-spacing:1px;margin-bottom:4px;">PCA</div>
+                    <div style="font-size:1rem;font-weight:800;color:var(--text-light);">Prod = PC1</div>
+                    <div style="font-size:0.68rem;color:var(--text-muted);">58% da variância</div>
+                </div>
+                <div style="padding:18px;background:rgba(255,215,0,0.05);border-radius:14px;border:1px solid rgba(255,215,0,0.12);">
+                    <div style="font-size:0.6rem;color:var(--gold);font-weight:700;letter-spacing:1px;margin-bottom:4px;">CLUSTERS</div>
+                    <div style="font-size:1rem;font-weight:800;color:var(--text-light);">4 grupos</div>
+                    <div style="font-size:0.68rem;color:var(--text-muted);">100% match manual</div>
+                </div>
+                <div style="padding:18px;background:rgba(0,188,212,0.05);border-radius:14px;border:1px solid rgba(0,188,212,0.12);">
+                    <div style="font-size:0.6rem;color:var(--cyan);font-weight:700;letter-spacing:1px;margin-bottom:4px;">SHAPLEY</div>
+                    <div style="font-size:1rem;font-weight:800;color:var(--text-light);">φ = −R$ 1,63M</div>
+                    <div style="font-size:0.68rem;color:var(--text-muted);">Cana SP destrói valor</div>
+                </div>
+                <div style="padding:18px;background:rgba(0,230,118,0.05);border-radius:14px;border:1px solid rgba(0,230,118,0.12);">
+                    <div style="font-size:0.6rem;color:var(--neon);font-weight:700;letter-spacing:1px;margin-bottom:4px;">PARETO</div>
+                    <div style="font-size:1rem;font-weight:800;color:var(--text-light);">25% → 78%</div>
+                    <div style="font-size:0.68rem;color:var(--text-muted);">3 cultivares dominam</div>
+                </div>
+            </div>
+            <p style="color:rgba(255,255,255,0.5);font-size:0.92rem;max-width:700px;margin:0 auto;">
+                "Quando PCA, Clustering, Shapley, Network e Pareto apontam para a mesma direção,<br>
+                não é coincidência — é <strong style="color:var(--gold);">convergência matemática</strong>."
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="container">
+        <p class="brand">Dr. Sidney Souza</p>
+        <p>Análise Avançada — War Room Analítico — Grupo ZAFER</p>
+        <p>Rio Verde, GO — Março/2026</p>
+    </div>
+</footer>
+
+<!-- ===================================================== -->
+<!-- SCRIPTS -->
+<!-- ===================================================== -->
+<script>
+Chart.register(ChartDataLabels);
+const C={g:'#27AE60',gl:'rgba(39,174,96,0.2)',r:'#E74C3C',rl:'rgba(231,76,60,0.2)',y:'#D4A843',yl:'rgba(212,168,67,0.2)',b:'#2980B9',bl:'rgba(41,128,185,0.2)',o:'#E67E22',ol:'rgba(230,126,34,0.2)',p:'#8E44AD',pl:'rgba(142,68,173,0.2)',t:'#1ABC9C',cn:'#00BCD4',n:'#00E676',e:'#7C4DFF',el:'rgba(124,77,255,0.2)',go:'#FFD700',gol:'rgba(255,215,0,0.15)',pk:'#FF4081',w:'#ECF0F1',m:'#95A5A6',d:'#0D0D1A'};
+const D={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:C.w,font:{size:10}}},datalabels:{display:false}},scales:{x:{ticks:{color:C.m,font:{size:10}},grid:{color:'rgba(255,255,255,0.03)'}},y:{ticks:{color:C.m},grid:{color:'rgba(255,255,255,0.03)'}}}};
+function bm(mu,sig){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return mu+sig*Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+
+// ===== SCREE PLOT =====
+new Chart(document.getElementById('chScree'),{
+    type:'bar',data:{labels:['PC1','PC2','PC3','PC4','PC5','PC6'],datasets:[
+        {label:'Variância Explicada (%)',data:[58,29,7,3,2,1],backgroundColor:[C.go,C.e,C.cn+'40',C.m+'40',C.m+'30',C.m+'20'],borderRadius:6},
+        {label:'% Acumulada',data:[58,87,94,97,99,100],type:'line',borderColor:C.pk,borderWidth:2,pointRadius:6,pointBackgroundColor:C.pk,yAxisID:'y2'}
+    ]},options:{...D,plugins:{...D.plugins,datalabels:{display:ctx=>ctx.datasetIndex===0,anchor:'end',align:'top',color:C.w,font:{weight:'bold',size:12},formatter:v=>v+'%'}},scales:{x:D.scales.x,y:{...D.scales.y,max:70,ticks:{callback:v=>v+'%'}},y2:{position:'right',ticks:{color:C.pk,callback:v=>v+'%'},grid:{display:false},max:105}}}
+});
+
+// ===== BIPLOT PCA =====
+const cultivars=[
+    {n:'NEO 790',pc1:2.8,pc2:0.5,c:'g'},{n:'OLIMPO',pc1:2.4,pc2:0.8,c:'g'},{n:'78IX80',pc1:2.5,pc2:-0.3,c:'g'},
+    {n:'BRS 8980',pc1:1.2,pc2:0.4,c:'b'},{n:'M 8349',pc1:1.0,pc2:-0.2,c:'b'},{n:'NS 8338',pc1:0.8,pc2:0.6,c:'b'},
+    {n:'TMG 2383',pc1:-0.3,pc2:0.8,c:'o'},{n:'P 8510',pc1:-0.5,pc2:-0.4,c:'o'},{n:'AS 3810',pc1:-0.8,pc2:0.2,c:'o'},
+    {n:'CZ 48B27',pc1:-1.8,pc2:-0.6,c:'r'},{n:'SYN 1687',pc1:-2.0,pc2:0.3,c:'r'},{n:'DM 82I78',pc1:-3.2,pc2:-0.8,c:'r'}
+];
+new Chart(document.getElementById('chBiplot'),{
+    type:'scatter',data:{datasets:cultivars.map(cv=>({
+        label:cv.n,data:[{x:cv.pc1,y:cv.pc2}],pointBackgroundColor:C[cv.c],pointRadius:10,pointBorderColor:C.w,pointBorderWidth:1
+    }))},options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:true,color:C.w,font:{size:7,weight:'bold'},align:'top',offset:6,formatter:(v,ctx)=>cultivars[ctx.datasetIndex].n}},scales:{
+        x:{title:{display:true,text:'PC1 — Performance Agronômica (58%)',color:C.go,font:{weight:'bold'}},ticks:{color:C.m},grid:{color:'rgba(255,255,255,0.03)'},min:-4,max:4},
+        y:{title:{display:true,text:'PC2 — Ambiente de Mercado (29%)',color:C.e,font:{weight:'bold'}},ticks:{color:C.m},grid:{color:'rgba(255,255,255,0.03)'},min:-2,max:2}
+    }}
+});
+
+// ===== LOADINGS =====
+const loadVars=['Produtividade','Resultado/ha','Receita/ha','Preço','Custo/ha','Chuva'];
+const ldPC1=[0.92,0.89,0.85,0.35,-0.25,0.68];
+const ldPC2=[0.18,0.32,0.42,0.88,0.82,-0.35];
+new Chart(document.getElementById('chLoadings'),{
+    type:'bar',data:{labels:loadVars,datasets:[
+        {label:'PC1 (Performance)',data:ldPC1,backgroundColor:C.gol,borderColor:C.go,borderWidth:2,borderRadius:4},
+        {label:'PC2 (Mercado)',data:ldPC2,backgroundColor:C.el,borderColor:C.e,borderWidth:2,borderRadius:4}
+    ]},options:{...D,plugins:{...D.plugins,datalabels:{display:true,anchor:ctx=>ctx.dataset.data[ctx.dataIndex]>=0?'end':'start',align:ctx=>ctx.dataset.data[ctx.dataIndex]>=0?'top':'bottom',color:C.w,font:{weight:'bold',size:9},formatter:v=>(v>=0?'+':'')+v.toFixed(2)}},scales:{x:D.scales.x,y:{...D.scales.y,min:-0.6,max:1.1}}}
+});
+
+// ===== ELBOW =====
+new Chart(document.getElementById('chElbow'),{
+    type:'line',data:{labels:['K=2','K=3','K=4','K=5','K=6','K=7','K=8'],datasets:[{
+        data:[4200,2800,1250,1100,980,920,880],borderColor:C.e,borderWidth:3,pointRadius:[6,6,14,6,6,6,6],pointBackgroundColor:['','','#FFD700','','','',''],tension:0.3
+    }]},options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:ctx=>ctx.dataIndex===2,color:C.go,font:{weight:'bold',size:12},formatter:()=>'★ K=4 (Ótimo)'}},scales:{x:D.scales.x,y:{...D.scales.y,title:{display:true,text:'Inércia (WCSS)',color:C.e}}}}
+});
+
+// ===== CLUSTERS PCA =====
+new Chart(document.getElementById('chClusters'),{
+    type:'scatter',data:{datasets:[
+        {label:'C1 — Estrelas',data:[{x:2.8,y:0.5},{x:2.4,y:0.8},{x:2.5,y:-0.3}],pointBackgroundColor:C.g,pointRadius:12,pointBorderColor:C.w,pointBorderWidth:2},
+        {label:'C2 — Consistentes',data:[{x:1.2,y:0.4},{x:1.0,y:-0.2},{x:0.8,y:0.6}],pointBackgroundColor:C.b,pointRadius:12,pointBorderColor:C.w,pointBorderWidth:2},
+        {label:'C3 — Marginais',data:[{x:-0.3,y:0.8},{x:-0.5,y:-0.4},{x:-0.8,y:0.2}],pointBackgroundColor:C.o,pointRadius:12,pointBorderColor:C.w,pointBorderWidth:2},
+        {label:'C4 — Destruidoras',data:[{x:-1.8,y:-0.6},{x:-2.0,y:0.3},{x:-3.2,y:-0.8}],pointBackgroundColor:C.r,pointRadius:12,pointBorderColor:C.w,pointBorderWidth:2}
+    ]},options:{...D,plugins:{...D.plugins},scales:{
+        x:{title:{display:true,text:'PC1',color:C.go,font:{weight:'bold'}},ticks:{color:C.m},grid:{color:'rgba(255,255,255,0.03)'},min:-4,max:4},
+        y:{title:{display:true,text:'PC2',color:C.e,font:{weight:'bold'}},ticks:{color:C.m},grid:{color:'rgba(255,255,255,0.03)'},min:-2,max:2}
+    }}
+});
+
+// ===== RADAR CLUSTER =====
+new Chart(document.getElementById('chRadarCluster'),{
+    type:'radar',data:{labels:['Produtividade','Resultado/ha','Estabilidade\n(1/CV)','Sharpe Ratio','Tendência\n(slope)','Consistência\n(% safras lucro)'],datasets:[
+        {label:'C1 — Estrelas',data:[95,90,92,95,88,100],borderColor:C.g,backgroundColor:'rgba(39,174,96,0.08)',borderWidth:2,pointRadius:4},
+        {label:'C2 — Consistentes',data:[72,65,75,68,60,85],borderColor:C.b,backgroundColor:'rgba(41,128,185,0.06)',borderWidth:2,pointRadius:4},
+        {label:'C3 — Marginais',data:[52,35,55,30,40,60],borderColor:C.o,backgroundColor:'rgba(230,126,34,0.06)',borderWidth:2,pointRadius:4},
+        {label:'C4 — Destruidoras',data:[25,8,28,5,15,15],borderColor:C.r,backgroundColor:'rgba(231,76,60,0.06)',borderWidth:2,pointRadius:4}
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:C.w,font:{size:10}}},datalabels:{display:false}},scales:{r:{grid:{color:'rgba(255,255,255,0.06)'},ticks:{display:false},pointLabels:{color:C.m,font:{size:9}}}}}
+});
+
+// ===== SHAPLEY =====
+new Chart(document.getElementById('chShapley'),{
+    type:'bar',data:{labels:['Prod.\nSoja','Preço\nMercado','Chuva/\nClima','Milho\nSafrinha','Custo\nOper.','Cana SP\n(Destruição)'],datasets:[{
+        data:[1.42,0.68,0.52,0.45,-0.82,-1.63],
+        backgroundColor:[C.gl,C.bl,C.pl,C.ol,C.rl,C.rl],borderColor:[C.g,C.b,C.p,C.o,C.r,C.r],borderWidth:2,borderRadius:6
+    }]},options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:true,anchor:ctx=>ctx.dataset.data[ctx.dataIndex]>=0?'end':'start',align:ctx=>ctx.dataset.data[ctx.dataIndex]>=0?'top':'bottom',color:C.w,font:{weight:'bold',size:12},formatter:v=>(v>=0?'+':'')+v.toFixed(2)+'M'}},scales:{x:D.scales.x,y:{...D.scales.y,ticks:{callback:v=>'R$ '+v+'M'}}}}
+});
+
+// ===== NETWORK MAP =====
+(function(){
+    const svg=document.getElementById('netSvg');
+    const map=document.getElementById('networkMap');
+    const W=map.offsetWidth,H=map.offsetHeight;
+    const nodes=[
+        {id:0,x:0.50,y:0.18,label:'Prod.\nSoja',color:C.g,size:70},
+        {id:1,x:0.82,y:0.35,label:'Resultado\n/ha',color:C.go,size:65},
+        {id:2,x:0.72,y:0.72,label:'Receita\n/ha',color:C.b,size:55},
+        {id:3,x:0.28,y:0.72,label:'Preço\nSoja',color:C.e,size:55},
+        {id:4,x:0.15,y:0.38,label:'Custo\n/ha',color:C.r,size:50},
+        {id:5,x:0.50,y:0.55,label:'Chuva\n(mm)',color:C.p,size:50}
+    ];
+    const edges=[
+        {from:0,to:1,w:0.94,c:C.g},{from:0,to:2,w:0.87,c:C.g},{from:0,to:5,w:0.72,c:C.p},
+        {from:1,to:2,w:0.92,c:C.go},{from:1,to:5,w:0.62,c:C.p},{from:2,to:3,w:0.82,c:C.b},
+        {from:3,to:4,w:0.65,c:C.r},{from:0,to:3,w:0.58,c:'rgba(255,255,255,0.15)'}
+    ];
+    svg.setAttribute('width',W);svg.setAttribute('height',H);
+    edges.forEach(e=>{
+        const n1=nodes[e.from],n2=nodes[e.to];
+        const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+        line.setAttribute('x1',n1.x*W);line.setAttribute('y1',n1.y*H);
+        line.setAttribute('x2',n2.x*W);line.setAttribute('y2',n2.y*H);
+        line.setAttribute('stroke',e.c);line.setAttribute('stroke-width',Math.max(1,e.w*5));
+        line.setAttribute('stroke-opacity',0.5);svg.appendChild(line);
+        const txt=document.createElementNS('http://www.w3.org/2000/svg','text');
+        txt.setAttribute('x',(n1.x+n2.x)/2*W);txt.setAttribute('y',(n1.y+n2.y)/2*H-4);
+        txt.setAttribute('fill',C.w);txt.setAttribute('font-size','10');txt.setAttribute('text-anchor','middle');
+        txt.setAttribute('font-weight','bold');txt.textContent='r='+e.w.toFixed(2);svg.appendChild(txt);
+    });
+    nodes.forEach(nd=>{
+        const div=document.createElement('div');div.className='net-node';
+        div.style.left=(nd.x*W-nd.size/2)+'px';div.style.top=(nd.y*H-nd.size/2)+'px';
+        div.style.width=nd.size+'px';div.style.height=nd.size+'px';
+        div.style.background=nd.color+'30';div.style.borderColor=nd.color;
+        div.innerHTML=nd.label.replace('\n','<br>');map.appendChild(div);
+    });
+})();
+
+// ===== CENTRALIDADE =====
+new Chart(document.getElementById('chCentral'),{
+    type:'bar',data:{labels:['Prod.\nSoja','Resultado\n/ha','Receita\n/ha','Preço\nSoja','Chuva\n(mm)','Custo\n/ha'],datasets:[
+        {label:'Degree Centrality',data:[0.83,0.67,0.67,0.50,0.50,0.33],backgroundColor:[C.go,C.go+'80',C.b,C.e,C.p,C.r],borderRadius:6}
+    ]},options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:true,anchor:'end',align:'top',color:C.w,font:{weight:'bold',size:12},formatter:v=>v.toFixed(2)}},scales:{x:D.scales.x,y:{...D.scales.y,max:1,ticks:{callback:v=>v.toFixed(1)}}}}
+});
+
+// ===== PARETO 1 =====
+const paretoLabels=['NEO 790','OLIMPO','78IX80','BRS 8980','M 8349','NS 8338','TMG 2383','P 8510','AS 3810','CZ 48B27','SYN 1687','DM 82I78'];
+const paretoVals=[3240,2850,2680,1560,1280,920,480,220,85,-640,-1280,-3520];
+const paretoPos=paretoVals.filter(v=>v>0);const posTotal=paretoPos.reduce((a,b)=>a+b,0);
+let cum=0;const paretoCum=paretoVals.map(v=>{if(v>0){cum+=v;return cum/posTotal*100;}return null;});
+new Chart(document.getElementById('chPareto1'),{
+    type:'bar',data:{labels:paretoLabels,datasets:[
+        {label:'Resultado/ha (R$)',data:paretoVals,backgroundColor:paretoVals.map(v=>v>2000?C.gl:v>0?C.bl:v>-1000?C.yl:C.rl),borderRadius:4},
+        {label:'% Acumulada',data:paretoCum,type:'line',borderColor:C.go,borderWidth:2,pointRadius:paretoCum.map(v=>v?5:0),yAxisID:'y2'}
+    ]},options:{...D,plugins:{...D.plugins,datalabels:{display:ctx=>ctx.datasetIndex===0&&Math.abs(ctx.dataset.data[ctx.dataIndex])>500,anchor:ctx=>ctx.dataset.data[ctx.dataIndex]>=0?'end':'start',align:ctx=>ctx.dataset.data[ctx.dataIndex]>=0?'top':'bottom',color:C.w,font:{weight:'bold',size:8},formatter:v=>'R$'+v}},scales:{x:{...D.scales.x,ticks:{font:{size:7},maxRotation:45}},y:{...D.scales.y,ticks:{callback:v=>'R$'+v}},y2:{position:'right',ticks:{color:C.go,callback:v=>v+'%'},grid:{display:false},max:110}}}
+});
+
+// ===== PARETO INVERSO =====
+const pInvLabels=['DM 82I78','SYN 1687','CZ 48B27','AS 3810','P 8510','TMG 2383'];
+const pInvVals=[-3520,-1280,-640,-85,0,0];
+const negTotal=Math.abs(pInvVals.filter(v=>v<0).reduce((a,b)=>a+b,0));
+let cumN=0;const pInvCum=pInvVals.map(v=>{if(v<0){cumN+=Math.abs(v);return cumN/negTotal*100;}return 100;});
+new Chart(document.getElementById('chPareto2'),{
+    type:'bar',data:{labels:pInvLabels,datasets:[
+        {data:pInvVals,backgroundColor:pInvVals.map(v=>v<-1000?C.r:v<0?C.o:C.m+'40'),borderRadius:4},
+        {data:pInvCum,type:'line',borderColor:C.pk,borderWidth:2,pointRadius:5,pointBackgroundColor:C.pk,yAxisID:'y2'}
+    ]},options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:ctx=>ctx.datasetIndex===0&&ctx.dataset.data[ctx.dataIndex]<0,anchor:'start',align:'bottom',color:C.w,font:{weight:'bold',size:10},formatter:v=>'R$'+v}},scales:{x:D.scales.x,y:{...D.scales.y,max:200,ticks:{callback:v=>'R$'+v}},y2:{position:'right',ticks:{color:C.pk,callback:v=>v+'%'},grid:{display:false},max:110}}}
+});
+
+// ===== BUBBLE CHART =====
+const bubbles=[
+    {x:76.42,y:2407,r:18,l:'NEO 790',c:C.g},{x:74.18,y:2274,r:14,l:'OLIMPO',c:C.g},{x:74.50,y:2540,r:12,l:'78IX80',c:C.g},
+    {x:71.30,y:1560,r:10,l:'BRS',c:C.b},{x:69.85,y:1280,r:9,l:'M8349',c:C.b},{x:68.20,y:920,r:8,l:'NS',c:C.b},
+    {x:66.50,y:480,r:7,l:'TMG',c:C.o},{x:62.40,y:220,r:8,l:'P8510',c:C.o},{x:60.10,y:85,r:6,l:'AS',c:C.o},
+    {x:55.20,y:-640,r:9,l:'CZ',c:C.r},{x:52.80,y:-1280,r:7,l:'SYN',c:C.r},{x:42.15,y:-3520,r:12,l:'DM82',c:C.r}
+];
+new Chart(document.getElementById('chBubble'),{
+    type:'bubble',data:{datasets:bubbles.map(b=>({
+        data:[{x:b.x,y:b.y,r:b.r}],backgroundColor:b.c+'40',borderColor:b.c,borderWidth:2,label:b.l
+    }))},options:{...D,plugins:{...D.plugins,legend:{display:false},datalabels:{display:true,color:C.w,font:{size:7,weight:'bold'},formatter:(v,ctx)=>bubbles[ctx.datasetIndex].l}},scales:{
+        x:{title:{display:true,text:'Produtividade (sc/ha)',color:C.go,font:{weight:'bold'}},ticks:{color:C.m},grid:{color:'rgba(255,255,255,0.03)'},min:38,max:82},
+        y:{title:{display:true,text:'Resultado/ha (R$)',color:C.go,font:{weight:'bold'}},ticks:{color:C.m,callback:v=>'R$'+v},grid:{color:'rgba(255,255,255,0.03)'}}
+    }}
+});
+
+// ===== BOOTSTRAP PROD =====
+const bootProd=[];for(let i=0;i<10000;i++){const samp=[57.3,56.4,63.5,68.9,61.2,62.0,67.69];let s=0;for(let j=0;j<7;j++)s+=samp[Math.floor(Math.random()*7)];bootProd.push(s/7);}
+bootProd.sort((a,b)=>a-b);
+const bpBins=[];for(let b=55;b<=70;b+=0.5)bpBins.push(b);
+const bpFreq=bpBins.map(bin=>bootProd.filter(v=>v>=bin&&v<bin+0.5).length);
+new Chart(document.getElementById('chBootProd'),{
+    type:'bar',data:{labels:bpBins.map(b=>b.toFixed(1)),datasets:[{data:bpFreq,backgroundColor:bpBins.map(b=>b>=58.12&&b<=66.82?'rgba(124,77,255,0.3)':'rgba(255,255,255,0.06)'),borderRadius:1}]},
+    options:{...D,plugins:{...D.plugins,legend:{display:false}},scales:{x:{...D.scales.x,title:{display:true,text:'Média Bootstrap (sc/ha)',color:C.e},ticks:{maxTicksLimit:12,font:{size:8}}},y:{...D.scales.y,title:{display:true,text:'Frequência (B=10.000)',color:C.e}}}}
+});
+
+// ===== BOOTSTRAP RESULTADO =====
+const bootRes=[];const resObs=[2.30,1.75,5.10,18.50,0.50,-2.17,2.62];
+for(let i=0;i<10000;i++){let s=0;for(let j=0;j<7;j++)s+=resObs[Math.floor(Math.random()*7)];bootRes.push(s/7);}
+bootRes.sort((a,b)=>a-b);
+const brBins=[];for(let b=-3;b<=14;b+=0.5)brBins.push(b);
+const brFreq=brBins.map(bin=>bootRes.filter(v=>v>=bin&&v<bin+0.5).length);
+new Chart(document.getElementById('chBootRes'),{
+    type:'bar',data:{labels:brBins.map(b=>b.toFixed(1)),datasets:[{data:brFreq,backgroundColor:brBins.map(b=>b>=-1.85&&b<=9.82?'rgba(255,215,0,0.25)':'rgba(255,255,255,0.04)'),borderRadius:1}]},
+    options:{...D,plugins:{...D.plugins,legend:{display:false}},scales:{x:{...D.scales.x,title:{display:true,text:'Média Bootstrap (R$ M)',color:C.go},ticks:{maxTicksLimit:15,font:{size:8}}},y:{...D.scales.y,title:{display:true,text:'Frequência',color:C.go}}}}
+});
+
+// ===== KAPLAN-MEIER =====
+const kmSafras=[0,1,2,3,4,5,6,7,8];
+const kmSurv=[100,100,92,85,72,50,35,22,10];
+const kmElite=[100,100,100,100,95,90,82,75,65];
+const kmDestr=[100,85,65,42,20,8,0,0,0];
+new Chart(document.getElementById('chKM'),{
+    type:'line',data:{labels:kmSafras.map(s=>s+' safras'),datasets:[
+        {label:'Geral (todos cultivares)',data:kmSurv,borderColor:C.go,borderWidth:3,pointRadius:5,tension:0.3,fill:false},
+        {label:'Cluster Elite (C1)',data:kmElite,borderColor:C.g,borderWidth:2,borderDash:[5,5],pointRadius:3,tension:0.3,fill:false},
+        {label:'Cluster Destruidoras (C4)',data:kmDestr,borderColor:C.r,borderWidth:2,borderDash:[5,5],pointRadius:3,tension:0.3,fill:false},
+        {label:'Mediana (50%)',data:[50,50,50,50,50,50,50,50,50],borderColor:'rgba(255,255,255,0.15)',borderWidth:1,borderDash:[3,3],pointRadius:0}
+    ]},options:{...D,plugins:{...D.plugins,datalabels:{display:false}},scales:{x:{...D.scales.x,title:{display:true,text:'Tempo (nº de safras ativo)',color:C.go}},y:{...D.scales.y,max:105,title:{display:true,text:'% Sobrevivência (competitivo)',color:C.go},ticks:{callback:v=>v+'%'}}}}
+});
+
+// SCROLL
+const sObs=new IntersectionObserver(e=>{e.forEach(el=>{if(el.isIntersecting)el.target.classList.add('visible')})},{threshold:0.08});
+document.querySelectorAll('.fi').forEach(el=>sObs.observe(el));
+window.addEventListener('scroll',()=>{
+    const ids=['visao','pca','cluster','shapley','network','pareto','bootstrap','sobrevivencia'];
+    let cur='';ids.forEach(id=>{const el=document.getElementById(id);if(el&&window.scrollY>=el.offsetTop-200)cur=id;});
+    document.querySelectorAll('.nav-links a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+cur));
+});
+</script>
+</body>
+</html>

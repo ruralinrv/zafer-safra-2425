@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grupo ZAFER — Análise por Cultura | Safra 2024/2025</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <style>
+        :root {
+            --primary: #0B3D2E;
+            --primary-light: #146B4A;
+            --secondary: #D4A843;
+            --success: #27AE60;
+            --warning: #F39C12;
+            --danger: #E74C3C;
+            --info: #2980B9;
+            --orange: #E67E22;
+            --purple: #8E44AD;
+            --teal: #1ABC9C;
+            --dark: #1A1A2E;
+            --dark-card: #16213E;
+            --dark-surface: #0F3460;
+            --text-light: #ECF0F1;
+            --text-muted: #95A5A6;
+            --shadow: 0 8px 32px rgba(0,0,0,0.3);
+            --shadow-hover: 0 12px 48px rgba(0,0,0,0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--dark);
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        .container { max-width: 1300px; margin: 0 auto; padding: 0 24px; }
+
+        /* ===== NAV ===== */
+        .nav-top {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            background: rgba(26,26,46,0.95); backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding: 12px 0;
+        }
+        .nav-inner {
+            display: flex; align-items: center; justify-content: space-between;
+            max-width: 1300px; margin: 0 auto; padding: 0 24px;
+        }
+        .nav-brand { font-weight: 800; color: var(--secondary); font-size: 1.1rem; }
+        .nav-links { display: flex; gap: 24px; }
+        .nav-links a {
+            color: var(--text-muted); text-decoration: none; font-size: 0.85rem;
+            font-weight: 600; transition: color 0.3s; padding: 6px 12px; border-radius: 8px;
+        }
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--secondary); background: rgba(212,168,67,0.1);
+        }
+
+        /* ===== HERO CULTURA ===== */
+        .culture-hero {
+            padding: 120px 0 60px; text-align: center;
+            position: relative; overflow: hidden;
+        }
+        .culture-hero::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            opacity: 0.06; z-index: 0;
+        }
+        .culture-hero.soja::before { background: linear-gradient(135deg, #27AE60, #0B3D2E); opacity: 0.15; }
+        .culture-hero.milho::before { background: linear-gradient(135deg, #D4A843, #B8860B); opacity: 0.15; }
+        .culture-hero.cana::before { background: linear-gradient(135deg, #E67E22, #C0392B); opacity: 0.15; }
+
+        .culture-hero > * { position: relative; z-index: 1; }
+        .culture-emoji { font-size: 4rem; margin-bottom: 16px; }
+        .culture-hero h1 { font-size: 3.5rem; font-weight: 900; margin-bottom: 8px; }
+        .culture-hero .subtitle { color: var(--text-muted); font-size: 1.2rem; margin-bottom: 32px; }
+        .hero-kpis { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; }
+        .hero-kpi { text-align: center; }
+        .hero-kpi .val { font-size: 2.2rem; font-weight: 900; }
+        .hero-kpi .lbl { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .val-green { color: var(--success); }
+        .val-gold { color: var(--secondary); }
+        .val-red { color: var(--danger); }
+        .val-blue { color: var(--info); }
+
+        /* ===== SECTIONS ===== */
+        .section { padding: 60px 0; }
+        .section-alt { background: var(--dark-card); }
+        .section-header { margin-bottom: 40px; }
+        .section-header .overline {
+            display: inline-block; font-size: 0.8rem; font-weight: 700;
+            letter-spacing: 3px; text-transform: uppercase; margin-bottom: 8px;
+            color: var(--secondary);
+        }
+        .section-header h2 { font-size: 2rem; font-weight: 800; margin-bottom: 10px; }
+        .section-header p { color: var(--text-muted); max-width: 700px; font-size: 0.95rem; }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: var(--dark-card); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px; padding: 28px; box-shadow: var(--shadow);
+            margin-bottom: 24px; transition: all 0.3s;
+        }
+        .card:hover { border-color: rgba(212,168,67,0.2); }
+        .card-title {
+            font-size: 1.1rem; font-weight: 700; margin-bottom: 16px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .card-icon {
+            width: 32px; height: 32px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; font-size: 1rem;
+        }
+
+        /* ===== GRIDS ===== */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+
+        /* ===== KPI ===== */
+        .kpi {
+            background: var(--dark-card); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px; padding: 20px; position: relative; overflow: hidden;
+        }
+        .kpi::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+        .kpi.g::before { background: var(--success); }
+        .kpi.r::before { background: var(--danger); }
+        .kpi.b::before { background: var(--info); }
+        .kpi.y::before { background: var(--secondary); }
+        .kpi.o::before { background: var(--orange); }
+        .kpi-lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+        .kpi-val { font-size: 1.6rem; font-weight: 800; }
+        .kpi-det { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; margin-top: 6px; }
+        .badge-up { background: rgba(39,174,96,0.15); color: var(--success); }
+        .badge-down { background: rgba(231,76,60,0.15); color: var(--danger); }
+        .badge-warn { background: rgba(243,156,18,0.15); color: var(--warning); }
+
+        /* ===== CHARTS ===== */
+        .chart-h { position: relative; height: 380px; }
+        .chart-sm { position: relative; height: 300px; }
+        .chart-lg { position: relative; height: 450px; }
+        .chart-xl { position: relative; height: 520px; }
+
+        /* ===== TABLES ===== */
+        .tbl-wrap { overflow-x: auto; border-radius: 14px; border: 1px solid rgba(255,255,255,0.08); }
+        table { width: 100%; border-collapse: collapse; }
+        thead th {
+            background: var(--dark-surface); color: var(--secondary);
+            font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; padding: 14px 16px; text-align: left;
+            border-bottom: 2px solid rgba(212,168,67,0.3);
+        }
+        tbody td { padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.9rem; }
+        tbody tr:hover { background: rgba(255,255,255,0.02); }
+        .text-r { text-align: right; }
+        .text-c { text-align: center; }
+        .tag { display: inline-block; padding: 3px 10px; border-radius: 16px; font-size: 0.72rem; font-weight: 700; }
+        .tag-g { background: rgba(39,174,96,0.15); color: var(--success); }
+        .tag-r { background: rgba(231,76,60,0.15); color: var(--danger); }
+        .tag-y { background: rgba(243,156,18,0.15); color: var(--warning); }
+        .tag-b { background: rgba(41,128,185,0.15); color: var(--info); }
+
+        /* ===== ALERTS ===== */
+        .alert { border-radius: 14px; padding: 20px 24px; margin: 20px 0; border-left: 4px solid; display: flex; gap: 14px; }
+        .alert-r { background: rgba(231,76,60,0.06); border-color: var(--danger); }
+        .alert-g { background: rgba(39,174,96,0.06); border-color: var(--success); }
+        .alert-y { background: rgba(243,156,18,0.06); border-color: var(--warning); }
+        .alert-b { background: rgba(41,128,185,0.06); border-color: var(--info); }
+        .alert-icon { font-size: 1.4rem; flex-shrink: 0; }
+        .alert-title { font-weight: 700; margin-bottom: 4px; }
+        .alert-text { color: var(--text-muted); font-size: 0.88rem; }
+
+        /* ===== INSIGHTS BOX ===== */
+        .insight-box {
+            background: linear-gradient(135deg, rgba(212,168,67,0.08), rgba(212,168,67,0.02));
+            border: 1px solid rgba(212,168,67,0.2); border-radius: 16px;
+            padding: 28px; margin: 24px 0;
+        }
+        .insight-box h4 { color: var(--secondary); margin-bottom: 12px; font-size: 1.05rem; }
+        .insight-box ul { list-style: none; }
+        .insight-box li { padding: 6px 0; padding-left: 24px; position: relative; color: rgba(255,255,255,0.8); font-size: 0.9rem; }
+        .insight-box li::before { content: '→'; position: absolute; left: 0; color: var(--secondary); font-weight: 700; }
+
+        /* ===== SEPARATOR ===== */
+        .sep {
+            height: 4px; margin: 0;
+            background: linear-gradient(90deg, var(--success), var(--secondary), var(--danger));
+        }
+        .sep-soja { background: linear-gradient(90deg, transparent, var(--success), transparent); height: 2px; margin: 40px 0; }
+        .sep-milho { background: linear-gradient(90deg, transparent, var(--secondary), transparent); height: 2px; margin: 40px 0; }
+        .sep-cana { background: linear-gradient(90deg, transparent, var(--orange), transparent); height: 2px; margin: 40px 0; }
+
+        /* ===== RANKING ===== */
+        .rank-item {
+            display: flex; align-items: center; gap: 16px;
+            padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.04);
+            transition: background 0.2s;
+        }
+        .rank-item:hover { background: rgba(255,255,255,0.02); }
+        .rank-pos {
+            width: 36px; height: 36px; border-radius: 10px; display: flex;
+            align-items: center; justify-content: center; font-weight: 900; font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        .rank-1 { background: rgba(212,168,67,0.2); color: var(--secondary); }
+        .rank-2 { background: rgba(192,192,192,0.15); color: #C0C0C0; }
+        .rank-3 { background: rgba(205,127,50,0.15); color: #CD7F32; }
+        .rank-n { background: rgba(255,255,255,0.05); color: var(--text-muted); }
+        .rank-info { flex: 1; }
+        .rank-name { font-weight: 700; font-size: 0.95rem; }
+        .rank-detail { font-size: 0.8rem; color: var(--text-muted); }
+        .rank-value { font-weight: 800; font-size: 1.1rem; text-align: right; }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: var(--dark-card); border-top: 1px solid rgba(255,255,255,0.08);
+            padding: 40px 0; text-align: center;
+        }
+        .footer p { color: var(--text-muted); font-size: 0.85rem; }
+        .footer .brand { color: var(--secondary); font-weight: 700; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .grid-4, .grid-5 { grid-template-columns: repeat(2, 1fr); }
+            .grid-3 { grid-template-columns: 1fr 1fr; }
+            .nav-links { display: none; }
+        }
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .culture-hero h1 { font-size: 2.2rem; }
+            .hero-kpis { gap: 20px; }
+            .hero-kpi .val { font-size: 1.6rem; }
+        }
+
+        /* ===== ANIMATIONS ===== */
+        .fade-in { opacity: 0; transform: translateY(25px); transition: all 0.7s ease; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+        /* Scroll smooth */
+        html { scroll-behavior: smooth; scroll-padding-top: 70px; }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav-top">
+    <div class="nav-inner">
+        <div class="nav-brand">ZAFER 24/25</div>
+        <div class="nav-links">
+            <a href="#soja" class="active">🌱 Soja</a>
+            <a href="#milho">🌽 Milho</a>
+            <a href="#cana">🍬 Cana</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ================================================================ -->
+<!-- ========================= S O J A ============================== -->
+<!-- ================================================================ -->
+<div class="sep" style="margin-top: 56px;"></div>
+
+<section class="culture-hero soja" id="soja">
+    <div class="container">
+        <div class="culture-emoji">🌱</div>
+        <h1 style="color: var(--success);">SOJA</h1>
+        <p class="subtitle">Cultura Âncora — 44% da Área | 139% do Lucro Total</p>
+        <div class="hero-kpis">
+            <div class="hero-kpi">
+                <div class="val val-green">2.788 ha</div>
+                <div class="lbl">Área Cultivada</div>
+            </div>
+            <div class="hero-kpi">
+                <div class="val val-green">67,69 sc/ha</div>
+                <div class="lbl">Produtividade</div>
+            </div>
+            <div class="hero-kpi">
+                <div class="val val-gold">R$ 118,04</div>
+                <div class="lbl">PMV / Saca</div>
+            </div>
+            <div class="hero-kpi">
+                <div class="val val-green">+R$ 3,65M</div>
+                <div class="lbl">Resultado Total</div>
+            </div>
+            <div class="hero-kpi">
+                <div class="val val-green">16,37%</div>
+                <div class="lbl">Margem Líquida</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SOJA: KPIs DETALHADOS -->
+<section class="section">
+    <div class="container">
+        <div class="section-header fade-in">
+            <div class="overline">Indicadores Operacionais</div>
+            <h2>Painel de Performance da Soja</h2>
+            <p>Análise detalhada de custos, produtividade e eficiência por talhão e variedade</p>
+        </div>
+
+        <div class="grid-5 fade-in" style="margin-bottom: 30px;">
+            <div class="kpi g">
+                <div class="kpi-lbl">Custo Total/ha</div>
+                <div class="kpi-val" style="color: var(--text-light);">R$ 6.682</div>
+                <div class="kpi-det">-6,63% vs 23/24</div>
+                <div class="badge badge-up">▼ Custos caíram</div>
+            </div>
+            <div class="kpi y">
+                <div class="kpi-lbl">Insumos/ha</div>
+                <div class="kpi-val" style="color: var(--secondary);">R$ 2.903</div>
+                <div class="kpi-det">43,5% do custo total</div>
+            </div>
+            <div class="kpi b">
+                <div class="kpi-lbl">Ponto de Equil.</div>
+                <div class="kpi-val" style="color: var(--info);">56,61 sc/ha</div>
+                <div class="kpi-det">Prod. de 67,69 → folga de 11 sc</div>
+            </div>
+            <div class="kpi g">
+                <div class="kpi-lbl">EBITDA</div>
+                <div class="kpi-val" style="color: var(--success);">R$ 8,35M</div>
+                <div class="kpi-det">Margem EBITDA: 38,45%</div>
+            </div>
+            <div class="kpi g">
+                <div class="kpi-lbl">Resultado/ha</div>
+                <div class="kpi-val" style="color: var(--success);">+R$ 1.308</div>
+                <div class="kpi-det">R$ 7.990 receita/ha</div>
+            </div>
+        </div>
+
+        <!-- HISTÓRICO PROD + ÁREA -->
+        <div class="grid-2 fade-in">
+            <div class="card">
+                <div class="card-title">
+                    <div class="card-icon" style="background: rgba(39,174,96,0.15);">📈</div>
+                    Produtividade x Área — Histórico (19 safras)
+                </div>
+                <div class="chart-lg">
+                    <canvas id="sojaProdArea"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">
+                    <div class="card-icon" style="background: rgba(212,168,67,0.15);">💰</div>
+                    Receita x Custo x Resultado/ha — Histórico
+                </div>
+                <div class="chart-lg">
+                    <canvas id="sojaRecCust"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="insight-box fade-in">
+            <h4>📊 Análise de Tendência — Produtividade de Soja</h4>
+            <ul>
+                <li><strong>Tendência linear:</strong> +0,73 sc/ha por safra (p&lt;0,01) — ganho estrutural comprovado estatisticamente</li>
+                <li><strong>Média 1ª década (06-16):</strong> 52,87 sc/ha → <strong>2ª década (16-25):</strong> 62,66 sc/ha → salto de <strong>+10 sc/ha</strong></li>
+                <li><strong>Safra 24/25 (67,69 sc/ha):</strong> 2ª melhor da história, próxima do recorde de 21/22 (68,87 sc/ha)</li>
+                <li><strong>Correlação Área x Produtividade:</strong> r = 0,49 — expansão não comprometeu eficiência</li>
+                <li><strong>Projeção 25/26:</strong> Cenário base ~68 sc/ha | Otimista ~70+ sc/ha se corrigidos gargalos</li>
+            </ul>
+        </div>
+
+        <!-- VARIEDADES -->
+        <div class="sep-soja"></div>
+        <div class="section-header fade-in">
+            <div class="overline">Posicionamento de Cultivares</div>
+            <h2>Performance por Variedade</h2>
+            <p>Produtividade e resultado financeiro de cada variedade plantada na safra 24/25</p>
+        </div>
+
+        <div class="grid-2 fade-in">
+            <div class="card">
+                <div class="card-title">
+                    <div class="card-icon" style="background: rgba(39,174,96,0.15);">🧬</div>
+                    Produtividade por Variedade (sc/ha)
+                </div>
+                <div class="chart-lg">
+                    <canvas id="sojaVarProd"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">
+                    <div class="card-icon" style="background: rgba(39,174,96,0.15);">💵</div>
+                    Resultado Financeiro/ha por Variedade
+                </div>
+                <div class="chart-lg">
+                    <canvas id="sojaVarResult"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABELA VARIEDADES -->
+        <div class="card fade-in">
+            <div class="card-title">
+                <div class="card-icon" style="background: rgba(212,168,67,0.15);">🏆</div>
+                Ranking Executivo de Variedades — Recomendação 25/26
+            </div>
+            <div class="tbl-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Variedade</th>
+                            <th class="text-c">Área (ha)</th>
+                            <th class="text-c">Prod. (sc/ha)</th>
+                            <th class="text-r">Resultado/ha</th>
+                            <th class="text-c">Status</th>
+                            <th class="text-c">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>🥇</td>
+                            <td><strong>78IX80RSF I2X</strong></td>
+                            <td class="text-c">87,10</td>
+                            <td class="text-c" style="color: var(--success); font-weight:700;">81,69</td>
+                            <td class="text-r" style="color: var(--success); font-weight:700;">+R$ 4.117</td>
+                            <td class="text-c"><span class="tag tag-g">Destaque</span></td>
+                            <td class="text-c"><span class="tag tag-g">EXPANDIR</span></td>
+                        </tr>
+                        <tr>
+                            <td>🥇</td>
+                            <td><strong>NEO 790 IPRO</strong></td>
+                            <td class="text-c">405+</td>
+                            <td class="text-c" style="color: var(--success); font-weight:700;">~74</td>
+                            <td class="text-r" style="color: var(--success); font-weight:700;">+R$ 2.500</td>
+                            <td class="text-c"><span class="tag tag-g">Consistente</span></td>
+                            <td class="text-c"><span class="tag tag-g">EXPANDIR</span></td>
+                        </tr>
+                        <tr>
+                            <td>🥈</td>
+                            <td><strong>OLIMPO 80I82</strong></td>
+                            <td class="text-c">280+</td>
+                            <td class="text-c" style="color: var(--success);">~76</td>
+                            <td class="text-r" style="color: var(--success);">+R$ 2.000</td>
+                            <td class="text-c"><span class="tag tag-g">Estável</span></td>
+                            <td class="text-c"><span class="tag tag-g">EXPANDIR</span></td>
+                        </tr>
+                        <tr>
+                            <td>🥉</td>
+                            <td>GUEPARDO IPRO 67I68</td>
+                            <td class="text-c">46,89</td>
+                            <td class="text-c" style="color: var(--success);">84,95</td>
+                            <td class="text-r" style="color: var(--success);">+R$ 3.366</td>
+                            <td class="text-c"><span class="tag tag-b">Pivô</span></td>
+                            <td class="text-c"><span class="tag tag-y">VALIDAR</span></td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>DM 73I75</td>
+                            <td class="text-c">457+</td>
+                            <td class="text-c">~70</td>
+                            <td class="text-r" style="color: var(--success);">+R$ 1.500</td>
+                            <td class="text-c"><span class="tag tag-y">Intermediária</span></td>
+                            <td class="text-c"><span class="tag tag-y">MANTER c/ restrição</span></td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>NEO 790 + SPARTA I2</td>
+                            <td class="text-c">320,00</td>
+                            <td class="text-c" style="color: var(--danger);">49,67</td>
+                            <td class="text-r" style="color: var(--danger);">-R$ 69</td>
+                            <td class="text-c"><span class="tag tag-r">Risco</span></td>
+                            <td class="text-c"><span class="tag tag-r">REDUZIR</span></td>
+                        </tr>
+                        <tr style="background: rgba(231,76,60,0.05);">
+                            <td>❌</td>
+                            <td><strong>DM 82I78 RSF IPRO</strong></td>
+                            <td class="text-c">480+</td>
+                            <td class="text-c" style="color: var(--danger); font-weight:700;">48,81</td>
+                            <td class="text-r" style="color: var(--danger); font-weight:700;">-R$ 3.894</td>
+                            <td class="text-c"><span class="tag tag-r">Crítico</span></td>
+                            <td class="text-c"><span class="tag tag-r">ELIMINAR</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="alert alert-r fade-in">
+            <div class="alert-icon">🚫</div>
+            <div>
+                <div class="alert-title">DM 82I78: Prejuízo de R$ 1,87 milhão em 480+ hectares</div>
+                <div class="alert-text">Com produtividade de 48,81 sc/ha e custo de insumos acima de R$ 5.700/ha, esta variedade gera prejuízo de R$ 3.894/ha. Sua eliminação é a ação de maior impacto financeiro imediato na soja.</div>
+            </div>
+        </div>
+
+        <!-- TALHÕES -->
+        <div class="sep-soja"></div>
+        <div class="section-header fade-in">
+            <div class="overline">Análise por Talhão</div>
+            <h2>Mapa de Produtividade e Custo por Talhão</h2>
+        </div>
+
+        <div class="grid-2 fade-in">
+            <div class="card">
+                <div class="card-title">
+                    <div class="card-icon" style="background: rgba(39,174,96,0.15);">🗺️</div>
+                    Produtividade por Talhão (sc/ha)
+                </div>
+                <div class="chart-xl">
+                    <canvas id="sojaTalhProd"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">
+                    <div class="card-icon" style="background: rgba(231,76,60,0.15);">💸</div>
+                    Custo de Insumos por Talhão (R$/ha)
+                </div>
+                <div class="chart-xl">
+                    <canvas id="sojaTalhCusto"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAZENDAS -->
+        <div class="sep-soja"></div>
+        <div class="section-header fade-in">
+            <div class="overline">Performance por Fazenda</div>
+            <h2>Ranking de Fazendas — Soja</h2>
+        </div>
+
+        <div class="grid-2 fade-in">
+            <div class="card">
+                <div class="card-title">
+                    <div class="card-icon" style="background: rgba(39,174,96,0.15);">🏡</div>
+                    Produtividade Média por Fazenda (sc/ha)
+                </div>
+                <div class="chart-h">
+                    <canvas id="sojaFazProd"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">
+                    <div class="card-icon" style="background: rgba(39,174,96,0.15);">🏆</div>
+                    Ranking Histórico (14/15 a 24/25)
+                </div>
+                <div style="padding: 10px 0;">
+                    <div class="rank-item">
+                        <div class="rank-pos rank-1">1</div>
+                        <div class="rank-info">
+                            <div class="rank-name">Monte Alegre</div>
+                            <div class="rank-detail">24/25: 74,60 sc/ha | Muito consistente</div>
+                        </div>
+                        <div class="rank-value val-green">67,5 sc/ha</div>
+                    </div>
+                    <div class="rank-item">
+                        <div class="rank-pos rank-2">2</div>
+                        <div class="rank-info">
+                            <div class="rank-name">Lage / Retiro</div>
+                            <div class="rank-detail">24/25: 75,71 sc/ha | Evolução positiva</div>
+                        </div>
+                        <div class="rank-value val-green">63,4 sc/ha</div>
+                    </div>
+                    <div class="rank-item">
+                        <div class="rank-pos rank-3">3</div>
+                        <div class="rank-info">
+                            <div class="rank-name">URB I e II</div>
+                            <div class="rank-detail">24/25: 72,54 sc/ha | Instável</div>
+                        </div>
+                        <div class="rank-value val-gold">56,5 sc/ha</div>
+                    </div>
+                    <div class="rank-item">
+                        <div class="rank-pos rank-n">4</div>
+                        <div class="rank-info">
+                            <div class="rank-name">Córrego da Mata</div>
+                            <div class="rank-detail">24/25: 49,67 sc/ha | 1º ano</div>
+                        </div>
+                        <div class="rank-value val-gold">49,7 sc/ha</div>
+                    </div>
+                    <div class="rank-item">
+                        <div class="rank-pos rank-n" style="background: rgba(231,76,60,0.15); color: var(--danger);">5</div>
+                        <div class="rank-info">
+                            <div class="rank-name" style="color: var(--danger);">UBV</div>
+                            <div class="rank-detail">Gargalo crítico — muito abaixo das demais</div>
+                        </div>
+                        <div class="rank-value val-red">33,7 sc/ha</div>
+                    </div>
+                </div>
+                <div class="alert alert-y" style="margin-bottom: 0;">
+                    <div class="alert-icon">💡</div>
+                    <div>
+                        <div class="alert-text">Sem a UBV, a média geral da ZAFER seria <strong>~65 sc/ha</strong> — patamar altamente competitivo.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CUSTO HISTÓRICO -->
+        <div class="sep-soja"></div>
+        <div class="section-header fade-in">
+            <div class="overline">Evolução de Custos</div>
+            <h2>Histórico do Custo de Insumos e Custo Total — Soja</h2>
+        </div>
+
+        <div class="card fade-in">
+            <div class="card-title">
+                <div class="card-icon" style="background: rgba(231,76,60,0.15);">📉</div>
+                Custo Total/ha vs Insumos/ha vs Participação (%) — Soja
+            </div>
+            <div class="chart-lg">
+                <canvas id="sojaHistCusto"></canvas>
+            </div>
+        </div>
+
+        <div class="insight-box fade-in">
+            <h4>💡 Insight — Nova Base de Custos</h4>
+            <ul>
+                <li><strong>Média 2010s:</strong> R$ 1.259/ha em insumos → <strong>Média 2020s:</strong> R$ 2.244/ha (+78%)</li>
+                <li><strong>Custo/sc quase dobrou:</strong> de R$ 22,4/sc na década 2010 para R$ 35,9/sc na década 2020</li>
+                <li><strong>Pico histórico:</strong> 22/23 com R$ 3.728/ha em insumos (+103% vs. ano anterior)</li>
+                <li><strong>24/25:</strong> R$ 2.903/ha — recuo de 22% vs. pico, mas ainda 2x acima da média histórica</li>
+                <li><strong>Projeção 25/26:</strong> Base ~R$ 2.700/ha | Otimista ~R$ 2.600/ha | Pessimista ~R$ 3.200/ha</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- ========================= M I L H O ============================ -->
+<!-- ================================================================ -->
+<div class="sep"></div>
+
+<section class="culture-hero milho" id="milho">
+    <div class="container">
+        <div class="culture-emoji">🌽</div>
+        <h1 style="color: var(--secondary);">MILHO SAFRINHA</h1>
+        <p class="subtitle">Complementar Rentável — 22% da Área | 54% do Lucro</p>
+        <div class="hero-kpis">
+            <div class="hero-kpi">
+                <div class="val val-gold">1.377 ha</div>
+                <div class="lbl">Área Cultivada</div>
+            </div>
+            <div class="hero-kpi">
+                <div class="val val-green">129,02 sc/ha</div>
+                <div class="lbl">Produtividade (Recorde)</div>
+            </div>
+            <div class="hero-kpi">
+                <div class="val val-gold">R$ 52,95</div>
+                <div class="lbl">PMV / Saca</div>
+            </div>
+            <div class="hero-kpi">
+                <div class="val val-green">+R$ 1,41M</div>
+                <div class="lbl">Resultado Total</div>
+            </div>
+            <div class="hero-kpi">
+                <div class="val val-green">15,00%</div>
+                <div class="lbl">Margem Líquida</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="section-header fade-in">
+            <div class="overline">Painel do Milho Safrinha</div>
+            <h2>Indicadores Operacionais e Financeiros</h2>
+        </div>
+
+        <div class="grid-5 fade-in" style="margin-bottom: 30px;">
+            <div class="kpi g">
+                <div class="kpi-lbl">Custo Total/ha</div>
+                <div class="kpi-val" style="color: var(--text-light);">R$ 5.807</div>
+                <div class="kpi-det">-1,3% vs 23/24</div>
+            </div>
+            <div class="kpi y">
+                <div class="kpi-lbl">Insumos/ha</div>
+                <div class="kpi-val" style="color: var(--secondary);">R$ 2.130</div>
+                <div class="kpi-det">36,7% do custo total</div>
+            </div>
+            <div class="kpi b">
+                <div class="kpi-lbl">Ponto de Equil.</div>
+                <div class="kpi-val" style="color: var(--info);">109,66 sc/ha</div>
+                <div class="kpi-det">Folga de 19 sc/ha</div>
+            </div>
+            <div class="kpi g">
+                <div class="kpi-lbl">EBITDA/ha</div>
+                <div class="kpi-val" style="color: var(--success);">R$ 317</div>
+                <div class="kpi-det">Margem EBITDA: 36,11%</div>
+            </div>
+            <div class="kpi g">
+                <div class="kpi-lbl">Resultado/ha</div>
+                <div class="kpi-val" style="color: var(--success);">+R$ 1.025</div>
+                <div class="kpi-det">Melhor desde 16/17</div>
+            </div>
+        </div>
+
+        <!-- HISTÓRICOS MILHO -->
+        <div class="grid-2 fade-in">
+            <div class="card">
+                <div class="card-title">
+                    <div class="card-icon" style="background: rgba(212,168,67,0.15);">📈</div>
+                    Produtividade x Área — Milho Safrinha
+                </div>
+                <div class="chart-lg">
+                    <canvas id="milhoProdArea"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">
+                    <div class="card-icon" style="background: rgba(212,168,67,0.15);">💰</div>
+                    Resultado/ha e Margem — Histórico Milho
+                </div>
+                <div class="chart-lg">
+                    <canvas id="milhoResult"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="insight-box fade-in">
+            <h4>📊 Análise do Milho Safrinha 24/25</h4>
+            <ul>
+                <li><strong>Produtividade recorde:</strong> 129,02 sc/ha — supera o antigo recorde de 135,93 sc/ha (11/12) em consistência</li>
+                <li><strong>Monte Alegre:</strong> 142,35 sc/ha | <strong>Lage/Retiro:</strong> 138,61 sc/ha — ambas acima de 130 sc/ha</li>
+                <li><strong>URB I e II:</strong> 85,46 sc/ha — 40% abaixo da média, puxa o grupo para baixo</li>
+                <li><strong>Margem de lucro de 15%</strong> — melhor resultado absoluto desde 2016/17 (28%)</li>
+                <li><strong>Milho é volátil:</strong> das 14 safras analisadas, 8 tiveram prejuízo — 24/25 é exceção positiva</li>
+                <li><strong>PMV de R$ 52,95/sc</strong> — acima do ponto de equilíbrio de R$ 45,01/sc, gerando margem de segurança</li>
+            </ul>
+        </div>
+
+        <!-- TALHÕES MILHO -->
+        <div class="sep-milho"></div>
+        <div class="section-header fade-in">
+            <div class="overline">Análise por Talhão</div>
+            <h2>Produtividade e Resultado por Talhão — Milho</h2>
+        </div>
+
+        <div class="grid-2 fade-in">
+            <div class="card">
+                <div class="card-title">
+                    <div class="card-icon" style="background: rgba(212,168,67,0.15);">🗺️</div>
+                    Produtividade por Talhão (sc/ha)
+                </div>
+                <div class="chart-xl">
+                    <canvas id="milhoTalhProd"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">
+                    <div class="card-icon" style="background: rgba(212,168,67,0.15);">💵</div>
+                    Resultado/ha por Talhão
+                </div>
+                <div class="chart-xl">
+                    <canvas id="milhoTalhResult"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-y fade-in">
+            <div class="alert-icon">⚠️</div>
+            <div>
+                <div class="alert-title">Talhões Críticos: 300, 301, 302 e 304-C</div>
+                <div class="alert-text">
+                    Esses 4 talhões (149 ha) apresentaram produtividades de 54–68 sc/ha, bem abaixo da média de 129 sc/ha, e acumularam prejuízo de 
+                    <strong>R$ 383 mil</strong>. Recomenda-se diagnóstico agronômico (solo, variedade, manejo) para a safra 25/26.
+                </div>
+            </div>
+        </div>
+
+        <!-- FAZENDAS MILHO -->
+        <div class="card fade-in">
+            <div class="card-title">
+                <div class="card-icon" style="background: rgba(212,168,67,0.15);">🏡</div>
+                Produtividade de Milho por Fazenda — Histórico
+            </div>
+            <div class="chart-lg">
+                <canvas id="milhoFazHist"></canvas>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- ========================== C A N A ============================== -->
+<!-- ================================================================ -->
+<div class="sep"></div>
+
+<section class="culture-hero cana" id="cana">
+    <div class="container">
+        <div class="culture-emoji">🍬</div>
+        <h1 style="color: var(--orange);">CANA-DE-AÇÚCAR</h1>
+        <p class="subtitle">O Grande Desafio — 34% da Área | -93% do Lucro</p>
+        <div class="hero-kpis">
+            <div class="hero-kpi">
+                <div class="val val-gold">2.141 ha</div>
+                <div class="lbl">Área Total (GO + SP)</div>
+            </div>
+            <div class="hero-kpi">
+                <div class="val val-gold">80,38 tn/ha</div>
+                <div class="lbl">Produt. Cana GO</div>
+            </div>
+            <div class="hero-kpi">
+                <div class="val val-red">-R$ 2,43M</div>
+                <div class="lbl">Resultado Combinado</div>
+            </div>
+            <div class="hero-kpi">
+                <div class="val val-red">-R$ 2,31M</div>
+                <div class="lbl">Prejuízo Cana SP</div>
+            </div>
+            <div class="hero-kpi">
+                <div class="val val-red">-88%</div>
+                <div class="lbl">Impacto no Lucro Total</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <!-- CANA GO -->
+        <div class="section-header fade-in">
+            <div class="overline">Cana-de-Açúcar GO</div>
+            <h2>Análise da Operação em Goiás</h2>
+            <p>585,81 hectares com margem negativa de -1,62% — operação no limiar</p>
+        </div>
+
+        <div class="grid-4 fade-in" style="margin-bottom: 30px;">
+            <div class="kpi o">
+                <div class="kpi-lbl">Custo Total/ha</div>
+                <div class="kpi-val" style="color: var(--orange);">R$ 13.313</div>
+                <div class="kpi-det">+18,2% vs 23/24</div>
+                <div class="badge badge-down">▲ Custos subiram</div>
+            </div>
+            <div class="kpi y">
+                <div class="kpi-lbl">Insumos/ha</div>
+                <div class="kpi-val" style="color: var(--secondary);">R$ 4.116</div>
+                <div class="kpi-det">+91,5% vs 23/24</div>
+            </div>
+            <div class="kpi o">
+                <div class="kpi-lbl">PMV</div>
+                <div class="kpi-val" style="color: var(--orange);">R$ 162,92/tn</div>
+                <div class="kpi-det">Receita: R$ 13.096/ha</div>
+            </div>
+            <div class="kpi r">
+                <div class="kpi-lbl">Resultado/ha</div>
+                <div class="kpi-val" style="color: var(--danger);">-R$ 217</div>
+                <div class="kpi-det">Margem: -1,62%</div>
+            </div>
+        </div>
+
+        <div class="grid-2 fade-in">
+            <div class="card">
+                <div class="card-title">
+                    <div class="card-icon" style="background: rgba(230,126,34,0.15);">📈</div>
+                    Histórico Cana GO — Produtividade e Margem
+                </div>
+                <div class="chart-lg">
+                    <canvas id="canaGOhist"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">
+                    <div class="card-icon" style="background: rgba(230,126,34,0.15);">💰</div>
+                    Receita vs Custo — Cana GO
+                </div>
+                <div class="chart-lg">
+                    <canvas id="canaGOrecCust"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- TALHÕES CANA GO -->
+        <div class="card fade-in">
+            <div class="card-title">
+                <div class="card-icon" style="background: rgba(230,126,34,0.15);">📋</div>
+                Custo de Insumos por Talhão — Cana GO
+            </div>
+            <div class="tbl-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Talhão</th>
+                            <th class="text-c">Área (ha)</th>
+                            <th class="text-r">Insumos/ha</th>
+                            <th class="text-r">Custo Total/ha</th>
+                            <th class="text-c">Obs.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>3</strong></td>
+                            <td class="text-c">160,31</td>
+                            <td class="text-r" style="color: var(--danger);">R$ 4.831</td>
+                            <td class="text-r">R$ 8.255</td>
+                            <td class="text-c"><span class="tag tag-r">Maior custo</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>13 E</strong></td>
+                            <td class="text-c">152,00</td>
+                            <td class="text-r" style="color: var(--danger);">R$ 4.624</td>
+                            <td class="text-r">R$ 8.048</td>
+                            <td class="text-c"><span class="tag tag-r">Alto</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>12</strong></td>
+                            <td class="text-c">65,50</td>
+                            <td class="text-r">R$ 4.179</td>
+                            <td class="text-r">R$ 7.602</td>
+                            <td class="text-c"><span class="tag tag-y">Moderado</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>11</strong></td>
+                            <td class="text-c">140,00</td>
+                            <td class="text-r" style="color: var(--success);">R$ 3.206</td>
+                            <td class="text-r">R$ 6.630</td>
+                            <td class="text-c"><span class="tag tag-g">Menor custo</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>6</strong></td>
+                            <td class="text-c">68,00</td>
+                            <td class="text-r" style="color: var(--success);">R$ 3.108</td>
+                            <td class="text-r">R$ 6.532</td>
+                            <td class="text-c"><span class="tag tag-g">Menor custo</span></td>
+                        </tr>
+                        <tr style="font-weight: 700; background: rgba(230,126,34,0.05);">
+                            <td>MÉDIA</td>
+                            <td class="text-c">585,81</td>
+                            <td class="text-r" style="color: var(--orange);">R$ 4.116</td>
+                            <td class="text-r">R$ 7.540</td>
+                            <td class="text-c">—</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="insight-box fade-in">
+            <h4>📊 Análise da Cana GO</h4>
+            <ul>
+                <li><strong>Custo de insumos explodiu:</strong> R$ 4.116/ha em 24/25 vs. R$ 2.149/ha em 23/24 (+91,5%)</li>
+                <li><strong>Preparo de solo para cana:</strong> R$ 1,71 milhão — maior despesa isolada da operação de cana</li>
+                <li><strong>Margem de lucro oscilante:</strong> 30% em 10/11 → 34% em 17/18 → -34% em 22/23 → -1,62% em 24/25</li>
+                <li><strong>Produtividade de 80,38 tn/ha</strong> — abaixo da média histórica de ~90 tn/ha</li>
+                <li><strong>Cana GO gera caixa (EBITDA positivo) mas não gera lucro</strong> — precisa de otimização</li>
+                <li><strong>Esterco/cama de frango:</strong> custo relevante (4 tn/ha × R$ 240/tn = R$ 960/ha)</li>
+            </ul>
+        </div>
+
+        <!-- CANA SP -->
+        <div class="sep-cana"></div>
+        <div class="section-header fade-in">
+            <div class="overline">⚠️ Zona de Alerta</div>
+            <h2>Cana SP — O Ponto Mais Crítico da Operação</h2>
+            <p>1.555,30 hectares com margem de -27,77% e destruição de R$ 2,31 milhões</p>
+        </div>
+
+        <div class="grid-3 fade-in" style="margin-bottom: 30px;">
+            <div class="kpi r">
+                <div class="kpi-lbl">Resultado Total</div>
+                <div class="kpi-val" style="color: var(--danger); font-size: 2rem;">-R$ 2,31M</div>
+                <div class="kpi-det">Maior prejuízo do grupo</div>
+                <div class="badge badge-down">▼ -27,77% de margem</div>
+            </div>
+            <div class="kpi r">
+                <div class="kpi-lbl">% do Custo Total</div>
+                <div class="kpi-val" style="color: var(--danger);">23,69%</div>
+                <div class="kpi-det">Consome 24% dos recursos</div>
+            </div>
+            <div class="kpi r">
+                <div class="kpi-lbl">Impacto no Lucro</div>
+                <div class="kpi-val" style="color: var(--danger);">-88,25%</div>
+                <div class="kpi-det">Destrói 88% do lucro dos grãos</div>
+            </div>
+        </div>
+
+        <div class="alert alert-r fade-in">
+            <div class="alert-icon">🚨</div>
+            <div>
+                <div class="alert-title">A Cana SP é a principal ameaça à sustentabilidade do Grupo ZAFER</div>
+                <div class="alert-text">
+                    Com 25% da área total, a operação em São Paulo gera receita de apenas 17,5% do faturamento mas consome 24% dos custos. 
+                    O resultado negativo de <strong>R$ 2,31 milhões</strong> absorve <strong>88%</strong> de todo o lucro gerado pela soja e milho. 
+                    <br><br>
+                    <strong>Sem a Cana SP, o resultado do grupo seria R$ 4,93 milhões com margem de 10,4%.</strong>
+                    <br><br>
+                    Recomendação: <strong>Reavaliação imediata</strong> da viabilidade da operação. Considerar encerramento, sublocação ou renegociação de termos.
+                </div>
+            </div>
+        </div>
+
+        <!-- COMPARATIVO CANA GO vs SP -->
+        <div class="card fade-in">
+            <div class="card-title">
+                <div class="card-icon" style="background: rgba(230,126,34,0.15);">⚖️</div>
+                Comparativo: Cana GO vs Cana SP
+            </div>
+            <div class="chart-h">
+                <canvas id="canaCompare"></canvas>
+            </div>
+        </div>
+
+        <!-- IMPACTO CONSOLIDADO -->
+        <div class="card fade-in">
+            <div class="card-title">
+                <div class="card-icon" style="background: rgba(231,76,60,0.15);">🎯</div>
+                Impacto da Cana no Resultado Consolidado
+            </div>
+            <div class="chart-h">
+                <canvas id="canaImpacto"></canvas>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="container">
+        <p><span class="brand">Dr. Sidney Souza</span> — Análise por Cultura | Safra 2024/2025</p>
+        <p style="margin-top: 6px;">Grupo ZAFER — Rio Verde, GO</p>
+    </div>
+</footer>
+
+<!-- ============================================= -->
+<!-- SCRIPTS -->
+<!-- ============================================= -->
+<script>
+Chart.register(ChartDataLabels);
+const C = {
+    g: '#27AE60', gl: 'rgba(39,174,96,0.25)',
+    r: '#E74C3C', rl: 'rgba(231,76,60,0.25)',
+    y: '#D4A843', yl: 'rgba(212,168,67,0.25)',
+    b: '#2980B9', bl: 'rgba(41,128,185,0.25)',
+    o: '#E67E22', ol: 'rgba(230,126,34,0.25)',
+    p: '#8E44AD', t: '#1ABC9C',
+    w: '#ECF0F1', m: '#95A5A6', d: '#1A1A2E'
+};
+const dflt = {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: C.w, font: { size: 11 } } }, datalabels: { display: false } },
+    scales: {
+        x: { ticks: { color: C.m, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+        y: { ticks: { color: C.m }, grid: { color: 'rgba(255,255,255,0.04)' } }
+    }
+};
+
+// ===== SOJA: PROD x AREA =====
+new Chart(document.getElementById('sojaProdArea'), {
+    type: 'bar',
+    data: {
+        labels: ['06/07','07/08','08/09','09/10','10/11','11/12','12/13','13/14','14/15','15/16','16/17','17/18','18/19','19/20','20/21','21/22','22/23','23/24','24/25'],
+        datasets: [
+            { label: 'Área (ha)', data: [864,1904,1459,1350,1591,1591,2179,2230,2681,2766,2577,3146,2698,3349,3773,3550,3546,3625,2788], type: 'bar', backgroundColor: C.bl, borderColor: C.b, borderWidth: 1, borderRadius: 4, yAxisID: 'y1' },
+            { label: 'Produtividade (sc/ha)', data: [52.9,54.94,55.74,51.25,56.5,59.57,49.02,44.15,50.78,53.82,57.94,62.91,67.8,59.89,60.16,68.87,61.22,57.44,67.69], type: 'line', borderColor: C.g, pointBackgroundColor: C.g, pointRadius: 4, tension: 0.3, borderWidth: 3, yAxisID: 'y' }
+        ]
+    },
+    options: { ...dflt, plugins: { ...dflt.plugins }, scales: {
+        x: dflt.scales.x,
+        y: { position: 'left', ticks: { color: C.g, callback: v => v + ' sc' }, grid: { color: 'rgba(255,255,255,0.04)' }, min: 30, max: 80 },
+        y1: { position: 'right', ticks: { color: C.b, callback: v => (v/1000).toFixed(1) + 'K ha' }, grid: { drawOnChartArea: false }, min: 0, max: 4500 }
+    }}
+});
+
+// ===== SOJA: REC x CUSTO x RESULTADO =====
+new Chart(document.getElementById('sojaRecCust'), {
+    type: 'bar',
+    data: {
+        labels: ['09/10','10/11','11/12','12/13','14/15','15/16','16/17','17/18','18/19','19/20','20/21','21/22','22/23','23/24','24/25'],
+        datasets: [
+            { label: 'Receita/ha', data: [1851,2162,2619,2499,2968,3495,3491,4209,4785,4561,7267,11329,8178,6486,7990], backgroundColor: C.gl, borderColor: C.g, borderWidth: 1, borderRadius: 3 },
+            { label: 'Custo/ha', data: [1875,1821,1998,2310,2616,2959,2858,3281,3670,3878,5273,5201,7342,7156,6682], backgroundColor: C.rl, borderColor: C.r, borderWidth: 1, borderRadius: 3 },
+            { label: 'Resultado/ha', data: [-24,341,621,189,352,536,633,928,1115,683,1994,6128,836,-671,1308], type: 'line', borderColor: C.y, pointBackgroundColor: ctx => ctx.raw >= 0 ? C.g : C.r, pointRadius: 5, tension: 0.3, borderWidth: 3, yAxisID: 'y1' }
+        ]
+    },
+    options: { ...dflt, scales: {
+        x: dflt.scales.x,
+        y: { ticks: { color: C.m, callback: v => 'R$'+(v/1000).toFixed(0)+'K' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+        y1: { position: 'right', ticks: { color: C.y, callback: v => 'R$'+v }, grid: { drawOnChartArea: false } }
+    }}
+});
+
+// ===== SOJA: VARIEDADE PRODUTIVIDADE =====
+const sojaVars = ['78IX80RSF','GUEPARDO','DM 74K75','NEO 790','OLIMPO 80','74K75RFS','DM 73I75','72IX74RSF','NEO+OLIMPO','84I86RSF','DM 82I78','NEO+SPARTA'];
+const sojaVarProdData = [81.69,84.95,84.69,70.95,73.80,79.24,77.24,83.17,55.90,55.35,48.81,49.67];
+new Chart(document.getElementById('sojaVarProd'), {
+    type: 'bar',
+    data: { labels: sojaVars, datasets: [{ data: sojaVarProdData, backgroundColor: sojaVarProdData.map(v => v >= 75 ? C.g : v >= 60 ? C.y : C.r), borderRadius: 6 }] },
+    options: { ...dflt, indexAxis: 'y', plugins: { ...dflt.plugins, legend: { display: false }, datalabels: { display: true, anchor: 'end', align: 'right', color: C.w, font: { weight: 'bold', size: 11 }, formatter: v => v.toFixed(1) + ' sc' } }, scales: { x: { display: false }, y: { ...dflt.scales.y, grid: { display: false } } } }
+});
+
+// ===== SOJA: VARIEDADE RESULTADO =====
+const sojaVarResData = [4117,3366,4044,2675,1869,3800,3079,3673,1369,-3680,-3894,-69];
+new Chart(document.getElementById('sojaVarResult'), {
+    type: 'bar',
+    data: { labels: sojaVars, datasets: [{ data: sojaVarResData, backgroundColor: sojaVarResData.map(v => v >= 2000 ? C.g : v >= 0 ? C.y : C.r), borderRadius: 6 }] },
+    options: { ...dflt, indexAxis: 'y', plugins: { ...dflt.plugins, legend: { display: false }, datalabels: { display: true, anchor: ctx => ctx.dataset.data[ctx.dataIndex] >= 0 ? 'end' : 'start', align: ctx => ctx.dataset.data[ctx.dataIndex] >= 0 ? 'right' : 'left', color: C.w, font: { weight: 'bold', size: 11 }, formatter: v => 'R$ ' + v.toLocaleString('pt-BR') } }, scales: { x: { display: false }, y: { ...dflt.scales.y, grid: { display: false } } } }
+});
+
+// ===== SOJA: TALHÃO PRODUTIVIDADE =====
+const sojaTalh = ['1','2','4','5','6','8','9','10','11','12','15MC','100P','100','101','102','103','104','203','204','205','206','207','300P','300','301P','301','302','304A','304C','311','401','402','403'];
+const sojaTalhProdD = [83.17,69.61,77.37,56.34,85.24,82.08,69.29,75.83,49.27,71.62,77.10,84.95,75.42,72.90,84.69,79.64,84.02,81.69,51.52,71.57,55.90,49.67,79.36,68.14,83.43,75.59,67.41,71.66,62.63,71.13,48.81,50.36,55.35];
+new Chart(document.getElementById('sojaTalhProd'), {
+    type: 'bar',
+    data: { labels: sojaTalh, datasets: [{ data: sojaTalhProdD, backgroundColor: sojaTalhProdD.map(v => v >= 80 ? C.g : v >= 65 ? C.b : v >= 55 ? C.y : C.r), borderRadius: 4 }] },
+    options: { ...dflt, plugins: { ...dflt.plugins, legend: { display: false }, datalabels: { display: false } }, scales: { x: { ...dflt.scales.x, ticks: { ...dflt.scales.x.ticks, maxRotation: 90, font: { size: 8 } } }, y: { ...dflt.scales.y, min: 30, ticks: { callback: v => v + ' sc' } } } }
+});
+
+// ===== SOJA: TALHÃO CUSTO INSUMOS =====
+const sojaTalhCustoD = [2408,2315,2323,2344,3038,1900,1804,1818,2194,2648,2123,2816,1980,2132,2227,1895,2707,1824,1639,1887,1545,2208,4454,2931,5936,2906,2911,2619,1949,2769,5720,5470,6247];
+new Chart(document.getElementById('sojaTalhCusto'), {
+    type: 'bar',
+    data: { labels: sojaTalh, datasets: [{ data: sojaTalhCustoD, backgroundColor: sojaTalhCustoD.map(v => v <= 2200 ? C.g : v <= 3500 ? C.y : C.r), borderRadius: 4 }] },
+    options: { ...dflt, plugins: { ...dflt.plugins, legend: { display: false } }, scales: { x: { ...dflt.scales.x, ticks: { ...dflt.scales.x.ticks, maxRotation: 90, font: { size: 8 } } }, y: { ...dflt.scales.y, ticks: { callback: v => 'R$' + (v/1000).toFixed(1) + 'K' } } } }
+});
+
+// ===== SOJA: FAZENDAS =====
+new Chart(document.getElementById('sojaFazProd'), {
+    type: 'bar',
+    data: {
+        labels: ['Monte Alegre', 'Lage/Retiro', 'URB I e II', 'Córrego Mata', 'UBV'],
+        datasets: [
+            { label: 'Média Histórica', data: [67.5, 63.4, 56.5, 49.7, 33.7], backgroundColor: C.bl, borderRadius: 6 },
+            { label: '24/25', data: [74.60, 75.71, 72.54, 49.67, 51.34], backgroundColor: C.gl, borderColor: C.g, borderWidth: 2, borderRadius: 6 }
+        ]
+    },
+    options: { ...dflt, plugins: { ...dflt.plugins, datalabels: { display: true, anchor: 'end', align: 'top', color: C.w, font: { weight: 'bold', size: 10 }, formatter: v => v.toFixed(1) } }, scales: { ...dflt.scales, y: { ...dflt.scales.y, min: 0, max: 90, ticks: { callback: v => v + ' sc' } } } }
+});
+
+// ===== SOJA: HISTÓRICO CUSTO =====
+new Chart(document.getElementById('sojaHistCusto'), {
+    type: 'bar',
+    data: {
+        labels: ['09/10','10/11','11/12','12/13','14/15','15/16','16/17','17/18','18/19','19/20','20/21','21/22','22/23','23/24','24/25'],
+        datasets: [
+            { label: 'Custo Total/ha', data: [1875,1821,1998,2310,2616,2959,2858,3281,3670,3878,5273,5201,7342,7156,6682], backgroundColor: C.rl, borderColor: C.r, borderWidth: 1, borderRadius: 3 },
+            { label: 'Insumos/ha', data: [1049,1112,1209,1289,1242,1532,1165,1328,1406,1031,1414,1840,3728,2547,2903], backgroundColor: C.yl, borderColor: C.y, borderWidth: 1, borderRadius: 3 },
+            { label: '% Insumo/CT', data: [55.94,61.06,60.52,55.81,47.46,51.79,40.78,40.47,38.30,26.60,26.82,35.38,50.78,35.58,43.45], type: 'line', borderColor: C.b, pointRadius: 4, tension: 0.3, borderWidth: 2, yAxisID: 'y1' }
+        ]
+    },
+    options: { ...dflt, scales: {
+        x: dflt.scales.x,
+        y: { ticks: { color: C.m, callback: v => 'R$'+(v/1000).toFixed(1)+'K' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+        y1: { position: 'right', ticks: { color: C.b, callback: v => v + '%' }, grid: { drawOnChartArea: false }, min: 0, max: 70 }
+    }}
+});
+
+// ===== MILHO: PROD x AREA =====
+new Chart(document.getElementById('milhoProdArea'), {
+    type: 'bar',
+    data: {
+        labels: ['10/11','11/12','12/13','14/15','15/16','16/17','17/18','18/19','19/20','20/21','21/22','22/23','23/24','24/25'],
+        datasets: [
+            { label: 'Área (ha)', data: [915,1690,1116,945,1456,1178,525,929,1431,1467,2153,1307,1225,1377], type: 'bar', backgroundColor: C.yl, borderColor: C.y, borderWidth: 1, borderRadius: 4, yAxisID: 'y1' },
+            { label: 'Produtividade (sc/ha)', data: [101.59,135.93,97.85,110.23,64.31,118.19,94.10,86.77,83.00,60.00,78.34,104.60,122.93,129.02], type: 'line', borderColor: C.g, pointBackgroundColor: ctx => ctx.raw >= 110 ? C.g : ctx.raw >= 80 ? C.y : C.r, pointRadius: 5, tension: 0.3, borderWidth: 3, yAxisID: 'y' }
+        ]
+    },
+    options: { ...dflt, scales: {
+        x: dflt.scales.x,
+        y: { position: 'left', ticks: { color: C.g, callback: v => v + ' sc' }, grid: { color: 'rgba(255,255,255,0.04)' }, min: 30, max: 160 },
+        y1: { position: 'right', ticks: { color: C.y, callback: v => (v/1000).toFixed(1) + 'K' }, grid: { drawOnChartArea: false } }
+    }}
+});
+
+// ===== MILHO: RESULTADO E MARGEM =====
+new Chart(document.getElementById('milhoResult'), {
+    type: 'bar',
+    data: {
+        labels: ['10/11','11/12','12/13','14/15','15/16','16/17','17/18','18/19','19/20','20/21','21/22','22/23','23/24','24/25'],
+        datasets: [
+            { label: 'Resultado/ha', data: [-209,688,-294,363,-352,1200,-263,-925,-93,-1171,776,-422,272,1025], backgroundColor: [-209,688,-294,363,-352,1200,-263,-925,-93,-1171,776,-422,272,1025].map(v => v >= 0 ? C.gl : C.rl), borderColor: [-209,688,-294,363,-352,1200,-263,-925,-93,-1171,776,-422,272,1025].map(v => v >= 0 ? C.g : C.r), borderWidth: 2, borderRadius: 5 },
+            { label: 'Margem (%)', data: [-12.28,26.67,-13.66,14.47,-15.75,28.21,-8.78,-28.46,-2.21,-24.62,13.48,-7.39,4.42,15.00], type: 'line', borderColor: C.y, pointRadius: 4, tension: 0.3, borderWidth: 2, yAxisID: 'y1' }
+        ]
+    },
+    options: { ...dflt, scales: {
+        x: dflt.scales.x,
+        y: { ticks: { color: C.m, callback: v => 'R$' + v }, grid: { color: 'rgba(255,255,255,0.04)' } },
+        y1: { position: 'right', ticks: { color: C.y, callback: v => v + '%' }, grid: { drawOnChartArea: false } }
+    }}
+});
+
+// ===== MILHO: TALHÃO PRODUTIVIDADE =====
+const milhoTalh = ['1','2','4','5','15MC','100P','100','101','102','103','104','300P','300','301P','301','302','304','304C'];
+const milhoTalhProd = [141.25,147.32,136.96,141.55,140.04,147.69,119.35,96.76,147.92,134.11,156.89,104.21,54.60,128.35,57.98,68.17,97.02,62.37];
+new Chart(document.getElementById('milhoTalhProd'), {
+    type: 'bar',
+    data: { labels: milhoTalh, datasets: [{ data: milhoTalhProd, backgroundColor: milhoTalhProd.map(v => v >= 130 ? C.g : v >= 100 ? C.y : C.r), borderRadius: 5 }] },
+    options: { ...dflt, plugins: { ...dflt.plugins, legend: { display: false }, datalabels: { display: true, anchor: 'end', align: 'top', color: C.w, font: { weight: 'bold', size: 9 }, formatter: v => v.toFixed(0) } }, scales: { x: { ...dflt.scales.x }, y: { ...dflt.scales.y, min: 0, max: 180, ticks: { callback: v => v + ' sc' } } } }
+});
+
+// ===== MILHO: TALHÃO RESULTADO =====
+const milhoTalhRes = [1410,1836,942,2227,2000,1329,-216,-812,2174,1371,1912,-1595,-2710,862,-2622,-2589,-104,-1793];
+new Chart(document.getElementById('milhoTalhResult'), {
+    type: 'bar',
+    data: { labels: milhoTalh, datasets: [{ data: milhoTalhRes, backgroundColor: milhoTalhRes.map(v => v >= 1000 ? C.g : v >= 0 ? C.y : C.r), borderRadius: 5 }] },
+    options: { ...dflt, plugins: { ...dflt.plugins, legend: { display: false }, datalabels: { display: true, anchor: ctx => ctx.dataset.data[ctx.dataIndex] >= 0 ? 'end' : 'start', align: ctx => ctx.dataset.data[ctx.dataIndex] >= 0 ? 'top' : 'bottom', color: C.w, font: { weight: 'bold', size: 9 }, formatter: v => v >= 0 ? '+R$' + v : '-R$' + Math.abs(v) } }, scales: { x: { ...dflt.scales.x }, y: { ...dflt.scales.y, ticks: { callback: v => 'R$' + v } } } }
+});
+
+// ===== MILHO: FAZENDAS HISTÓRICO =====
+new Chart(document.getElementById('milhoFazHist'), {
+    type: 'line',
+    data: {
+        labels: ['14/15','15/16','16/17','17/18','18/19','19/20','20/21','21/22','22/23','23/24','24/25'],
+        datasets: [
+            { label: 'Monte Alegre', data: [114.46,106.66,123.17,94.10,94.23,74.14,78.11,100.54,109.28,144.07,142.35], borderColor: C.g, pointRadius: 4, tension: 0.3, borderWidth: 2 },
+            { label: 'URB I e II', data: [null,11.39,118.28,null,40.45,75.94,null,59.77,null,66.17,85.46], borderColor: C.r, pointRadius: 4, tension: 0.3, borderWidth: 2, borderDash: [5,5] },
+            { label: 'Lage/Retiro', data: [102.58,58.29,67.20,null,87.83,null,51.50,55.78,91.36,96.65,138.61], borderColor: C.b, pointRadius: 4, tension: 0.3, borderWidth: 2 }
+        ]
+    },
+    options: { ...dflt, scales: { ...dflt.scales, y: { ...dflt.scales.y, min: 0, max: 170, ticks: { callback: v => v + ' sc' } } } }
+});
+
+// ===== CANA GO: HISTÓRICO =====
+new Chart(document.getElementById('canaGOhist'), {
+    type: 'bar',
+    data: {
+        labels: ['10/11','11/12','12/13','13/14','14/15','15/16','16/17','17/18','18/19','19/20','20/21','21/22','22/23','23/24','24/25'],
+        datasets: [
+            { label: 'Produtividade (tn/ha)', data: [124.49,118.04,96.98,90.56,101.8,59.69,61.39,103.59,89.36,96.99,91.02,80.24,75.01,92.8,80.38], backgroundColor: C.ol, borderColor: C.o, borderWidth: 1, borderRadius: 4 },
+            { label: 'Margem (%)', data: [29.83,32.72,33.00,21.09,28.93,36.26,29.65,34.51,31.37,7.52,24.81,30.41,-34.30,8.00,-1.66], type: 'line', borderColor: C.y, pointBackgroundColor: ctx => ctx.raw >= 0 ? C.g : C.r, pointRadius: 5, tension: 0.3, borderWidth: 3, yAxisID: 'y1' }
+        ]
+    },
+    options: { ...dflt, scales: {
+        x: dflt.scales.x,
+        y: { ticks: { color: C.o, callback: v => v + ' tn' }, grid: { color: 'rgba(255,255,255,0.04)' }, min: 0, max: 140 },
+        y1: { position: 'right', ticks: { color: C.y, callback: v => v + '%' }, grid: { drawOnChartArea: false }, min: -40, max: 50 }
+    }}
+});
+
+// ===== CANA GO: RECEITA x CUSTO =====
+new Chart(document.getElementById('canaGOrecCust'), {
+    type: 'bar',
+    data: {
+        labels: ['17/18','18/19','19/20','20/21','21/22','22/23','23/24','24/25'],
+        datasets: [
+            { label: 'Receita/ha', data: [6752,8160,9563,12462,14048,7302,12244,13096], backgroundColor: C.gl, borderColor: C.g, borderWidth: 1, borderRadius: 4 },
+            { label: 'Custo/ha', data: [5203,7586,8096,9374,9776,9314,11264,13313], backgroundColor: C.rl, borderColor: C.r, borderWidth: 1, borderRadius: 4 }
+        ]
+    },
+    options: { ...dflt, scales: { ...dflt.scales, y: { ...dflt.scales.y, ticks: { callback: v => 'R$'+(v/1000).toFixed(0)+'K' } } } }
+});
+
+// ===== CANA: COMPARATIVO GO vs SP =====
+new Chart(document.getElementById('canaCompare'), {
+    type: 'bar',
+    data: {
+        labels: ['Área (ha)', 'Margem (%)', 'Resultado (R$ mil)', 'Custo % Total', 'Receita % Total'],
+        datasets: [
+            { label: 'Cana GO', data: [586, -1.62, -122, 17.03, 15.84], backgroundColor: C.ol, borderColor: C.o, borderWidth: 2, borderRadius: 6 },
+            { label: 'Cana SP', data: [1555, -27.77, -2313, 23.69, 17.52], backgroundColor: C.rl, borderColor: C.r, borderWidth: 2, borderRadius: 6 }
+        ]
+    },
+    options: { ...dflt, scales: { ...dflt.scales } }
+});
+
+// ===== CANA: IMPACTO NO RESULTADO =====
+new Chart(document.getElementById('canaImpacto'), {
+    type: 'bar',
+    data: {
+        labels: ['Resultado Soja+Milho', '(-) Cana GO', '(-) Cana SP', '= Resultado Final'],
+        datasets: [{
+            data: [5056, -122, -2313, 2621],
+            backgroundColor: [C.g, C.o, C.r, C.y],
+            borderRadius: 8
+        }]
+    },
+    options: {
+        ...dflt,
+        plugins: { ...dflt.plugins, legend: { display: false },
+            datalabels: { display: true, anchor: ctx => ctx.dataset.data[ctx.dataIndex] >= 0 ? 'end' : 'start', align: ctx => ctx.dataset.data[ctx.dataIndex] >= 0 ? 'top' : 'bottom', color: C.w, font: { weight: 'bold', size: 14 }, formatter: v => 'R$ ' + (v/1000).toFixed(1) + 'M' }
+        },
+        scales: { x: { ...dflt.scales.x }, y: { ...dflt.scales.y, ticks: { callback: v => 'R$' + (v/1000).toFixed(0) + 'K' } } }
+    }
+});
+
+// ===== SCROLL ANIMATION =====
+const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+
+// ===== NAV ACTIVE =====
+const sections = document.querySelectorAll('.culture-hero');
+const navLinks = document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => { if(window.scrollY >= s.offsetTop - 200) current = s.id; });
+    navLinks.forEach(a => { a.classList.toggle('active', a.getAttribute('href') === '#' + current); });
+});
+</script>
+
+</body>
+</html>
